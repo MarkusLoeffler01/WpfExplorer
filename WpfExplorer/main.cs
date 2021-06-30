@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace WpfExplorer
@@ -11,12 +8,13 @@ namespace WpfExplorer
     {
         public static void ReportError(Exception e)
         {
-            if(e.GetType().ToString() == "Npgsql.NpgsqlException")
-            {
-                string msg = "Es wurde ein Fehler festgestellt. Stellen Sie sicher, dass sie mit dem Internet verbunden sind. Bei weiteren Fragen wenden Sie sich an ihren System Administrator\n\n\nFehlertext: " + e.Message;
-                MessageBox.Show(msg);
-                System.Environment.Exit(1);
-            }
+            string msg;
+
+            if(e.GetType().ToString() == "Npgsql.NpgsqlException") msg = "Es wurde ein Fehler festgestellt. Stellen Sie sicher, dass sie mit dem Internet verbunden sind. Bei weiteren Fragen wenden Sie sich an ihren System Administrator\n\n\nFehlertext: " + e.Message;
+            else  msg = "Es ist ein unbekannter Fehler aufgetreten: \n\n" + e.Message +"\nWeitere Hilfe erhalten Sie hier: "+ e.HelpLink;
+            
+            MessageBox.Show(msg);
+            Environment.Exit(1);
         }
 
         public static bool PingDB()
@@ -29,8 +27,7 @@ namespace WpfExplorer
                 msgS +="\n\n";
             }
             MessageBox.Show(msgS);
-            if (cmd[0] == "2") return true;
-            return false;
+            return cmd[0] == "2";
         }
     }
 }
