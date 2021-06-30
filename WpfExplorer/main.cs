@@ -6,6 +6,7 @@ namespace WpfExplorer
 {
     public class main
     {
+        public static bool isIndexerRunning = false;
         public static void ReportError(Exception e)
         {
             string msg;
@@ -28,6 +29,14 @@ namespace WpfExplorer
             }
             MessageBox.Show(msgS);
             return cmd[0] == "2";
+        }
+
+        public static FileStructure[] FoundFiles;
+
+        public class FileStructure
+        {
+            public string Path;
+            public string Filename;
         }
     }
 }
