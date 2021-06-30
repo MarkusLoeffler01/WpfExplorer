@@ -7,6 +7,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Button Click="Button_Click" Margin="605,41,82,345.5"></Button>
+        <TextBlock Name="TB_Ping" Margin="10,10,632,394.5">Connecting to Database...</TextBlock>
+        <TextBlock Name="TB_PingTime" Margin="151,10,491,394"></TextBlock>
     </Grid>
 </Window>
