@@ -11,21 +11,25 @@ namespace WpfExplorer
     class db
     {
         /**Method */
-        public static Item getConf()
+        public static T getConf<T>(string name)
         {
             string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-            using (StreamReader r = new StreamReader(dir+"\\..\\..\\..\\config.json"))
+            using (StreamReader r = new StreamReader(dir+$"\\..\\..\\..\\{name}.json"))
             {
                 string json = r.ReadToEnd();
-                List<Item> items = JsonConvert.DeserializeObject<List<Item>>(json);
-                return items[0];
+                try
+                {
+                    List<T> items = JsonConvert.DeserializeObject<List<T>>(json);
+                    return items[0];
+                }
+                catch(Exception e) { main.ReportError(e); throw; }
             }
         }
         
         public static double PingDB()
         {
-            Item conf = getConf();
+            DBConf conf = getConf<DBConf>("config");
             Ping p = new Ping();
             PingReply r = p.Send(conf.Host);
             if(r.Status == IPStatus.Success) return r.RoundtripTime;
@@ -35,7 +39,7 @@ namespace WpfExplorer
         
         public static List<string> query(string command)
         {
-            Item item = getConf();
+            DBConf item = getConf<DBConf>("config");
             string conStr = $"Host={item.Host};Username={item.Username};Password={item.Password};Database={item.Database}";
             //MessageBox.Show(conStr);
             NpgsqlConnection con = new NpgsqlConnection(conStr);
@@ -59,7 +63,7 @@ namespace WpfExplorer
         }
 
 
-        public class Item
+        public class DBConf
         {
             public string Host;
             public string Username;
