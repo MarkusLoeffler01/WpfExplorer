@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-
+using System.Linq;
 namespace WpfExplorer
 {
     /// <summary>
@@ -9,6 +9,7 @@ namespace WpfExplorer
     /// </summary>
     public partial class MainWindow : Window
     {
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -18,6 +19,9 @@ namespace WpfExplorer
             dT.Tick += new EventHandler(SetPing);
             dT.Interval = new TimeSpan(0, 0, 1);
             dT.Start();
+            
+            MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..")));
+            MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..", true)));
         }
 
         private void SetPing(object sender, EventArgs e)
@@ -36,5 +40,29 @@ namespace WpfExplorer
             }
             MessageBox.Show(res);
         }
+
+        public void AddToGrid(string FileName, string FullPath)
+        {
+
+        }
+
+        private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            /**Es sollten zuerst die Dateinamen und DANN erst Dateien mit dem Inhalt durchsucht werden */
+
+            main.isIndexerRunning = true;
+            fs.CF_Ind _ = db.getConf<fs.CF_Ind>("index");
+            for(int i = 0; i < _.Paths.Length; i++)
+            {
+
+                System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
+                main.FileStructure oof = fs.searchFile(_.Paths[i], false);
+                txt.Text += $"\n\n{oof.Filename} in {oof.Path}";
+            }
+            
+
+        }
+
+
     }
 }
