@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Npgsql;
 using Newtonsoft.Json;
 using System.IO;
-using System.Windows.Threading;
 
-using static WpfExplorer.main;
-using System.Windows;
 using System.Net.NetworkInformation;
-using static WpfExplorer.MainWindow;
 
 namespace WpfExplorer
 {
@@ -19,7 +13,7 @@ namespace WpfExplorer
         /**Method */
         public static Item getConf()
         {
-            string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
             using (StreamReader r = new StreamReader(dir+"\\..\\..\\..\\config.json"))
             {
@@ -44,9 +38,9 @@ namespace WpfExplorer
             Item item = getConf();
             string conStr = $"Host={item.Host};Username={item.Username};Password={item.Password};Database={item.Database}";
             //MessageBox.Show(conStr);
-            var con = new NpgsqlConnection(conStr);
+            NpgsqlConnection con = new NpgsqlConnection(conStr);
             try { con.Open(); }
-            catch(Exception e) { ReportError(e); throw; }
+            catch(Exception e) { main.ReportError(e); throw; }
             NpgsqlCommand cmd = new NpgsqlCommand(command, con);
             //cmd.Prepare();
             var reader = cmd.ExecuteReader();
