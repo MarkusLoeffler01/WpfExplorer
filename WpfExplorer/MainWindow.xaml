@@ -8,7 +8,12 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button Click="Button_Click" Margin="605,41,82,345.5"></Button>
-        <TextBlock Name="TB_Ping" Margin="10,10,632,394.5">Connecting to Database...</TextBlock>
-        <TextBlock Name="TB_PingTime" Margin="151,10,491,394"></TextBlock>
+        <TextBlock Name="TB_Ping" Margin="10,28,632,376">Connecting to Database...</TextBlock>
+        <TextBlock Name="TB_PingTime" Margin="10,3,744,401"></TextBlock>
+        <TextBlock Name="TB_SearchText" Margin="169,8,210,396">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
+        <TextBox Name="tb_Search" Margin="169,28,210,376" TextChanged="tb_Search_TextChanged"></TextBox>
+        <Grid Name="GD_Dateiausgabe" Margin="19,60,196,106">
+            
+        </Grid>
     </Grid>
 </Window>
