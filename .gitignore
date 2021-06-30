@@ -8,6 +8,7 @@ App.g.cs
 *.g.cs
 *.g.i.cs
 *.cache
+.dccache
 *.rsuser
 
 *.suo
