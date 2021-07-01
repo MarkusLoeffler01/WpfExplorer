@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Linq;
+using System.Windows.Interop;
+using System.Diagnostics;
+using System.Windows.Controls.Primitives;
+
 namespace WpfExplorer
 {
     /// <summary>
@@ -22,6 +26,10 @@ namespace WpfExplorer
             
             MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..")));
             MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..", true)));
+            //DetectUSB.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            //DetectUSB.Click(new object(), new RoutedEventArgs());
+            //Detect_Click(Window.GetWindow(this), new RoutedEventArgs());
+            //DetectUSB.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         private void SetPing(object sender, EventArgs e)
@@ -63,6 +71,35 @@ namespace WpfExplorer
 
         }
 
+        private void Detect_Click(object sender, RoutedEventArgs e)
+        {
+            HwndSource hwndSource = HwndSource.FromHwnd(Process.GetCurrentProcess().MainWindowHandle);
+            if (hwndSource != null)
+            {
+                IntPtr windowHandle = hwndSource.Handle;
+                hwndSource.AddHook(UsbNotificationHandler);
+                USBDetector.RegisterUsbDeviceNotification(windowHandle);
+            }
+            DetectUSB.IsEnabled = false;
+        }
+        private IntPtr UsbNotificationHandler(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        {
+            if (msg == USBDetector.UsbDevicechange)
+            {
+                switch ((int)wparam)
+                {
+                    case USBDetector.UsbDeviceRemoved:
+                        MessageBox.Show("USB Removed");
+                        break;
+                    case USBDetector.NewUsbDeviceConnected:
+                        MessageBox.Show("New USB Detected");
+                        break;
+                }
+            }
+
+            handled = false;
+            return IntPtr.Zero;
+        }
 
     }
 }
