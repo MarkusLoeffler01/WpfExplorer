@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Interop;
 using System.Diagnostics;
 using System.Windows.Controls.Primitives;
+using System.IO;
 
 namespace WpfExplorer
 {
@@ -92,13 +93,43 @@ namespace WpfExplorer
                         MessageBox.Show("USB Removed");
                         break;
                     case USBDetector.NewUsbDeviceConnected:
-                        MessageBox.Show("New USB Detected");
+
+                        MessageBoxResult res = MessageBox.Show("Neuer USB erkannt. Möchten Sie ihn indizieren?", "Neues USB Gerät", MessageBoxButton.YesNo);
+                        if (res == MessageBoxResult.Yes) { ScanUSB(); }
                         break;
                 }
             }
 
             handled = false;
             return IntPtr.Zero;
+        }
+
+        public static void ScanUSB()
+        {
+            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            foreach(DriveInfo d in allDrives)
+            {
+                string message = "";
+                /** Fixed sind feste SATA/NVMe Datenträger */
+                if (d.DriveType.ToString() == "Fixed") { }
+
+                if(d.DriveType.ToString() == "Removeable")
+                {
+                    MessageBox.Show("USB Gerät erkannt");
+                }
+                message+=$"Drive "+d.Name;
+                message+=$"\nDrive type: "+d.DriveType.ToString();
+                if (d.IsReady == true)
+                {
+                    message+=$"\nVolume label: "+d.VolumeLabel;
+                    message+=$"\nFile system: "+d.DriveFormat;
+                    message += $"\nAvailable space to current user: " + d.AvailableFreeSpace.ToString() + " bytes";
+                    message += $"\nTotal available space: " + d.TotalFreeSpace.ToString() + " bytes";
+                    message+=$"\nTotal size of drive: "+ d.TotalSize.ToString()+ " bytes";
+
+                    MessageBox.Show(message);
+                }
+            }
         }
 
     }
