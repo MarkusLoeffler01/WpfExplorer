@@ -6,6 +6,8 @@ using System.Windows.Interop;
 using System.Diagnostics;
 using System.Windows.Controls.Primitives;
 using System.IO;
+using System.Threading;
+using System.ComponentModel;
 
 namespace WpfExplorer
 {
@@ -14,7 +16,8 @@ namespace WpfExplorer
     /// </summary>
     public partial class MainWindow : Window
     {
-        
+        string _PATH = "";
+        public static DriveInfo[] allDrives; 
         public MainWindow()
         {
             InitializeComponent();
@@ -24,9 +27,14 @@ namespace WpfExplorer
             dT.Tick += new EventHandler(SetPing);
             dT.Interval = new TimeSpan(0, 0, 1);
             dT.Start();
-            
-            MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..")));
-            MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..", true)));
+
+            allDrives = DriveInfo.GetDrives();
+            //allDrives = DriveInfo.GetDrives();
+
+
+
+            //MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..")));
+            //MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..", true)));
             //DetectUSB.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
             //DetectUSB.Click(new object(), new RoutedEventArgs());
             //Detect_Click(Window.GetWindow(this), new RoutedEventArgs());
@@ -39,20 +47,48 @@ namespace WpfExplorer
             TB_PingTime.Text = $"{PingTime}ms";
         }
         private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            List<string> x = db.query("SELECT 1+1;");
-            string res = "";
-            for (int i = 0; i < x.Count; i++)
-            {
-                res += x[i];
-                res += "\n\n";
-            }
-            MessageBox.Show(res);
+        { 
+            BackgroundWorker worker = new BackgroundWorker();
+            _PATH = main.getPathDialog();
+            worker.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+            worker.WorkerSupportsCancellation = true;
+            //worker.WorkerReportsProgress = true;
+            //worker.ProgressChanged += OnProgressChanged;
+            worker.RunWorkerAsync();
+            return;
+            //List<string> x = db.query("SELECT 1+1;");
+            //string res = "";
+            //for (int i = 0; i < x.Count; i++)
+            //{
+            //    res += x[i];
+            //    res += "\n\n";
+            //}
+            //MessageBox.Show(res);
         }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
+
+            string[] files = fs.readDirSync(_PATH, true, true);
+            int TotalFiles = files.Length;
+            for (int i = 0; i < TotalFiles; i++)
+            {
+                //Thread.Sleep(100);
+
+                SetIndexProgress(files[i], i, TotalFiles);
+            }
+        }
+
+        //private void OnProgressChanged(object sender, ProgressChangedEventArgs e)
+        //{
+        //    SetIndexProgress()
+        //}
 
         public void AddToGrid(string FileName, string FullPath)
         {
-
+            index _ = new index(main.getPathDialog());
+            _.start();
         }
 
         private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -85,6 +121,7 @@ namespace WpfExplorer
         }
         private IntPtr UsbNotificationHandler(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
+         
             if (msg == USBDetector.UsbDevicechange)
             {
                 switch ((int)wparam)
@@ -95,41 +132,63 @@ namespace WpfExplorer
                     case USBDetector.NewUsbDeviceConnected:
 
                         MessageBoxResult res = MessageBox.Show("Neuer USB erkannt. Möchten Sie ihn indizieren?", "Neues USB Gerät", MessageBoxButton.YesNo);
-                        if (res == MessageBoxResult.Yes) { ScanUSB(); }
+                        if (res == MessageBoxResult.Yes) { NewIndex(); }
                         break;
                 }
+            }
+            else
+            {
+                
             }
 
             handled = false;
             return IntPtr.Zero;
         }
 
-        public static void ScanUSB()
+        public static void NewIndex()
         {
-            DriveInfo[] allDrives = DriveInfo.GetDrives();
-            foreach(DriveInfo d in allDrives)
+            List<string> drive = ScanUSB();
+
+            if (drive == null || drive.Count == 0) { MessageBox.Show("USB Gerät wurde nicht erkannt\nBitte erneut probieren"); return; }
+            MessageBox.Show("Wählen Sie den Ordner aus, den Sie indizieren möchten");
+            main.getPathDialog(drive[0]);
+        }
+
+        public static List<string> ScanUSB()
+        {
+            DriveInfo[] currentDrives = DriveInfo.GetDrives();
+            //foreach (var drive in currentDrives)
+            //{
+            //    if (!allDrives.Contains(drive)) { MessageBox.Show(drive.Name); }
+            //}
+
+            List<string> oldD = new List<string> { };
+            List<string> newD = new List<string> { };
+            foreach (var curr in currentDrives)
             {
-                string message = "";
-                /** Fixed sind feste SATA/NVMe Datenträger */
-                if (d.DriveType.ToString() == "Fixed") { }
-
-                if(d.DriveType.ToString() == "Removeable")
-                {
-                    MessageBox.Show("USB Gerät erkannt");
-                }
-                message+=$"Drive "+d.Name;
-                message+=$"\nDrive type: "+d.DriveType.ToString();
-                if (d.IsReady == true)
-                {
-                    message+=$"\nVolume label: "+d.VolumeLabel;
-                    message+=$"\nFile system: "+d.DriveFormat;
-                    message += $"\nAvailable space to current user: " + d.AvailableFreeSpace.ToString() + " bytes";
-                    message += $"\nTotal available space: " + d.TotalFreeSpace.ToString() + " bytes";
-                    message+=$"\nTotal size of drive: "+ d.TotalSize.ToString()+ " bytes";
-
-                    MessageBox.Show(message);
-                }
+                oldD.Add(curr.Name);
             }
+            foreach(var d in allDrives)
+            {
+                newD.Add(d.Name);
+            }
+            return oldD.Except(newD).Concat(newD.Except(oldD)).ToList();
+        }
+
+        public void SetIndexProgress(string FileName, int current, int total)
+        {
+            current++;
+            double p = 100 / Convert.ToDouble(total);
+            double prozent = p * Convert.ToDouble(current);
+
+            /** Gebe die Aufgabe zurück an den HauptThread. 
+             * Nur dieser darf auf die UI zugreifen
+             */
+            this.Dispatcher.Invoke(() =>
+            { 
+                IndexProgress.Text = $"{FileName} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
+            });
+            
         }
 
     }
