@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Management;
 
 
 namespace WpfExplorer
@@ -12,10 +13,30 @@ namespace WpfExplorer
     {
         public static main.FileStructure[] Files = { };
 
-        public static string[] readDirSync(string path, bool fullpath = false)
+        public static string[] readDirSync(string path, bool fullpath = false, bool recursive = false, string[] _dirs = null)
         {
-            if(fullpath) return Directory.GetFiles(path).Select(p => Path.GetFullPath(p)).ToArray();
-            return Directory.GetFiles(path).Select(p => Path.GetFileName(p)).ToArray();
+            if(!recursive)
+            {
+                if (fullpath) return Directory.GetFiles(path).Select(p => Path.GetFullPath(p)).ToArray();
+                return Directory.GetFiles(path).Select(p => Path.GetFileName(p)).ToArray();
+            }
+            if (fullpath) return Directory.GetFiles(path, "*", SearchOption.AllDirectories).Select(p => Path.GetFullPath(p)).ToArray();
+            return Directory.GetFiles(path, "*", SearchOption.AllDirectories).Select(p => Path.GetFileName(p)).ToArray();
+
+
+            string[] dirs = new string[] { };
+            if (_dirs != null) dirs = _dirs;
+
+            foreach(string d in Directory.GetDirectories(path))
+            {
+                foreach(string f in Directory.GetFiles(d))
+                {
+                    dirs.Append(f);
+                }
+                dirs.Append(string.Join("\n", readDirSync(d, fullpath, true, dirs)));
+                //readDirSync(d, fullpath, true, dirs);
+            }
+            return dirs;
         }
 
         public static void writeFileSync(string path, string context, bool overwrite = false)
@@ -31,7 +52,6 @@ namespace WpfExplorer
 
 
         /** Other section*/
-
 
         /** GIbt -1 zurück, sollte der Dateiname ungültige Zeichen beinhalten*/
         public static string[] getPath(string fileName)
@@ -70,6 +90,7 @@ namespace WpfExplorer
             main.FileStructure file = Files.FirstOrDefault(_file => _file.Filename == File);
             return file;
         }
+        
 
 
 
@@ -77,6 +98,11 @@ namespace WpfExplorer
         public class CF_Ind
         {
             public string[] Paths;
+        }
+
+        public static int getFileCount(string path)
+        {
+            return Directory.GetFiles(path).Length;
         }
     }
 }
