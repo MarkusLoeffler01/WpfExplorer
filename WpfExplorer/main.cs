@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using WPFFolderBrowser;
 
 namespace WpfExplorer
 {
-    public class main
+    public class main : Window
     {
         public static bool isIndexerRunning = false;
         public static void ReportError(Exception e)
@@ -27,7 +28,7 @@ namespace WpfExplorer
                 msgS += cmd[i];
                 msgS +="\n\n";
             }
-            MessageBox.Show(msgS);
+            //MessageBox.Show(msgS);
             return cmd[0] == "2";
         }
 
@@ -37,6 +38,21 @@ namespace WpfExplorer
         {
             public string Path;
             public string Filename;
+        }
+
+        public static string getPathDialog(string path = null)
+        {
+            WPFFolderBrowserDialog dia = new WPFFolderBrowserDialog();
+            dia.InitialDirectory = path;
+            if(dia.ShowDialog() == true)
+            {
+                MessageBox.Show(dia.FileName);
+                dia.ShowHiddenItems = true;
+                dia.Title = "Verzeichnis zum Indizieren wählen";
+                return dia.FileName;
+            }
+            return "";
+
         }
     }
 }
