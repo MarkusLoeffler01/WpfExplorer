@@ -16,6 +16,7 @@ namespace WpfExplorer
 
         public static string[] readDirSync(string path, bool fullpath = false, bool recursive = false, string[] _dirs = null)
         {
+            if (path == null) return null;
             if(!recursive)
             {
                 if (fullpath) return Directory.GetFiles(path).Select(p => Path.GetFullPath(p)).ToArray();
