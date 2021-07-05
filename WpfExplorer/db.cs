@@ -57,7 +57,7 @@ namespace WpfExplorer
             };
             reader.Close();
             return result;
-            //Array.ForEach(x, Console.WriteLine);
+            //Array.ForEach(x, System.Diagnostics.Debug.WriteLine);
 
 
             //MessageBox.Show(reader.GetString(0));
