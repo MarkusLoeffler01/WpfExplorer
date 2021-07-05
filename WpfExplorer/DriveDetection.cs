@@ -48,40 +48,12 @@ namespace WpfExplorer
     /// </summary>
     public class USBDetector
     {
-        /// <summary>
-        /// The new usb device connected
-        /// </summary>
         public const int NewUsbDeviceConnected = 0x8000;
-
-        /// <summary>
-        /// The usb device removed
-        /// </summary>
         public const int UsbDeviceRemoved = 0x8004;
-
-        /// <summary>
-        /// The usb devicechange
-        /// </summary>
         public const int UsbDevicechange = 0x0219;
-
-        /// <summary>
-        /// The DBT devtyp deviceinterface
-        /// </summary>
         private const int DbtDevtypDeviceinterface = 5;
-
-        /// <summary>
-        /// The unique identifier devinterface usb device
-        /// </summary>
         private static readonly Guid GuidDevinterfaceUSBDevice = new Guid("A5DCBF10-6530-11D2-901F-00C04FB951ED"); // USB devices
-
-        /// <summary>
-        /// The notification handle
-        /// </summary>
         private static IntPtr notificationHandle;
-
-        /// <summary>
-        /// Registers a window to receive notifications when USB devices are plugged or unplugged.
-        /// </summary>
-        /// <param name="windowHandle">Handle to the window receiving notifications.</param>
         public static void RegisterUsbDeviceNotification(IntPtr windowHandle)
         {
             USBBroadcastinterface dbi = new USBBroadcastinterface
