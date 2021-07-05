@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.IO;
 using System.Threading;
 using System.ComponentModel;
+using System.Windows.Controls;
 
 namespace WpfExplorer
 {
@@ -23,6 +24,7 @@ namespace WpfExplorer
         {
             fs.checkFiles();
             InitializeComponent();
+
             if(main.PingDB()) { TB_Ping.Text = "Connected"; }
             else { TB_Ping.Text = "Connection failed..."; main.ReportError(new Exception("Ping not successfull")); return; }
             System.Windows.Threading.DispatcherTimer dT = new System.Windows.Threading.DispatcherTimer();
@@ -30,16 +32,6 @@ namespace WpfExplorer
             dT.Interval = new TimeSpan(0, 0, 1);
             dT.Start();
 
-            var xx = fs.readIndexedFiles();
-            var yy = xx.ToArray<main.FileStructure>();
-            string res = "";
-            for(int i = 0; i < yy.Length; i++)
-            {
-                res += yy[i].Filename+"\n";
-                res += yy[i].Path+"\n\n";
-
-            }
-            MessageBox.Show(res);
             allDrives = DriveInfo.GetDrives();
             //allDrives = DriveInfo.GetDrives();
 
@@ -51,10 +43,34 @@ namespace WpfExplorer
             //DetectUSB.Click(new object(), new RoutedEventArgs());
             //Detect_Click(Window.GetWindow(this), new RoutedEventArgs());
             //DetectUSB.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+
+
+            //var xx = fs.readIndexedFiles();
+            //var yy = xx.ToArray<main.FileStructure>();
+            //string res = "";
+            //for(int i = 0; i < yy.Length; i++)
+            //{
+            //    res += yy[i].Filename+"\n";
+            //    res += yy[i].Path+"\n\n";
+
+            //}
+            //MessageBox.Show(res);
+
+            var File = fs.searchFile("bdhfszifzui1.txt", false);
+            if (File.Count == 0) MessageBox.Show("Keine Dateien gefunden");
+            else
+            {
+                string res = "";
+                foreach (var v in File)
+                {
+                    res += v.Filename + "\n";
+                    res += v.Path + "\n\n";
+                }
+                MessageBox.Show(res);
+            }
         }
 
         private void SetPing(object sender, EventArgs e)
-        
         {
             double PingTime = db.PingDB();
             TB_PingTime.Text = $"{PingTime}ms";
@@ -107,19 +123,49 @@ namespace WpfExplorer
 
         private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
+            GD_Dateiausgabe.Children.Clear();
+
+            /** Nichts eingegeben = nichts anzeigen */
+            if (tb_Search.Text.Length == 0) return;
             /**Es sollten zuerst die Dateinamen und DANN erst Dateien mit dem Inhalt durchsucht werden */
 
-            main.isIndexerRunning = true;
-            fs.CF_Ind _ = db.getConf<fs.CF_Ind>("index");
-            for(int i = 0; i < _.Paths.Length; i++)
+            var File = fs.searchFile(tb_Search.Text, false);
+            if(File.Count != 0)
             {
+                string res = "";
+                foreach (var v in File)
+                {
+                    res += v.Filename + "\n";
+                    res += v.Path + "\n\n";
+                }
+                TextBlock tb = new TextBlock();
+                tb.Text = res + "\n";
 
-                System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
-                main.FileStructure oof = fs.searchFile(_.Paths[i].FileName, false);
-                txt.Text += $"\n\n{oof.Filename} in {oof.Path}";
+                tb.MouseLeftButtonUp += Tb_MouseLeftButtonUp;
+                GD_Dateiausgabe.Children.Add(tb);
             }
-            
 
+
+            //fs.C_IZ _ = db.getConf<fs.C_IZ>("database");
+            //for (int i = 0; i < _.Paths.Length; i++)
+            //{
+
+            //    System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
+            //    List<main.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
+            //    oof.ForEach((p) =>
+            //    {
+            //        AddToGrid(p.Filename, p.Path);
+            //        txt.Text += $"\n\n{p.Filename} in {p.Path}";
+            //    });
+
+            //}
+
+
+        }
+
+        private void Tb_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            //Hier ein Event einfügen, welches den Pfad des angeklickten TextBlocks öffnet
         }
 
         private void Detect_Click(object sender, RoutedEventArgs e)
