@@ -21,11 +21,10 @@ namespace WpfExplorer
             Task.Run(() =>
             {
                 string path = MainWindow.CONFIG_LOCATIONS;
+                string[] files = {"config", "database", "WhichPaths"};
 
                 Directory.CreateDirectory(path);
-                if (!File.Exists(path + "index.json")) File.WriteAllText(path + "index.json", "[{}]");
-                if (!File.Exists(path + "config.json")) File.WriteAllText(path + "config.json", "[{}]");
-
+                for (int i = 0; i < files.Length; i++) { if (!File.Exists(path + files[i] + ".json")) File.WriteAllText(path + files[i] + ".json", "[{}]"); }
             });
         }
 
@@ -91,50 +90,67 @@ namespace WpfExplorer
 
 
         /** Liest alle Dateien aus dem Index */
-        public static List<main.FileStructure> readIndexedFiles()
+        public static C_IZ readIndexedFiles()
         {
             /** Hole die Config, welche Directories gescannt werden sollten*/
-            CF_Ind conf = db.getConf<CF_Ind>("WhichPaths");
-            
-            List<main.FileStructure> Files = new List<main.FileStructure>();
-            for (int i = 0; i < conf.Paths.Length; i++)
-            {
-                string[] FileNames = readDirSync(conf.Paths[i].Path);
-                string[] FullPaths = readDirSync(conf.Paths[i].Path, true); 
-                for(int o = 0; o < FileNames.Length; o++)
-                {
-                    /** Entferne die Dateinamen aus dem Path */
-                        FullPaths[o] = Path.GetDirectoryName(FullPaths[o]);
-                        Files.Add(new main.FileStructure() {Filename = FileNames[o], Path = FullPaths[o]});
-                }
-            }
-            main.isIndexerRunning = false;
-            return Files;
+            return db.getConf<C_IZ>("database");
 
         }
-        /** Sucht nach einer Datei nach ihrem Namen und gibt die Datei zurück */
-        public static main.FileStructure searchFile(string Filename, bool SearchFileContent)
+        /** Sucht nach einer Datei nach ihrem Namen und gibt die Datei mit dem Pfad zurück */
+        public static List<main.FileStructure> searchFile(string Filename, bool SearchFileContent)
         {
             /** Es wird noch indiziert. Kann nicht gesucht werden*/
-            while (!main.isIndexerRunning) { }
-            var Files = readIndexedFiles();
-            main.FileStructure file = Files.FirstOrDefault(_file => _file.Filename == Filename);
-            return file;
+            int ___ = 0;
+            while (main.isIndexerRunning) { System.Diagnostics.Debug.WriteLine("Still running"+___); ___++; }
+            C_IZ conf = db.getConf<C_IZ>("database");
+            List<main.FileStructure> FoundFiles = new List<main.FileStructure>();
+            for(int i = 0; i < conf.Paths.Length; i++)
+            {
+                for(int o = 0; o < conf.Paths[i].Files.Length; o++)
+                {
+                    if (conf.Paths[i].Files[o].Contains(Filename)) FoundFiles.Add(new main.FileStructure() { Filename = conf.Paths[i].Files[o], Path = conf.Paths[i].Path });
+                }
+            }
+            return FoundFiles;
         }
         /** Holt sich die IndexDatei und fügt einen Eintrag hinzu */
-        public static void AddToIndex(string path)
+        public static void AddToIndex(string _file)
         {
             
             try
             {
-                List<i> obj = JsonConvert.DeserializeObject<List<i>>(fs.readFileSync(path));
-                //TODO: Mach eine neue Variable mit dem Interface von index und setze das Attribut Path auf path
-                i d = new i(path);
-                obj.Add(d);
-                fs.writeFileSync(path, JsonConvert.SerializeObject(obj));
-                string[] filename = path.Split('\\');
-                MainWindow.AddToGrid(filename[filename.Length-1], path);
+                string path = Path.GetDirectoryName(_file);
+                string file = Path.GetFileName(_file);
 
+                //Hole die DB-Datei
+                C_IZ db = JsonConvert.DeserializeObject<C_IZ>(fs.readFileSync(MainWindow.CONFIG_LOCATIONS+"database.json"));
+                
+                //Ist Paths[i].Path schon vorhanden?
+                for(int i = 0; i < db.Paths.Length; i++)
+                {
+                    if(db.Paths[i].Path == path)
+                    {
+                        //JA, füge Eintrag zu Paths[i].Files hinzu
+                        db.Paths[i].Files.Append(file);
+                        break;
+                    }
+                }
+                //NEIN, lege einen neuen Path Eintrag an und füge die File hinzu
+                db.Paths.Append(new C_Path{Path = path, Files = new string[] { file } });
+
+                //Speicher die DB-Datei
+                fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(db));
+                MainWindow.AddToGrid(file, path);
+                return;
+
+
+                List<i> obj = JsonConvert.DeserializeObject<List<i>>(fs.readFileSync(file));
+                //TODO: Mach eine neue Variable mit dem Interface von index und setze das Attribut Path auf path
+                i d = new i(file);
+                obj.Add(d);
+                fs.writeFileSync(file, JsonConvert.SerializeObject(obj));
+                string[] filename = file.Split('\\');
+                MainWindow.AddToGrid(filename[filename.Length-1], file);
             }
             catch(Exception e)
             {
@@ -155,7 +171,7 @@ namespace WpfExplorer
             }
             public string path;
         }
-        
+
 
 
 
@@ -168,7 +184,8 @@ namespace WpfExplorer
         //    };
         //}
 
-        public partial class CF_Ind
+
+        public partial class C_IZ
         {
             [JsonProperty("Paths")]
             public C_Path[] Paths { get; set; }
@@ -176,12 +193,20 @@ namespace WpfExplorer
 
         public partial class C_Path
         {
-            [JsonProperty("FileName")]
-            public string FileName { get; set; }
-
             [JsonProperty("Path")]
             public string Path { get; set; }
+
+            [JsonProperty("Files")]
+            public string[] Files { get; set; }
         }
+
+
+        public partial class C_Which
+        {
+            [JsonProperty("Paths")]
+            public string[] Paths { get; set; }
+        }
+
 
         public static int getFileCount(string path)
         {
