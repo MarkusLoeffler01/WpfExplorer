@@ -17,9 +17,11 @@ namespace WpfExplorer
     public partial class MainWindow : Window
     {
         string _PATH = "";
+        public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
         public static DriveInfo[] allDrives; 
         public MainWindow()
         {
+            fs.checkFiles();
             InitializeComponent();
             if(main.PingDB()) { TB_Ping.Text = "Connected"; }
             else { TB_Ping.Text = "Connection failed..."; main.ReportError(new Exception("Ping not successfull")); return; }
@@ -28,6 +30,16 @@ namespace WpfExplorer
             dT.Interval = new TimeSpan(0, 0, 1);
             dT.Start();
 
+            var xx = fs.readIndexedFiles();
+            var yy = xx.ToArray<main.FileStructure>();
+            string res = "";
+            for(int i = 0; i < yy.Length; i++)
+            {
+                res += yy[i].Filename+"\n";
+                res += yy[i].Path+"\n\n";
+
+            }
+            MessageBox.Show(res);
             allDrives = DriveInfo.GetDrives();
             //allDrives = DriveInfo.GetDrives();
 
@@ -42,6 +54,7 @@ namespace WpfExplorer
         }
 
         private void SetPing(object sender, EventArgs e)
+        
         {
             double PingTime = db.PingDB();
             TB_PingTime.Text = $"{PingTime}ms";
@@ -66,6 +79,7 @@ namespace WpfExplorer
             //MessageBox.Show(res);
         }
 
+        /**Neuer Thread, um die UI nicht zu blockieren */
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
@@ -75,7 +89,7 @@ namespace WpfExplorer
             for (int i = 0; i < TotalFiles; i++)
             {
                 //Thread.Sleep(100);
-
+                fs.AddToIndex(files[i]);
                 SetIndexProgress(files[i], i, TotalFiles);
             }
         }
@@ -85,7 +99,7 @@ namespace WpfExplorer
         //    SetIndexProgress()
         //}
 
-        public void AddToGrid(string FileName, string FullPath)
+        public static void AddToGrid(string FileName, string FullPath)
         {
             index _ = new index(main.getPathDialog());
             _.start();
@@ -101,7 +115,7 @@ namespace WpfExplorer
             {
 
                 System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
-                main.FileStructure oof = fs.searchFile(_.Paths[i], false);
+                main.FileStructure oof = fs.searchFile(_.Paths[i].FileName, false);
                 txt.Text += $"\n\n{oof.Filename} in {oof.Path}";
             }
             
@@ -175,6 +189,7 @@ namespace WpfExplorer
             return oldD.Except(newD).Concat(newD.Except(oldD)).ToList();
         }
 
+        /** Diese Methode sollte in einem neuen Thread ausgrführt werden, um die UI nicht zu blockieren*/
         public void SetIndexProgress(string FileName, int current, int total)
         {
             current++;
