@@ -114,7 +114,7 @@ namespace WpfExplorer
             return FoundFiles;
         }
         /** Holt sich die IndexDatei und fügt einen Eintrag hinzu */
-        public static void AddToIndex(string _file)
+        public static int AddToIndex(string _file)
         {
             
             try
@@ -132,8 +132,8 @@ namespace WpfExplorer
                 {
                     if(data.Paths[i].Path == path)
                     {
-                        //JA, füge Eintrag zu Paths[i].Files hinzu
-                        data.Paths[i].Files.Add(file);
+                        //JA, füge Eintrag zu Paths[i].Files hinzu, wenn diese nicht schon vorhanden ist
+                        if (!data.Paths[i].Files.Contains(file)) { data.Paths[i].Files.Add(file); } else { return -1; }
                         found = true;
                         break;
                     }
@@ -145,11 +145,11 @@ namespace WpfExplorer
                 db.setConf("database", data);
                 //fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(data), true);
                 MainWindow.AddToGrid(file, path);
-                return;
+                return 0;
             }
             catch(Exception e)
             {
-                main.ReportError(e);
+                main.ReportError(e); return -255;
             }
         }
 
