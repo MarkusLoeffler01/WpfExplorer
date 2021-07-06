@@ -6,6 +6,8 @@ using System.IO;
 
 using System.Net.NetworkInformation;
 using System.Windows;
+using System.Text.Json;
+using Newtonsoft.Json.Linq;
 
 namespace WpfExplorer
 {
@@ -27,7 +29,20 @@ namespace WpfExplorer
                 catch(Exception e) { main.ReportError(e); throw; }
             }
         }
-        
+
+        public static void setConf(string name, object text)
+        {
+            string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                try
+                {
+                    JsonConvert.SerializeObject(text);
+                    string _ = JsonConvert.SerializeObject(text);
+                    fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", $"[{_}]", true);
+                    return;
+                }
+                catch (Exception e) { main.ReportError(e); throw; }
+        }
+
         public static double PingDB()
         {
             DBConf conf = getConf<DBConf>("config");
