@@ -168,6 +168,16 @@ namespace WpfExplorer
             //Hier ein Event einfügen, welches den Pfad des angeklickten TextBlocks öffnet
         }
 
+        public void tb_AddExceptions_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        public void Index_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void Detect_Click(object sender, RoutedEventArgs e)
         {
             HwndSource hwndSource = HwndSource.FromHwnd(Process.GetCurrentProcess().MainWindowHandle);
