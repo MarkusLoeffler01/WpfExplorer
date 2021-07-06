@@ -102,13 +102,34 @@ namespace WpfExplorer
 
             string[] files = fs.readDirSync(_PATH, true, true);
             int TotalFiles = files.Length;
+            C_TFiles ProcessedFiles = new C_TFiles();
             for (int i = 0; i < TotalFiles; i++)
             {
-                //Thread.Sleep(100);
-                fs.AddToIndex(files[i]);
+                //fs.AddToIndex(files[i]);
+                Thread.Sleep(100);
+                switch (fs.AddToIndex(files[i]))
+                {
+                    case -1: MessageBox.Show($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i]}); break; //Datei schon vorhanden
+                    case -255: break; //Exception
+                    case 0: break;
+
+                }
                 SetIndexProgress(files[i], i, TotalFiles);
             }
             MessageBox.Show(TotalFiles.ToString() + " Dateien erfolgreich hinzugefügt");
+        }
+
+
+        class C_TFiles
+        {
+            public List<C_Files> FilesOk;
+            public List<C_Files> FilesErr;
+        }
+
+        public class C_Files
+        {
+            public string FileName;
+            public string Path;
         }
 
         //private void OnProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -182,7 +203,7 @@ namespace WpfExplorer
                 hwndSource.AddHook(UsbNotificationHandler);
                 USBDetector.RegisterUsbDeviceNotification(windowHandle);
             }
-            DetectUSB.IsEnabled = false;
+            //DetectUSB.IsEnabled = false;
         }
         private IntPtr UsbNotificationHandler(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
@@ -257,5 +278,11 @@ namespace WpfExplorer
             
         }
 
+        
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Detect_Click(sender, e);
+        }
     }
 }
