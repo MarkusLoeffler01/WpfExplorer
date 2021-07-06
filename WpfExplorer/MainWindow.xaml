@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfExplorer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -16,6 +16,24 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Margin="10,28,129,376">Connecting to Database...</TextBlock>
+<<<<<<< HEAD
+=======
+        <TextBlock Grid.Row="0" Name="TB_PingTime" Margin="19,8,195.5,395.5"/>
+        <TextBlock Name="TB_SearchText" Margin="169,8,210,396" Grid.ColumnSpan="2">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
+        <TextBox Name="tb_Search" Width="500px" Height="20px" TextChanged="tb_Search_TextChanged" Margin="169,32,123,367" Grid.ColumnSpan="2"></TextBox>
+        <!-- <Button Name="DetectUSB" Width="300" Height="30" Click="Detect_Click" Margin="197,361,6,28" Grid.Column="1">Neue Datenträger erkennen</Button> -->
+        <Button Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="315,60,10,329" Grid.Column="1">Neue Dateien indizieren</Button>
+        <Label Content="Dateien ausschließen" Margin="315,95,0,291" Grid.Column="1"></Label>
+        <TextBox Name="tb_AddExceptions" Margin="305,123,10,273" Grid.Column="1"></TextBox>
+        <ListBox Margin="305,154,10,67" Name="ListBox" Grid.Column="1">
+
+        </ListBox>
+        <Grid Name="GD_Dateiausgabe" Margin="19,60,196,68" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="101*"/>
+                <RowDefinition Height="194*"/>
+            </Grid.RowDefinitions>
+>>>>>>> fe25ff44a7e3555c470940db52311798615f662d
 
         <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="241,28,10,376"></TextBlock>
         <TextBlock Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,0,396" Grid.ColumnSpan="2">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
