@@ -7,20 +7,31 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <TextBlock Name="TB_Ping" Margin="10,28,632,376">Connecting to Database...</TextBlock>
-        <TextBlock Name="TB_PingTime" Margin="10,3,744,401"></TextBlock>
-        <TextBlock Name="TB_SearchText" Margin="169,8,210,396">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
-        <TextBox Name="tb_Search" Width="500px" Height="20px" TextChanged="tb_Search_TextChanged" Margin="169,32,126,370.5"></TextBox>
-        <Button Name="DetectUSB" Width="300" Height="30" Click="Detect_Click" Margin="486,361,10,33">Neue Datenträger erkennen</Button>
-        <Button Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="604,60,10,332.5">Neue Dateien indizieren</Button>
-        <Label Content="Dateien ausschließen" Margin="604,95,0,290.5"></Label>
-        <TextBox Name="tb_AddExceptions" Margin="594,123,10,273.5"></TextBox>
-        <ListBox Margin="594,154,10,66.5" Name="ListBox">
-            
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Margin="10,28,129,376">Connecting to Database...</TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="0" Name="TB_PingTime" Margin="10,3,241,401"></TextBlock>
+        <TextBlock Name="TB_SearchText" Margin="169,8,210,396" Grid.ColumnSpan="2">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
+        <TextBox Name="tb_Search" Width="500px" Height="20px" TextChanged="tb_Search_TextChanged" Margin="169,32,123,367" Grid.ColumnSpan="2"></TextBox>
+        <Button Name="DetectUSB" Width="300" Height="30" Click="Detect_Click" Margin="197,361,6,28" Grid.Column="1">Neue Datenträger erkennen</Button>
+        <Button Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="315,60,10,329" Grid.Column="1">Neue Dateien indizieren</Button>
+        <Label Content="Dateien ausschließen" Margin="315,95,0,291" Grid.Column="1"></Label>
+        <TextBox Name="tb_AddExceptions" Margin="305,123,10,273" Grid.Column="1"></TextBox>
+        <ListBox Margin="305,154,10,67" Name="ListBox" Grid.Column="1">
+
         </ListBox>
-        <Grid Name="GD_Dateiausgabe" Margin="19,60,196,68">
+        <Grid Name="GD_Dateiausgabe" Margin="19,60,196,68" Grid.ColumnSpan="2">
 
         </Grid>
-        <TextBlock Name="IndexProgress" Margin="10,396,10,10"></TextBlock>
+        <TextBlock Name="IndexProgress" Margin="10,396,10,10" Grid.ColumnSpan="2"></TextBlock>
     </Grid>
 </Window>
