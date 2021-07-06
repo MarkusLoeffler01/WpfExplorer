@@ -32,9 +32,17 @@ namespace WpfExplorer
         {
             DBConf conf = getConf<DBConf>("config");
             Ping p = new Ping();
-            PingReply r = p.Send(conf.Host);
-            if(r.Status == IPStatus.Success) return r.RoundtripTime;
-            return -1;
+            try
+            {
+                PingReply r = p.Send(conf.Host);
+                if (r.Status == IPStatus.Success) return r.RoundtripTime;
+                return -1;
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+            
             
         }
         
