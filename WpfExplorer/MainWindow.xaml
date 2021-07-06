@@ -15,8 +15,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Margin="10,28,129,376">Connecting to Database...</TextBlock>
-        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="241,28,10,376"></TextBlock>
+        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Margin="10,10,129,376">Connecting to Database...</TextBlock>
+        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="0,10,10,376"></TextBlock>
         <TextBlock Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,0,396" Grid.ColumnSpan="2">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
         <TextBox HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Name="tb_Search" Height="20px" TextChanged="tb_Search_TextChanged" Margin="0,32,0,367"></TextBox>
         <Button Name="DetectUSB" Height="30" Click="Detect_Click" Margin="0,361,6,28" Grid.Column="1" Grid.Row="0">Neue Datenträger erkennen</Button>
