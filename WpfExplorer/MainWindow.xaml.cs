@@ -75,7 +75,7 @@ namespace WpfExplorer
             double PingTime = db.PingDB();
             TB_PingTime.Text = $"{PingTime}ms";
         }
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Index_Click(object sender, RoutedEventArgs e)
         { 
             BackgroundWorker worker = new BackgroundWorker();
             _PATH = main.getPathDialog();
@@ -108,6 +108,7 @@ namespace WpfExplorer
                 fs.AddToIndex(files[i]);
                 SetIndexProgress(files[i], i, TotalFiles);
             }
+            MessageBox.Show(TotalFiles.ToString() + " Dateien erfolgreich hinzugefügt");
         }
 
         //private void OnProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -117,8 +118,7 @@ namespace WpfExplorer
 
         public static void AddToGrid(string FileName, string FullPath)
         {
-            index _ = new index(main.getPathDialog());
-            _.start();
+            
         }
 
         private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -169,11 +169,6 @@ namespace WpfExplorer
         }
 
         public void tb_AddExceptions_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        public void Index_Click(object sender, RoutedEventArgs e)
         {
 
         }

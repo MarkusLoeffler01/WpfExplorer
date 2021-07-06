@@ -104,9 +104,9 @@ namespace WpfExplorer
             while (main.isIndexerRunning) { System.Diagnostics.Debug.WriteLine("Still running"+___); ___++; }
             C_IZ conf = db.getConf<C_IZ>("database");
             List<main.FileStructure> FoundFiles = new List<main.FileStructure>();
-            for(int i = 0; i < conf.Paths.Length; i++)
+            for(int i = 0; i < conf.Paths.Count; i++)
             {
-                for(int o = 0; o < conf.Paths[i].Files.Length; o++)
+                for(int o = 0; o < conf.Paths[i].Files.Count; o++)
                 {
                     if (conf.Paths[i].Files[o].Contains(Filename)) FoundFiles.Add(new main.FileStructure() { Filename = conf.Paths[i].Files[o], Path = conf.Paths[i].Path });
                 }
@@ -123,36 +123,78 @@ namespace WpfExplorer
                 string file = Path.GetFileName(_file);
 
                 //Hole die DB-Datei
-                C_IZ db = JsonConvert.DeserializeObject<C_IZ>(fs.readFileSync(MainWindow.CONFIG_LOCATIONS+"database.json"));
-                
+                C_IZ data = db.getConf<C_IZ>("database");
+                //object db = JsonConvert.DeserializeObject<object>(jsonstring);
+
                 //Ist Paths[i].Path schon vorhanden?
-                for(int i = 0; i < db.Paths.Length; i++)
+                bool found = false;
+                for (int i = 0; i < data.Paths.Count; i++)
                 {
-                    if(db.Paths[i].Path == path)
+                    if(data.Paths[i].Path == path)
                     {
                         //JA, füge Eintrag zu Paths[i].Files hinzu
-                        db.Paths[i].Files.Append(file);
+                        data.Paths[i].Files.Add(file);
+                        found = true;
                         break;
                     }
                 }
                 //NEIN, lege einen neuen Path Eintrag an und füge die File hinzu
-                db.Paths.Append(new C_Path{Path = path, Files = new string[] { file } });
+                if (!found) { data.Paths.Add(new C_Path { Path = path, Files = new List<string> { file } }); }
 
                 //Speicher die DB-Datei
-                fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(db));
+                db.setConf("database", data);
+                //fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(data), true);
                 MainWindow.AddToGrid(file, path);
                 return;
-
-
-                List<i> obj = JsonConvert.DeserializeObject<List<i>>(fs.readFileSync(file));
-                //TODO: Mach eine neue Variable mit dem Interface von index und setze das Attribut Path auf path
-                i d = new i(file);
-                obj.Add(d);
-                fs.writeFileSync(file, JsonConvert.SerializeObject(obj));
-                string[] filename = file.Split('\\');
-                MainWindow.AddToGrid(filename[filename.Length-1], file);
             }
             catch(Exception e)
+            {
+                main.ReportError(e);
+            }
+        }
+
+        public static void RemoveFromIndex(string _file)
+        {
+            try
+            {
+                string path = Path.GetDirectoryName(_file);
+                string file = Path.GetFileName(_file);
+
+                //Hole die DB-Datei
+                C_IZ data = db.getConf<C_IZ>("database");
+                //object db = JsonConvert.DeserializeObject<object>(jsonstring);
+
+                //Gibt es den Pfad zur Datei?
+                bool found = false;
+                for (int i = 0; i < data.Paths.Count; i++)
+                {
+                    if (data.Paths[i].Path == path)
+                    {
+                        //JA, füge Eintrag zu Paths[i].Files hinzu
+                        if (data.Paths[i].Files.Contains(file))
+                        {
+                            data.Paths[i].Files.Remove(file);
+                            found = true;
+                            break;
+                        }
+                        //Der Directory ist nicht indiziert
+                        else
+                        {
+                            MessageBox.Show($"Die Datei ${_file} in {path} konnte nicht entfernt werden, da das Verzeichnis nicht indiziert wurde");
+                            return;
+                        }
+                    }
+                }
+                //NEIN, der Directory ist nicht im Index und die Datei wurde nicht gefunden
+                if (!found) { MessageBox.Show($"Die Datei ${_file} in {path} konnte nicht entfernt werden, da diese nicht indiziert wurde"); }
+
+                //Speicher die DB-Datei
+                db.setConf("database", data);
+                //fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(data), true);
+                MainWindow.AddToGrid(file, path);
+                return;
+            }
+            catch (Exception e)
             {
                 main.ReportError(e);
             }
@@ -188,7 +230,7 @@ namespace WpfExplorer
         public partial class C_IZ
         {
             [JsonProperty("Paths")]
-            public C_Path[] Paths { get; set; }
+            public List<C_Path> Paths { get; set; }
         }
 
         public partial class C_Path
@@ -197,14 +239,14 @@ namespace WpfExplorer
             public string Path { get; set; }
 
             [JsonProperty("Files")]
-            public string[] Files { get; set; }
+            public List<string> Files { get; set; }
         }
 
 
         public partial class C_Which
         {
             [JsonProperty("Paths")]
-            public string[] Paths { get; set; }
+            public List<string> Paths { get; set; }
         }
 
 
