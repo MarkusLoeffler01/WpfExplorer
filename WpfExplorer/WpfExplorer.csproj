@@ -180,6 +180,15 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\nhibernate-configuration.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\nhibernate-mapping.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.dll.config" />
+    <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.VisualBasic.dll.config" />
+    <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.TestDatabaseSetup.dll.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -195,6 +204,53 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\FireBird.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\HANA.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\MSSQL.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\MySql.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\Oracle-Managed.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\Oracle.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\PostgreSQL.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SapSQLAnywhere.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SQLite.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SqlServerCe.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SybaseASE.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SybaseSQLAnywhere.cfg.xml" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\HowInstall.txt" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\LICENSE.txt" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\readme.html" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\releasenotes.txt" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Antlr3.Runtime.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Iesi.Collections.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\NHibernate.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\NHibernate.pdb" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\NHibernate.xml" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Remotion.Linq.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Remotion.Linq.EagerFetching.dll" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Tests\ABC.hbm.xml" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\MsSql2008DialectLinqReadonlyCreateScript.sql" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\MsSql2008DialectLinqReadonlyDropScript.sql" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\MsSql2012DialectLinqReadonlyCreateScript.sql" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\MsSql2012DialectLinqReadonlyDropScript.sql" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\PostgreSQL83DialectLinqReadonlyCreateScript.sql" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\PostgreSQL83DialectLinqReadonlyDropScript.sql" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\log4net.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.DomainModel.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.DomainModel.pdb" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.pdb" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.VisualBasic.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.VisualBasic.pdb" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.TestDatabaseSetup.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.TestDatabaseSetup.pdb" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\nunit.engine.api.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\nunit.engine.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\nunit.framework.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NUnit3.TestAdapter.dll" />
+    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NUnit3.TestAdapter.pdb" />
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Tests\TestEmbeddedConfig.cfg.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
