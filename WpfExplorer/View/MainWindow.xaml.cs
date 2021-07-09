@@ -9,8 +9,10 @@ using System.IO;
 using System.Threading;
 using System.ComponentModel;
 using System.Windows.Controls;
+using System.Windows.Input;
+using CommandHelper;
 
-namespace WpfExplorer
+namespace WpfExplorer 
 {
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
@@ -141,6 +143,30 @@ namespace WpfExplorer
         {
             
         }
+
+        ICommand _addToExceptList;
+
+        public ICommand AddToExceptionList
+        {
+            get
+            {
+                if (_addToExceptList == null) _addToExceptList = new RelayCommand(c => ToExceptionList());
+                return _addToExceptList;
+            }
+        }
+
+
+        private void ToExceptionList()
+        {
+            List<string> _ = GetExceptionList();
+        }
+
+
+        private List<string> GetExceptionList()
+        {
+            return ListBox.Items.Cast<string>().ToList();
+        }
+
 
         private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
