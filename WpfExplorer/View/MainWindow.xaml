@@ -22,7 +22,13 @@
         <Button Name="DetectUSB" Height="30" Click="Detect_Click" Margin="0,361,6,28" Grid.Column="1" Grid.Row="0">Neue Datenträger erkennen</Button>
         <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="0,60,0,329" Grid.Column="1" Grid.Row="0">Neue Dateien indizieren</Button>
         <Label HorizontalAlignment="Stretch" Content="Dateien ausschließen" Margin="0,95,0,291" Grid.Column="1" Grid.Row="0"></Label>
-        <TextBox Name="tb_AddExceptions" Margin="0,123,0,273" Grid.Column="1"></TextBox>
+        <TextBox Name="tb_AddExceptions"  Margin="0,123,0,273" Grid.Column="1">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}">
+                    
+                </KeyBinding>
+            </TextBox.InputBindings>
+        </TextBox>
         <ListBox Margin="0,155,0,67" Height="200" Name="ListBox" Grid.Column="1">
 
         </ListBox>
