@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using Npgsql;
 using Newtonsoft.Json;
 using System.IO;
-using MySql.Data;
-
+// using MySql.Data;
 using System.Net.NetworkInformation;
 using System.Windows;
 using System.Text.Json;
@@ -88,19 +87,14 @@ namespace WpfExplorer
 
         public static void initDB()
         {
+            var command = "CREATE TABLE IF NOT EXISTS data (id integer NOT NULL, fileName varchar(255) NOT NULL, fileContent text, PRIMARY KEY(id));";
             DBConf item = getConf<DBConf>("config");
             string conStr = $"Host={item.Host};Username={item.Username};Password={item.Password};Database={item.Database}";
+            NpgsqlConnection con = new NpgsqlConnection(conStr);
             try { con.Open(); }
             catch(Exception e) { main.ReportError(e); throw; }
             NpgsqlCommand cmd = new NpgsqlCommand(command, con);
-            var reader = cmd.ExecuteReader();
-            reader.Read("CREATE TABLE IF NOT EXISTS 'DATA' (
-	            'ID' int NOT NULL,
-	            'fileName' varchar(255) NOTNULL,
-	            'fileContent' varchar(max),
-	            PRIMARY KEY ('ID')
-            )");
-            reader.Close();
+            cmd.ExecuteNonQuery();
         }
 
         public class DBConf
