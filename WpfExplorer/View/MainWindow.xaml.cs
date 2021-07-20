@@ -24,7 +24,7 @@ namespace WpfExplorer
         public static DriveInfo[] allDrives; 
         public MainWindow()
         {
-            fs.checkFiles();
+            fs.checkConfig();
             InitializeComponent();
 
             db.initDB();

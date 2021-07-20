@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using Npgsql;
 using Newtonsoft.Json;
 using System.IO;
+using MySql.Data;
 
 using System.Net.NetworkInformation;
 using System.Windows;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
+
 
 namespace WpfExplorer
 {
@@ -57,8 +59,6 @@ namespace WpfExplorer
             {
                 throw e;
             }
-            
-            
         }
         
         public static List<string> query(string command)
