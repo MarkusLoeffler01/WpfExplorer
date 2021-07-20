@@ -9,8 +9,10 @@ using System.IO;
 using System.Threading;
 using System.ComponentModel;
 using System.Windows.Controls;
+using System.Windows.Input;
+using CommandHelper;
 
-namespace WpfExplorer
+namespace WpfExplorer 
 {
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
@@ -55,19 +57,6 @@ namespace WpfExplorer
 
             //}
             //MessageBox.Show(res);
-
-            var File = fs.searchFile("bdhfszifzui1.txt", false);
-            if (File.Count == 0) MessageBox.Show("Keine Dateien gefunden");
-            else
-            {
-                string res = "";
-                foreach (var v in File)
-                {
-                    res += v.Filename + "\n";
-                    res += v.Path + "\n\n";
-                }
-                MessageBox.Show(res);
-            }
         }
 
         private void SetPing(object sender, EventArgs e)
@@ -141,6 +130,32 @@ namespace WpfExplorer
         {
             
         }
+
+        ICommand _addToExceptList;
+
+        public ICommand AddToExceptionList
+        {
+            get
+            {
+                if (_addToExceptList == null) _addToExceptList = new RelayCommand(e => ToExceptionList());
+                return _addToExceptList;
+            }
+        }
+
+
+        private void ToExceptionList()
+        {
+            List<string> _ = GetExceptionList();
+            foreach(var d in _) ListBox.Items.Add(d);
+            return;
+        }
+
+
+        public List<string> GetExceptionList()
+        {
+            return ListBox.Items.Cast<string>().ToList();
+        }
+
 
         private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {

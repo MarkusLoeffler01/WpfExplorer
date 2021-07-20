@@ -57,6 +57,9 @@
     <Reference Include="BetterFolderBrowser, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\BetterFolderBrowser.1.2.0\lib\BetterFolderBrowser.dll</HintPath>
     </Reference>
+    <Reference Include="CommandHelper">
+      <HintPath>..\..\..\..\Downloads\CommandHelper.dll</HintPath>
+    </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
@@ -77,6 +80,9 @@
     </Reference>
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -115,8 +121,8 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -152,6 +158,9 @@
     <Compile Include="Modules\fs.cs" />
     <Compile Include="Modules\index.cs" />
     <Compile Include="Modules\main.cs" />
+    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\MainWindowViewModel.cs" />
+    <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -206,6 +215,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Zubehör\CommandHelper.dll" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\FireBird.cfg.xml" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\HANA.cfg.xml" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\MSSQL.cfg.xml" />
@@ -225,7 +235,6 @@
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Antlr3.Runtime.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Iesi.Collections.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\NHibernate.dll" />
-    <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\NHibernate.pdb" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\NHibernate.xml" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Remotion.Linq.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Remotion.Linq.EagerFetching.dll" />
@@ -238,18 +247,13 @@
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\PostgreSQL83DialectLinqReadonlyDropScript.sql" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\log4net.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.DomainModel.dll" />
-    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.DomainModel.pdb" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.dll" />
-    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.pdb" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.VisualBasic.dll" />
-    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.VisualBasic.pdb" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.TestDatabaseSetup.dll" />
-    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.TestDatabaseSetup.pdb" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\nunit.engine.api.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\nunit.engine.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\nunit.framework.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NUnit3.TestAdapter.dll" />
-    <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NUnit3.TestAdapter.pdb" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Tests\TestEmbeddedConfig.cfg.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
