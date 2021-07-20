@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using Npgsql;
 using Newtonsoft.Json;
 using System.IO;
-<<<<<<< Updated upstream
-// using MySql.Data;
-=======
+
 using MySql.Data;
 using MySql.Data.MySqlClient;
 
->>>>>>> Stashed changes
 using System.Net.NetworkInformation;
 using System.Windows;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
-
 
 namespace WpfExplorer
 {
