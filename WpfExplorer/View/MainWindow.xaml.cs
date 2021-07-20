@@ -24,7 +24,7 @@ namespace WpfExplorer
         public static DriveInfo[] allDrives; 
         public MainWindow()
         {
-            fs.checkFiles();
+            fs.checkConfig();
             InitializeComponent();
 
             if(main.PingDB()) { TB_Ping.Text = "Connected"; }
