@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ViewModel="clr-namespace:WpfExplorer.ViewModel"
-        xmlns:local="clr-namespace:WpfExplorer" xmlns:cmd="http://www.galasoft.ch/mvvmlight" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:WpfExplorer" xmlns:cmd="http://www.galasoft.ch/mvvmlight" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" d:DataContext="{d:DesignInstance Type=ViewModel:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     
@@ -27,15 +27,13 @@
         <Button Name="DetectUSB" Height="30" Click="Detect_Click" Margin="0,361,6,28" Grid.Column="1" Grid.Row="0">Neue Datenträger erkennen</Button>
         <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="0,60,0,329" Grid.Column="1" Grid.Row="0">Neue Dateien indizieren</Button>
         <Label HorizontalAlignment="Stretch" Content="Dateien ausschließen" Margin="0,95,0,291" Grid.Column="1" Grid.Row="0"></Label>
-        <TextBox Name="tb_AddExceptions" DataContext="" Margin="0,123,0,273" Grid.Column="1">
-            
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="KeyDown">
-                    <i:InvokeCommandAction Command="{Binding KeyInputCommand}" CommandParameter="YouCommandParameter"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+        <TextBox Name="tb_AddExceptions" Margin="0,123,0,273" Grid.Column="1">
+            <TextBox.InputBindings>
+            <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=tb_AddExceptions, Path=Text}"/>
+            </TextBox.InputBindings>
         </TextBox>
-        <ListBox Margin="0,155,0,67" Height="200" Name="ListBox" Grid.Column="1">
+        <ListBox Margin="0,155,0,67" Height="200" Name="lb_Exceptions" ItemsSource="{Binding SerhatList}" 
+                 SelectedItem="{Binding SelectedFileException}" Grid.Column="1">
 
         </ListBox>
         <Grid Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0">

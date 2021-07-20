@@ -35,6 +35,9 @@ namespace WpfExplorer
             dT.Interval = new TimeSpan(0, 0, 1);
             dT.Start();
 
+            List<string> query = db.myquery("SELECT version();");
+            MessageBox.Show("MySQL "+query[0]);
+
             allDrives = DriveInfo.GetDrives();
             //allDrives = DriveInfo.GetDrives();
 
@@ -65,6 +68,7 @@ namespace WpfExplorer
             double PingTime = db.PingDB();
             TB_PingTime.Text = $"{PingTime}ms";
         }
+
         private void Index_Click(object sender, RoutedEventArgs e)
         { 
             BackgroundWorker worker = new BackgroundWorker();
@@ -147,14 +151,15 @@ namespace WpfExplorer
         private void ToExceptionList()
         {
             List<string> _ = GetExceptionList();
-            foreach(var d in _) ListBox.Items.Add(d);
+            //foreach(var d in _) ListBox.Items.Add(d);
             return;
         }
 
 
         public List<string> GetExceptionList()
         {
-            return ListBox.Items.Cast<string>().ToList();
+            return new List<string> { };
+            //return ListBox.Items.Cast<string>().ToList();
         }
 
 
