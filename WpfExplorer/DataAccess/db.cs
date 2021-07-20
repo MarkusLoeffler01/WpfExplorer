@@ -86,6 +86,23 @@ namespace WpfExplorer
             //MessageBox.Show(reader.GetString(0));
         }
 
+        public static void initDB()
+        {
+            DBConf item = getConf<DBConf>("config");
+            string conStr = $"Host={item.Host};Username={item.Username};Password={item.Password};Database={item.Database}";
+            try { con.Open(); }
+            catch(Exception e) { main.ReportError(e); throw; }
+            NpgsqlCommand cmd = new NpgsqlCommand(command, con);
+            var reader = cmd.ExecuteReader();
+            reader.Read("CREATE TABLE IF NOT EXISTS 'DATA' (
+	            'ID' int NOT NULL,
+	            'fileName' varchar(255) NOTNULL,
+	            'fileContent' varchar(max),
+	            PRIMARY KEY ('ID')
+            )");
+            reader.Close();
+        }
+
         public class DBConf
         {
             public string Host;

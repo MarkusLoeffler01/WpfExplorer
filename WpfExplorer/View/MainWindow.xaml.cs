@@ -27,6 +27,7 @@ namespace WpfExplorer
             fs.checkFiles();
             InitializeComponent();
 
+            db.initDB();
             if(main.PingDB()) { TB_Ping.Text = "Connected"; }
             else { TB_Ping.Text = "Connection failed..."; main.ReportError(new Exception("Ping not successfull")); return; }
             System.Windows.Threading.DispatcherTimer dT = new System.Windows.Threading.DispatcherTimer();
