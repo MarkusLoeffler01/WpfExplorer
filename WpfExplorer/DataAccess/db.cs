@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using Npgsql;
 using Newtonsoft.Json;
 using System.IO;
+<<<<<<< Updated upstream
 // using MySql.Data;
+=======
+using MySql.Data;
+using MySql.Data.MySqlClient;
+
+>>>>>>> Stashed changes
 using System.Net.NetworkInformation;
 using System.Windows;
 using System.Text.Json;
@@ -56,8 +62,28 @@ namespace WpfExplorer
             }
             catch(Exception e)
             {
-                throw e;
+                MessageBox.Show("Bei der Verbindung ist ein Fehler aufgetreten, prüfen Sie Ihre Verbindung");
+                Environment.Exit(1);
+                throw;
             }
+        }
+
+        public static List<string> myquery(string command)
+        {
+            DBConf item = getConf<DBConf>("config");
+            MySqlConnection con = new MySqlConnection($"server={item.Host};database={item.Database};uid={item.Username};password={item.Password};");
+            try { con.Open(); }
+            catch (Exception e) { main.ReportError(e); throw; }
+
+            var cmd = new MySqlCommand(command, con);
+            var reader = cmd.ExecuteReader();
+            List<string> res = new List<string> { };
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++) res.Add(reader.GetValue(i).ToString());
+            }
+            reader.Close();
+            return res;
         }
         
         public static List<string> query(string command)
