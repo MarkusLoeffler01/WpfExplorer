@@ -21,21 +21,22 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Margin="10,10,129,376">Connecting to Database...</TextBlock>
-        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="0,10,10,376"></TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,0,396" Grid.ColumnSpan="2">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
-        <TextBox HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Name="tb_Search" Height="20px" TextChanged="tb_Search_TextChanged" Margin="0,32,0,367"></TextBox>
-        <Button Name="DetectUSB" Height="30" Click="Detect_Click" Margin="0,361,6,28" Grid.Column="1" Grid.Row="0">Neue Datenträger erkennen</Button>
-        <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="0,60,0,329" Grid.Column="1" Grid.Row="0">Neue Dateien indizieren</Button>
-        <Label HorizontalAlignment="Stretch" Content="Dateien ausschließen" Margin="0,95,0,291" Grid.Column="1" Grid.Row="0"></Label>
-        <TextBox Name="tb_AddExceptions" DataContext="" Margin="0,123,0,273" Grid.Column="1">
-            
+        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="150,10,6,376"></TextBlock>
+        <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,1,396" Grid.ColumnSpan="2">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
+        <TextBox HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Name="tb_Search" TextChanged="tb_Search_TextChanged" Height="25" Margin="0,25,6,367"></TextBox>
+        <Button Name="DetectUSB" Height="30" Click="Detect_Click" Margin="0,361,6,28" Grid.Column="1" Grid.Row="0" Foreground="White">Neue Datenträger erkennen</Button>
+        <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="0,60,6,329" Grid.Column="1" Grid.Row="0" Foreground="White">Neue Dateien indizieren</Button>
+        <Label HorizontalAlignment="Stretch" FontWeight="Bold" Content="Dateien ausschließen"  Margin="0,95,6,291" Grid.Column="1" Grid.Row="0"></Label>
+        <TextBox Name="tb_AddExceptions" DataContext="" Height="25" Margin="0,120,6,273" Grid.Column="1">
+            <!--
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="KeyDown">
                     <i:InvokeCommandAction Command="{Binding KeyInputCommand}" CommandParameter="YouCommandParameter"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
+            -->
         </TextBox>
-        <ListBox Margin="0,155,0,67" Height="200" Name="ListBox" Grid.Column="1">
+        <ListBox Margin="0,155,10,67" Height="200" Name="ListBox" Grid.Column="1" BorderThickness="1px" BorderBrush="Black">
 
         </ListBox>
         <Grid Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0">
