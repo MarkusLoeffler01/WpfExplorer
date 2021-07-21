@@ -12,6 +12,7 @@ using System.Windows;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
 
+
 namespace WpfExplorer
 {
     class db
@@ -36,14 +37,14 @@ namespace WpfExplorer
         public static void setConf(string name, object text)
         {
             string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                try
-                {
-                    JsonConvert.SerializeObject(text);
-                    string _ = JsonConvert.SerializeObject(text);
-                    fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", $"[{_}]", true);
-                    return;
-                }
-                catch (Exception e) { main.ReportError(e); throw; }
+            try
+            {
+                JsonConvert.SerializeObject(text);
+                string _ = JsonConvert.SerializeObject(text);
+                fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", $"[{_}]", true);
+                return;
+            }
+            catch (Exception e) { main.ReportError(e); throw; }
         }
 
         public static double PingDB()
@@ -81,7 +82,8 @@ namespace WpfExplorer
             reader.Close();
             return res;
         }
-        
+
+
         public static List<string> query(string command)
         {
             DBConf item = getConf<DBConf>("config");
@@ -122,13 +124,17 @@ namespace WpfExplorer
         public class DBConf
         {
             public string Host;
+            
             public string Username;
             public string Password;
             public string Database;
             public int Port;
+           
         }
     }
 }
+
+#pragma warning restore 0649
 
 
 

@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CommandHelper;
+#pragma warning disable 0649
 
 namespace WpfExplorer 
 {

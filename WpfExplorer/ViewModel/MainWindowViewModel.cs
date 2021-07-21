@@ -32,8 +32,8 @@ namespace WpfExplorer.ViewModel
         public string Name
         {
             get => _name;
-            set 
-            { 
+            set
+            {
                 _name = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(Name)));
             }
