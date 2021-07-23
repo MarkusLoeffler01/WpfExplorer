@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Npgsql;
+﻿using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using Npgsql;
+using System;
+using System.Collections.Generic;
 using System.IO;
-
-using MySql.Data;
-using MySql.Data.MySqlClient;
-
 using System.Net.NetworkInformation;
 using System.Windows;
-using System.Text.Json;
-using Newtonsoft.Json.Linq;
 
 
 namespace WpfExplorer
@@ -22,7 +17,7 @@ namespace WpfExplorer
         {
             string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-            using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS+$"{name}.json"))
+            using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS + $"{name}.json"))
             {
                 string json = r.ReadToEnd();
                 try
@@ -30,7 +25,7 @@ namespace WpfExplorer
                     List<T> items = JsonConvert.DeserializeObject<List<T>>(json);
                     return items[0];
                 }
-                catch(Exception e) { main.ReportError(e); throw; }
+                catch (Exception e) { main.ReportError(e); throw; }
             }
         }
 
@@ -57,9 +52,9 @@ namespace WpfExplorer
                 if (r.Status == IPStatus.Success) return r.RoundtripTime;
                 return -1;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                MessageBox.Show("Bei der Verbindung ist ein Fehler aufgetreten, prüfen Sie Ihre Verbindung");
+                MessageBox.Show("Bei der Verbindung ist ein Fehler aufgetreten, prüfen Sie Ihre Verbindung\n\n" + e);
                 Environment.Exit(1);
                 throw;
             }
@@ -86,17 +81,18 @@ namespace WpfExplorer
 
         public static List<string> query(string command)
         {
+#pragma warning disable 0649
             DBConf item = getConf<DBConf>("config");
             string conStr = $"Host={item.Host};Username={item.Username};Password={item.Password};Database={item.Database}";
             //MessageBox.Show(conStr);
             NpgsqlConnection con = new NpgsqlConnection(conStr);
             try { con.Open(); }
-            catch(Exception e) { main.ReportError(e); throw; }
+            catch (Exception e) { main.ReportError(e); throw; }
             NpgsqlCommand cmd = new NpgsqlCommand(command, con);
             //cmd.Prepare();
             var reader = cmd.ExecuteReader();
             //string[] x = new string[10000];
-            List<string> result = new List<string>(); 
+            List<string> result = new List<string>();
             while (reader.Read())
             {
                 for (int i = 0; i < reader.FieldCount; i++) result.Add(reader.GetValue(i).ToString());
@@ -104,7 +100,7 @@ namespace WpfExplorer
             reader.Close();
             return result;
             //Array.ForEach(x, System.Diagnostics.Debug.WriteLine);
-
+#pragma warning restore 0649
 
             //MessageBox.Show(reader.GetString(0));
         }
@@ -116,7 +112,7 @@ namespace WpfExplorer
             string conStr = $"Host={item.Host};Username={item.Username};Password={item.Password};Database={item.Database}";
             NpgsqlConnection con = new NpgsqlConnection(conStr);
             try { con.Open(); }
-            catch(Exception e) { main.ReportError(e); throw; }
+            catch (Exception e) { main.ReportError(e); throw; }
             NpgsqlCommand cmd = new NpgsqlCommand(command, con);
             cmd.ExecuteNonQuery();
         }
@@ -124,17 +120,15 @@ namespace WpfExplorer
         public class DBConf
         {
             public string Host;
-            
             public string Username;
             public string Password;
             public string Database;
             public int Port;
-           
         }
     }
 }
 
-#pragma warning restore 0649
+#pragma warning restore 649
 
 
 

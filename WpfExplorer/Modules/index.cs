@@ -1,11 +1,5 @@
-﻿ using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Linq;
 using System.Windows;
-using static WK.Libraries.BetterFolderBrowserNS.BetterFolderBrowser;
 
 namespace WpfExplorer
 {
@@ -33,5 +27,5 @@ namespace WpfExplorer
             }
 
         }
-    }    
+    }
 }

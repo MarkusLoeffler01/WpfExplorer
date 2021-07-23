@@ -1,13 +1,13 @@
 ﻿
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
-using System.Management;
-using Newtonsoft.Json;
 using System.Windows;
+
 
 namespace WpfExplorer
 {
@@ -21,7 +21,7 @@ namespace WpfExplorer
             Task.Run(() =>
             {
                 string path = MainWindow.CONFIG_LOCATIONS;
-                string[] files = {"config", "database", "WhichPaths"};
+                string[] files = { "config", "database", "WhichPaths" };
 
                 Directory.CreateDirectory(path);
                 for (int i = 0; i < files.Length; i++) { if (!File.Exists(path + files[i] + ".json")) File.WriteAllText(path + files[i] + ".json", "[{}]"); }
@@ -31,7 +31,7 @@ namespace WpfExplorer
         public static string[] readDirSync(string path, bool fullpath = false, bool recursive = false, string[] _dirs = null)
         {
             if (path == null) return null;
-            if(!recursive)
+            if (!recursive)
             {
                 if (fullpath) return Directory.GetFiles(path).Select(p => Path.GetFullPath(p)).ToArray();
                 return Directory.GetFiles(path).Select(p => Path.GetFileName(p)).ToArray();
@@ -61,7 +61,7 @@ namespace WpfExplorer
         }
 
         public static void writeFileSync(string path, string context, bool overwrite = false)
-        { 
+        {
             if (!overwrite && File.Exists(path)) return;
             File.WriteAllText(path, context);
         }
@@ -79,7 +79,7 @@ namespace WpfExplorer
         {
             /**Error handling. Ungültige Zeichen wie ", ' oder ` geben -1 zurück */
             if (fileName.Contains("'") || fileName.Contains('"') || fileName.Contains('`')) { main.ReportError(new Exception("Ungültiger Dateiname")); return new string[] { "-1" }; }
-            return db.query("SELECT * FROM test WHERE fileName ="+fileName).ToArray();
+            return db.query("SELECT * FROM test WHERE fileName =" + fileName).ToArray();
         }
 
         public static string[] getContent(string content)
@@ -101,12 +101,12 @@ namespace WpfExplorer
         {
             /** Es wird noch indiziert. Kann nicht gesucht werden*/
             int ___ = 0;
-            while (main.isIndexerRunning) { System.Diagnostics.Debug.WriteLine("Still running"+___); ___++; }
+            while (main.isIndexerRunning) { System.Diagnostics.Debug.WriteLine("Still running" + ___); ___++; }
             C_IZ conf = db.getConf<C_IZ>("database");
             List<main.FileStructure> FoundFiles = new List<main.FileStructure>();
-            for(int i = 0; i < conf.Paths.Count; i++)
+            for (int i = 0; i < conf.Paths.Count; i++)
             {
-                for(int o = 0; o < conf.Paths[i].Files.Count; o++)
+                for (int o = 0; o < conf.Paths[i].Files.Count; o++)
                 {
                     if (conf.Paths[i].Files[o].Contains(Filename)) FoundFiles.Add(new main.FileStructure() { Filename = conf.Paths[i].Files[o], Path = conf.Paths[i].Path });
                 }
@@ -116,7 +116,7 @@ namespace WpfExplorer
         /** Holt sich die IndexDatei und fügt einen Eintrag hinzu */
         public static int AddToIndex(string _file)
         {
-            
+
             try
             {
                 string path = Path.GetDirectoryName(_file);
@@ -130,7 +130,7 @@ namespace WpfExplorer
                 bool found = false;
                 for (int i = 0; i < data.Paths.Count; i++)
                 {
-                    if(data.Paths[i].Path == path)
+                    if (data.Paths[i].Path == path)
                     {
                         //JA, füge Eintrag zu Paths[i].Files hinzu, wenn diese nicht schon vorhanden ist
                         if (!data.Paths[i].Files.Contains(file)) { data.Paths[i].Files.Add(file); } else { return -1; }
@@ -147,7 +147,7 @@ namespace WpfExplorer
                 MainWindow.AddToGrid(file, path);
                 return 0;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 main.ReportError(e); return -255;
             }
