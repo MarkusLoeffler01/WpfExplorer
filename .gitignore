@@ -10,6 +10,7 @@ App.g.cs
 *.cache
 .dccache
 *.rsuser
+config.json
 
 *.suo
 *.user

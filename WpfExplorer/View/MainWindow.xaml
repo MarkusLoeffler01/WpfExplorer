@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ViewModel="clr-namespace:WpfExplorer.ViewModel"
         xmlns:local="clr-namespace:WpfExplorer" xmlns:cmd="http://www.galasoft.ch/mvvmlight" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        mc:Ignorable="d"
+        xmlns:ignore="http://www.galasoft.ch/ignore"
+        mc:Ignorable="ignore"
+
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     
     <Window.DataContext>
@@ -24,19 +26,16 @@
         <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="150,10,6,376"></TextBlock>
         <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,1,396" Grid.ColumnSpan="2">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
         <TextBox HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Name="tb_Search" TextChanged="tb_Search_TextChanged" Height="25" Margin="0,25,6,367"></TextBox>
-        <Button Name="DetectUSB" Height="30" Click="Detect_Click" Margin="0,361,6,28" Grid.Column="1" Grid.Row="0" Foreground="White">Neue Datenträger erkennen</Button>
         <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="0,60,6,329" Grid.Column="1" Grid.Row="0" Foreground="White">Neue Dateien indizieren</Button>
+        <Button Command="{Binding ButtonCommand}" Margin="225,8,38.5,387.5"></Button>     
         <Label HorizontalAlignment="Stretch" FontWeight="Bold" Content="Dateien ausschließen"  Margin="0,95,6,291" Grid.Column="1" Grid.Row="0"></Label>
-        <TextBox Name="tb_AddExceptions" DataContext="" Height="25" Margin="0,120,6,273" Grid.Column="1">
-            <!--
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="KeyDown">
-                    <i:InvokeCommandAction Command="{Binding KeyInputCommand}" CommandParameter="YouCommandParameter"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-            -->
+        <TextBox Name="tb_AddExceptions" Text="{Binding tb_AddExceptionsText}" Height="25" Margin="0,120,6,273" Grid.Column="1">
+        <TextBox.InputBindings>
+        <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=tb_AddExceptions, Path=Text}"/>
+        </TextBox.InputBindings>
         </TextBox>
-        <ListBox Margin="0,155,10,67" Height="200" Name="ListBox" Grid.Column="1" BorderThickness="1px" BorderBrush="Black">
+        <ListBox Margin="0,155,10,67" Height="200" Name="lb_Exceptions" ItemsSource="{Binding FileExceptionList}" 
+                 SelectedItem="{Binding SelectedFileException}" Grid.Column="1" BorderThickness="1px" BorderBrush="Black">
 
         </ListBox>
         <Grid Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0">
