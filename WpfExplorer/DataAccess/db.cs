@@ -1,3 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using Npgsql;
+using Newtonsoft.Json;
+using System.IO;
+using MySql.Data;
+
+using System.Net.NetworkInformation;
+using System.Windows;
+using System.Text.Json;
+using Newtonsoft.Json.Linq;
 ﻿using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Npgsql;
@@ -16,7 +27,6 @@ namespace WpfExplorer
         public static T getConf<T>(string name)
         {
             string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
             using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS + $"{name}.json"))
             {
                 string json = r.ReadToEnd();
@@ -99,8 +109,8 @@ namespace WpfExplorer
             };
             reader.Close();
             return result;
-            //Array.ForEach(x, System.Diagnostics.Debug.WriteLine);
 #pragma warning restore 0649
+
 
             //MessageBox.Show(reader.GetString(0));
         }
@@ -127,9 +137,4 @@ namespace WpfExplorer
         }
     }
 }
-
 #pragma warning restore 649
-
-
-
-

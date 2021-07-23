@@ -1,3 +1,4 @@
+
 ﻿using CommandHelper;
 using System;
 using System.Collections.Generic;
@@ -23,10 +24,12 @@ namespace WpfExplorer
         string _PATH = "";
         public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
         public static DriveInfo[] allDrives;
+
         public MainWindow()
         {
             fs.checkConfig();
             InitializeComponent();
+
 
             db.initDB();
             if (main.PingDB()) { TB_Ping.Text = "Connected"; }
@@ -114,6 +117,7 @@ namespace WpfExplorer
                 Thread.Sleep(100);
                 switch (fs.AddToIndex(files[i]))
                 {
+
                     case -1: MessageBox.Show($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
                     case -255: break; //Exception
                     case 0: break;
@@ -175,7 +179,7 @@ namespace WpfExplorer
 
         public static void AddToGrid(string FileName, string FullPath)
         {
-
+          
         }
 
         ICommand _addToExceptList;
@@ -271,7 +275,6 @@ namespace WpfExplorer
         }
         private IntPtr UsbNotificationHandler(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
-
             if (msg == USBDetector.UsbDevicechange)
             {
                 switch ((int)wparam)
@@ -288,7 +291,7 @@ namespace WpfExplorer
             }
             else
             {
-
+              
             }
 
             handled = false;
@@ -341,7 +344,6 @@ namespace WpfExplorer
             });
 
         }
-
 
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

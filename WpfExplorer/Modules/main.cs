@@ -13,7 +13,6 @@ namespace WpfExplorer
         public static void ReportError(Exception e)
         {
             string msg;
-
             if (e.GetType().ToString() == "Npgsql.NpgsqlException") msg = "Es wurde ein Fehler festgestellt. Stellen Sie sicher, dass sie mit dem Internet verbunden sind. Bei weiteren Fragen wenden Sie sich an ihren System Administrator\n\n\nFehlertext: " + e.Message;
             else msg = "Es ist ein unbekannter Fehler aufgetreten: \n\n" + e.Message + "\nWeitere Hilfe erhalten Sie hier: " + e.HelpLink;
 

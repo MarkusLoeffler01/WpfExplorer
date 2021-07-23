@@ -1,4 +1,3 @@
-﻿
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
 
 namespace WpfExplorer
 {
@@ -116,7 +114,6 @@ namespace WpfExplorer
         /** Holt sich die IndexDatei und fügt einen Eintrag hinzu */
         public static int AddToIndex(string _file)
         {
-
             try
             {
                 string path = Path.GetDirectoryName(_file);
