@@ -3,20 +3,10 @@ using System.Collections.Generic;
 using Npgsql;
 using Newtonsoft.Json;
 using System.IO;
-using MySql.Data;
 
 using System.Net.NetworkInformation;
 using System.Windows;
-using System.Text.Json;
-using Newtonsoft.Json.Linq;
-﻿using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
-using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.NetworkInformation;
-using System.Windows;
+using MySql.Data.MySqlClient;
 
 
 namespace WpfExplorer
