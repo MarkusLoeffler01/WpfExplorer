@@ -1,9 +1,12 @@
 ﻿using CommandHelper;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using RelayCommand = CommandHelper.RelayCommand;
 
@@ -84,14 +87,15 @@ namespace WpfExplorer.ViewModel
             var File = fs.searchFile(tb_Search_Text, false);
             if (File.Count != 0)
             {
-                string res = "";
+
                 foreach (var v in File)
                 {
+                    string res = "";
                     res += v.Filename + "\n";
                     res += v.Path + "\n\n";
-                }
 
-                FoundFiles.Add(res+"\n");
+                    FoundFiles.Add(res);
+                }
             }
 
 
@@ -126,32 +130,24 @@ namespace WpfExplorer.ViewModel
             return new List<string>(FileExceptionList);
         }
 
-        private RelayCommand tb_Search_Command1;
-
-        //public ICommand tb_Search_Command
-        //{
-        //    get
-        //    {
-        //        if (tb_Search_Command1 == null)
-        //        {
-        //            tb_Search_Command1 = new RelayCommand(tb_Search_);
-        //        }
-
-        //        return tb_Search_Command1;
-        //    }
-        //}
-
-        private void tb_Search_(object commandParameter)
-        {
-        }
-
         public ICommand ButtonCommand { get; set; }
         public ICommand tb_Search_Command { get; set; }
+        public ICommand MouseDoubleClick { get; set; }
+
+        //public ICommand MyCommand { get; set; }
 
         public MainWindowViewModel()
         {
             ButtonCommand = new RelayCommand(o => Debug_Click());
             tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
+            MouseDoubleClick = new RelayCommand(o => My(o));
+            //MyCommand = new RelayCommand(o => My(o));
+        }
+
+        public void MyCommand(object sender, SelectionChangedEventArgs e)
+        {
+            List<string> lul = (List<string>)e.AddedItems;
+            MessageBox.Show(string.Join("\n", lul));
         }
 
         public void Debug_Click()
@@ -169,13 +165,15 @@ namespace WpfExplorer.ViewModel
                 if(_tb_Search_Text != value)
                 {
                     _tb_Search_Text = value;
-                    PropertyChanged(this, new PropertyChangedEventArgs(tb_Search_Text));
-                    PropertyChanged(this, new PropertyChangedEventArgs(_tb_Search_Text));
+                    PropertyChanged(this, new PropertyChangedEventArgs("tb_Search_Text"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("_tb_Search_Text"));
                     tb_Search_TextChanged();
                 }
                 
             }
         }
+
+
 
 
         public ObservableCollection<string> FileExceptionList { get; set; } = new ObservableCollection<string>();
@@ -185,6 +183,43 @@ namespace WpfExplorer.ViewModel
 
         public object SelectedFileException { get => selectedFileException; set => SetProperty(ref selectedFileException, value); }
 
-        
+        public main.FileStructure selectedFile;
+
+        public main.FileStructure SelectedFile
+        {
+            get { return selectedFile; }
+            set
+            {
+                //if (value == selectedFile) return;
+                selectedFile = value;
+                PropertyChanged(this, new PropertyChangedEventArgs("selectedFile"));
+            }
+        }
+
+        public void FileSelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            ListBoxItem lbi = ((sender as ListBox).SelectedItem as ListBoxItem);
+            MessageBox.Show(lbi.Content.ToString());
+            MessageBox.Show(selectedFile.Path);
+            Process.Start(lbi.Content.ToString());
+        }
+
+        private void My(object o)
+        {
+            string p = o.ToString();
+            string[] pp = p.Split('\n');
+
+            Process cmd = new Process();
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.UseShellExecute = false;
+            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.Arguments = "/c " + $"explorer.exe /select,\"{pp[1]}\\{pp[0]}\"";
+            cmd.EnableRaisingEvents = true;
+            cmd.Start();
+        }
+        //public object SelectedFile { get => selectedFile; set => SetProperty(ref selectedFile, value); }
+
+
     }
 }

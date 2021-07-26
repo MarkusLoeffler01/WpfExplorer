@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ViewModel="clr-namespace:WpfExplorer.ViewModel"
-        xmlns:local="clr-namespace:WpfExplorer" xmlns:cmd="http://www.galasoft.ch/mvvmlight" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:WpfExplorer" xmlns:cmd="http://www.galasoft.ch/mvvmlight" 
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         mc:Ignorable="ignore"
 
@@ -38,8 +39,12 @@
                  SelectedItem="{Binding SelectedFileException}" Grid.Column="1" BorderThickness="1px" BorderBrush="Black">
 
         </ListBox>
-        <ListBox Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}">
-
+        <ListBox MaxHeight="300px" Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding MouseDoubleClick}" CommandParameter="{Binding ElementName=GD_Dateiausgabe, Path=SelectedItem}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </ListBox>
         <TextBlock Name="IndexProgress" Margin="10,396,10,10" Grid.ColumnSpan="2"></TextBlock>
 
