@@ -176,6 +176,8 @@ namespace WpfExplorer.ViewModel
 
 
 
+
+
         public ObservableCollection<string> FileExceptionList { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> FoundFiles { get; set; } = new ObservableCollection<string>();
         //public ObservableCollection<string> MyProperty { get; set; } = new ObservableCollection<string>();
