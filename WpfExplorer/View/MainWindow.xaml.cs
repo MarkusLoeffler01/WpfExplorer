@@ -209,48 +209,48 @@ namespace WpfExplorer
         }
 
 
-        private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            GD_Dateiausgabe.Children.Clear();
+        //private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        //{
+        //    GD_Dateiausgabe.Children.Clear();
 
-            /** Nichts eingegeben = nichts anzeigen */
-            if (tb_Search.Text.Length == 0) return;
-            /**Es sollten zuerst die Dateinamen und DANN erst Dateien mit dem Inhalt durchsucht werden */
+        //    /** Nichts eingegeben = nichts anzeigen */
+        //    if (tb_Search.Text.Length == 0) return;
+        //    /**Es sollten zuerst die Dateinamen und DANN erst Dateien mit dem Inhalt durchsucht werden */
 
-            var File = fs.searchFile(tb_Search.Text, false);
-            if (File.Count != 0)
-            {
-                string res = "";
-                foreach (var v in File)
-                {
-                    res += v.Filename + "\n";
-                    res += v.Path + "\n\n";
-                }
-                TextBlock tb = new TextBlock();
-                //ObservableCollection tb = new System.Collections.ObjectModel.ObservableCollection();
-                tb.Text = res + "\n";
+        //    var File = fs.searchFile(tb_Search.Text, false);
+        //    if (File.Count != 0)
+        //    {
+        //        string res = "";
+        //        foreach (var v in File)
+        //        {
+        //            res += v.Filename + "\n";
+        //            res += v.Path + "\n\n";
+        //        }
+        //        TextBlock tb = new TextBlock();
+        //        //ObservableCollection tb = new System.Collections.ObjectModel.ObservableCollection();
+        //        tb.Text = res + "\n";
 
-                tb.MouseLeftButtonUp += Tb_MouseLeftButtonUp;
-                GD_Dateiausgabe.Children.Add(tb);
-            }
-
-
-            //fs.C_IZ _ = db.getConf<fs.C_IZ>("database");
-            //for (int i = 0; i < _.Paths.Length; i++)
-            //{
-
-            //    System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
-            //    List<main.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
-            //    oof.ForEach((p) =>
-            //    {
-            //        AddToGrid(p.Filename, p.Path);
-            //        txt.Text += $"\n\n{p.Filename} in {p.Path}";
-            //    });
-
-            //}
+        //        tb.MouseLeftButtonUp += Tb_MouseLeftButtonUp;
+        //        GD_Dateiausgabe.Children.Add(tb);
+        //    }
 
 
-        }
+        //    //fs.C_IZ _ = db.getConf<fs.C_IZ>("database");
+        //    //for (int i = 0; i < _.Paths.Length; i++)
+        //    //{
+
+        //    //    System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
+        //    //    List<main.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
+        //    //    oof.ForEach((p) =>
+        //    //    {
+        //    //        AddToGrid(p.Filename, p.Path);
+        //    //        txt.Text += $"\n\n{p.Filename} in {p.Path}";
+        //    //    });
+
+        //    //}
+
+
+        //}
 
         private void Tb_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
