@@ -11,6 +11,7 @@ App.g.cs
 .dccache
 *.rsuser
 config.json
+packages/
 
 *.suo
 *.user
