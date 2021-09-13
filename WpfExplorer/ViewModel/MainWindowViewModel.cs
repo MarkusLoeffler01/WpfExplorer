@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,16 +17,42 @@ namespace WpfExplorer.ViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public MainWindowViewModel()
+        {
+            ButtonCommand = new RelayCommand(o => Debug_Click());
+            tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
+            MouseDoubleClick = new RelayCommand(o => My(o));
+            //MyCommand = new RelayCommand(o => My(o));
+            fs.checkConfig();
+            db.initDB();
+            if (main.PingDB()) { tb_Ping_Text = "Connected"; }
+            else { tb_Ping_Text = "Connection failed..."; main.ReportError(new Exception("Ping not successfull")); return; }
+            System.Windows.Threading.DispatcherTimer dT = new System.Windows.Threading.DispatcherTimer();
+            dT.Tick += new EventHandler(SetPing);
+            dT.Interval = new TimeSpan(0, 0, 1);
+            dT.Start();
+
+            List<string> query = db.myquery("SELECT version();");
+            MessageBox.Show("MySQL " + query[0]);
+
+            allDrives = DriveInfo.GetDrives();
+        }
+
+        private void SetPing(object sender, EventArgs e)
+        {
+            double PingTime = db.PingDB();
+            tb_Ping_Text = $"{PingTime}ms";
+        }
+
         public ICommand KeyInputCommand
         {
-            get
             {
                 if (_keyInputCommand == null) _keyInputCommand = new GalaSoft.MvvmLight.Command.RelayCommand(KeyDown);
                 return _keyInputCommand;
             }
         }
-
-        public string KeineÄnderung { get; }
 
         public string Name
         {
@@ -136,14 +163,6 @@ namespace WpfExplorer.ViewModel
 
         //public ICommand MyCommand { get; set; }
 
-        public MainWindowViewModel()
-        {
-            ButtonCommand = new RelayCommand(o => Debug_Click());
-            tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
-            MouseDoubleClick = new RelayCommand(o => My(o));
-            //MyCommand = new RelayCommand(o => My(o));
-        }
-
         public void MyCommand(object sender, SelectionChangedEventArgs e)
         {
             List<string> lul = (List<string>)e.AddedItems;
@@ -157,19 +176,32 @@ namespace WpfExplorer.ViewModel
 
         public string tb_AddExceptionsText { get; set; } = null;
 
-        public string _tb_Search_Text;
-        public string tb_Search_Text {
+        public string _tb_Search_Text { get; set; } = null;
+        public string tb_Search_Text
+        {
             get { return _tb_Search_Text; }
             set
             {
-                if(_tb_Search_Text != value)
+                if (_tb_Search_Text != value)
                 {
                     _tb_Search_Text = value;
                     PropertyChanged(this, new PropertyChangedEventArgs("tb_Search_Text"));
                     PropertyChanged(this, new PropertyChangedEventArgs("_tb_Search_Text"));
                     tb_Search_TextChanged();
                 }
-                
+
+            }
+        }
+
+        public string _tb_Ping_Text { get; set; } = null;
+        public string tb_Ping_Text
+            {
+                if (_tb_Ping_Text != value)
+                {
+                    _tb_Ping_Text = value;
+                    //PropertyChanged(this, new PropertyChangedEventArgs("_tb_Ping_Text"));
+                    //PropertyChanged(this, new PropertyChangedEventArgs("tb_Ping_Text"));
+                }
             }
         }
 
@@ -178,7 +210,6 @@ namespace WpfExplorer.ViewModel
 
 
 
-        public ObservableCollection<string> FileExceptionList { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> FoundFiles { get; set; } = new ObservableCollection<string>();
         //public ObservableCollection<string> MyProperty { get; set; } = new ObservableCollection<string>();
         private object selectedFileException;
@@ -220,7 +251,26 @@ namespace WpfExplorer.ViewModel
             cmd.EnableRaisingEvents = true;
             cmd.Start();
         }
-        //public object SelectedFile { get => selectedFile; set => SetProperty(ref selectedFile, value); }
+
+        private RelayCommand _bt_Help1;
+
+        public ICommand _bt_Help
+        {
+            get
+            {
+                if (_bt_Help1 == null)
+                {
+                    _bt_Help1 = new RelayCommand(Perform_bt_Help);
+                }
+
+                return _bt_Help1;
+            }
+        }
+
+        private void Perform_bt_Help(object commandParameter)
+        {
+            MessageBox.Show("Bedienung:\n*.jpg => Filter alle JPG Dateien\nHa* => Filter alle Dateien, welche mit Ha beginnen\n*2021* => Filter alle Dateien, welche 2021 im Namen haben\n\nFiles/ ignoriert jedes Verzeichnis mit dem Namen Files\n*les/ ignoriert jedes Verzeichnis mit les am Ende\nC:\\Users\\ ignoriert NUR diesen einen Ordner\n\nDoppelklicken Sie auf einen Eintrag, um diesen zu entfernen");
+        }        //public object SelectedFile { get => selectedFile; set => SetProperty(ref selectedFile, value); }
 
 
     }

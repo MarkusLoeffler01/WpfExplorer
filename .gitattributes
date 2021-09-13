@@ -1,0 +1,3 @@
+*.sql linguist-generated
+*.xsd linguist-generated
+Zubehör/NHibernate-5.3.8-bin/ linguist-generated

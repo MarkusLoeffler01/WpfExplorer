@@ -79,6 +79,7 @@ namespace WpfExplorer
         }
 
 
+        [Obsolete("switching to MySQL, please use myquery(command);")]
         public static List<string> query(string command)
         {
 #pragma warning disable 0649
