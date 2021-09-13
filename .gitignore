@@ -11,6 +11,12 @@ App.g.cs
 .dccache
 *.rsuser
 config.json
+<<<<<<< HEAD
+packages/
+WpfExplorer/Zubehör/NHibernate-5.3.8-bin/Configuration_Templates
+WpfExplorer/Zubehör/NHibernate-5.3.8-bin/Tests
+=======
+>>>>>>> main
 
 *.suo
 *.user

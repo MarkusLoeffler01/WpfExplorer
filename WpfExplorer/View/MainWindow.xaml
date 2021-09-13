@@ -10,7 +10,6 @@
         mc:Ignorable="ignore"
 
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
-
     <Window.DataContext>
         <ViewModel:MainWindowViewModel x:Name="mvm"></ViewModel:MainWindowViewModel>
     </Window.DataContext>

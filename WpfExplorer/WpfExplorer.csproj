@@ -237,9 +237,15 @@
     <None Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\nhibernate-mapping.xsd">
       <SubType>Designer</SubType>
     </None>
+<<<<<<< HEAD
+    <!-- <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.dll.config" />
+    <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.VisualBasic.dll.config" />
+    <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.TestDatabaseSetup.dll.config" /> -->
+=======
     <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.dll.config" />
     <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.Test.VisualBasic.dll.config" />
     <None Include="Zubehör\NHibernate-5.3.8-bin\Tests\NHibernate.TestDatabaseSetup.dll.config" />
+>>>>>>> main
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -258,7 +264,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zubehör\CommandHelper.dll" />
+<<<<<<< HEAD
+    <!-- <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\FireBird.cfg.xml" />
+=======
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\FireBird.cfg.xml" />
+>>>>>>> main
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\HANA.cfg.xml" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\MSSQL.cfg.xml" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\MySql.cfg.xml" />
@@ -269,7 +279,11 @@
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SQLite.cfg.xml" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SqlServerCe.cfg.xml" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SybaseASE.cfg.xml" />
+<<<<<<< HEAD
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SybaseSQLAnywhere.cfg.xml" /> -->
+=======
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Configuration_Templates\SybaseSQLAnywhere.cfg.xml" />
+>>>>>>> main
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\HowInstall.txt" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\LICENSE.txt" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\readme.html" />
@@ -280,7 +294,11 @@
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\NHibernate.xml" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Remotion.Linq.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Required_Bins\Remotion.Linq.EagerFetching.dll" />
+<<<<<<< HEAD
+    <!-- <Resource Include="Zubehör\NHibernate-5.3.8-bin\Tests\ABC.hbm.xml" />
+=======
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Tests\ABC.hbm.xml" />
+>>>>>>> main
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\MsSql2008DialectLinqReadonlyCreateScript.sql" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\MsSql2008DialectLinqReadonlyDropScript.sql" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\DbScripts\MsSql2012DialectLinqReadonlyCreateScript.sql" />
@@ -296,7 +314,11 @@
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\nunit.engine.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\nunit.framework.dll" />
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NUnit3.TestAdapter.dll" />
+<<<<<<< HEAD
+    <Resource Include="Zubehör\NHibernate-5.3.8-bin\Tests\TestEmbeddedConfig.cfg.xml" /> -->
+=======
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Tests\TestEmbeddedConfig.cfg.xml" />
+>>>>>>> main
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.1.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.1.0\build\MaterialDesignThemes.targets')" />

@@ -15,9 +15,8 @@ namespace WpfExplorer.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        string _PATH = "";
-        public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
-        public static DriveInfo[] allDrives;
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindowViewModel()
@@ -49,7 +48,6 @@ namespace WpfExplorer.ViewModel
 
         public ICommand KeyInputCommand
         {
-            get
             {
                 if (_keyInputCommand == null) _keyInputCommand = new GalaSoft.MvvmLight.Command.RelayCommand(KeyDown);
                 return _keyInputCommand;
@@ -197,9 +195,6 @@ namespace WpfExplorer.ViewModel
 
         public string _tb_Ping_Text { get; set; } = null;
         public string tb_Ping_Text
-        {
-            get { return _tb_Ping_Text; }
-            set
             {
                 if (_tb_Ping_Text != value)
                 {
@@ -215,7 +210,6 @@ namespace WpfExplorer.ViewModel
 
 
 
-        public ObservableCollection<string> FileExceptionList { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> FoundFiles { get; set; } = new ObservableCollection<string>();
         //public ObservableCollection<string> MyProperty { get; set; } = new ObservableCollection<string>();
         private object selectedFileException;

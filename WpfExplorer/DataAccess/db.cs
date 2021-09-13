@@ -25,7 +25,7 @@ namespace WpfExplorer
                     List<T> items = JsonConvert.DeserializeObject<List<T>>(json);
                     return items[0];
                 }
-                catch (Exception e) { main.ReportError(e); throw new Exception(); }
+                catch (Exception e) { main.ReportError(e); throw; }
             }
         }
 
@@ -59,8 +59,6 @@ namespace WpfExplorer
                 throw;
             }
         }
-
-        //Create a function to connect to a mysql database, execute a query and return the result
 
         public static List<string> myquery(string command)
         {
