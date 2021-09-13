@@ -27,44 +27,22 @@ namespace WpfExplorer
 
         public MainWindow()
         {
-            fs.checkConfig();
-            InitializeComponent();
+            //fs.checkConfig();
+            //InitializeComponent();
 
 
-            db.initDB();
-            if (main.PingDB()) { TB_Ping.Text = "Connected"; }
-            else { TB_Ping.Text = "Connection failed..."; main.ReportError(new Exception("Ping not successfull")); return; }
-            System.Windows.Threading.DispatcherTimer dT = new System.Windows.Threading.DispatcherTimer();
-            dT.Tick += new EventHandler(SetPing);
-            dT.Interval = new TimeSpan(0, 0, 1);
-            dT.Start();
+            //db.initDB();
+            //if (main.PingDB()) { TB_Ping.Text = "Connected"; }
+            //else { TB_Ping.Text = "Connection failed..."; main.ReportError(new Exception("Ping not successfull")); return; }
+            //System.Windows.Threading.DispatcherTimer dT = new System.Windows.Threading.DispatcherTimer();
+            //dT.Tick += new EventHandler(SetPing);
+            //dT.Interval = new TimeSpan(0, 0, 1);
+            //dT.Start();
 
-            List<string> query = db.myquery("SELECT version();");
-            MessageBox.Show("MySQL " + query[0]);
+            //List<string> query = db.myquery("SELECT version();");
+            //MessageBox.Show("MySQL " + query[0]);
 
-            allDrives = DriveInfo.GetDrives();
             //allDrives = DriveInfo.GetDrives();
-
-
-
-            //MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..")));
-            //MessageBox.Show(string.Join("\n", fs.readDirSync("..\\..\\..\\..", true)));
-            //DetectUSB.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-            //DetectUSB.Click(new object(), new RoutedEventArgs());
-            //Detect_Click(Window.GetWindow(this), new RoutedEventArgs());
-            //DetectUSB.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-
-
-            //var xx = fs.readIndexedFiles();
-            //var yy = xx.ToArray<main.FileStructure>();
-            //string res = "";
-            //for(int i = 0; i < yy.Length; i++)
-            //{
-            //    res += yy[i].Filename+"\n";
-            //    res += yy[i].Path+"\n\n";
-
-            //}
-            //MessageBox.Show(res);
         }
 
         private void SetPing(object sender, EventArgs e)
@@ -87,14 +65,6 @@ namespace WpfExplorer
             //worker.ProgressChanged += OnProgressChanged;
             worker.RunWorkerAsync();
             return;
-            //List<string> x = db.query("SELECT 1+1;");
-            //string res = "";
-            //for (int i = 0; i < x.Count; i++)
-            //{
-            //    res += x[i];
-            //    res += "\n\n";
-            //}
-            //MessageBox.Show(res);
         }
 
         /**Neuer Thread, um die UI nicht zu blockieren */
