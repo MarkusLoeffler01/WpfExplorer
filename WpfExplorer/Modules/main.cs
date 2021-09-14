@@ -22,7 +22,7 @@ namespace WpfExplorer
 
         public static bool PingDB()
         {
-            List<string> cmd = db.query("SELECT 1+1;");
+            List<string> cmd = db.myquery("SELECT 1+1;");
             string msgS = "";
             for (int i = 0; i < cmd.ToArray().Length; i++)
             {

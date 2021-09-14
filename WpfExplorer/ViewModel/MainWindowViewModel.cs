@@ -22,6 +22,7 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
+            tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
             MouseDoubleClick = new RelayCommand(o => My(o));

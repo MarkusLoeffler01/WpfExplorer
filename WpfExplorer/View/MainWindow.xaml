@@ -23,7 +23,7 @@
             <RowDefinition Height="163.163"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Text="{Binding tb_Ping_Text}" Margin="10,10,129,212.837">Connecting to Database...</TextBlock>
+        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Text="{Binding tb_Ping_Text}" Margin="10,10,129,212.837"></TextBlock>
         <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="150,10,6,212.837"></TextBlock>
         <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,1,232.837">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
         <TextBox HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Text="{Binding Path=tb_Search_Text, UpdateSourceTrigger=PropertyChanged}"  Name="tb_Search" Height="25" Margin="0,30,6,208.837"></TextBox>
