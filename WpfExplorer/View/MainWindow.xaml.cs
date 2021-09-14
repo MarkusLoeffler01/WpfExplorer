@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using WpfExplorer.ViewModel;
 #pragma warning disable 0649
 
 namespace WpfExplorer
@@ -52,51 +53,51 @@ namespace WpfExplorer
         }
 
         List<string> ExcList;
-        private void Index_Click(object sender, RoutedEventArgs e)
-        {
-            BackgroundWorker worker = new BackgroundWorker();
-            _PATH = main.getPathDialog();
-            ExcList = GetExceptionList();
-            if (_PATH == "") return;
+        //private void Index_Click(object sender, RoutedEventArgs e)
+        //{
+        //    BackgroundWorker worker = new BackgroundWorker();
+        //    _PATH = main.getPathDialog();
+        //    ExcList = GetExceptionList();
+        //    if (_PATH == "") return;
 
-            worker.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
-            worker.WorkerSupportsCancellation = true;
-            //worker.WorkerReportsProgress = true;
-            //worker.ProgressChanged += OnProgressChanged;
-            worker.RunWorkerAsync();
-            return;
-        }
+        //    worker.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+        //    worker.WorkerSupportsCancellation = true;
+        //    //worker.WorkerReportsProgress = true;
+        //    //worker.ProgressChanged += OnProgressChanged;
+        //    worker.RunWorkerAsync();
+        //    return;
+        //}
 
         /**Neuer Thread, um die UI nicht zu blockieren */
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        {
-            string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
+        //private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        //{
+        //    string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
 
-            string[] files = fs.readDirSync(_PATH, true, true);
+        //    string[] files = fs.readDirSync(_PATH, true, true);
 
-            //Check if the file type or files are in the ExceptionList
-            MessageBox.Show(files.Length + "\n" + string.Join(",", files));
-            files = checkForExcpetionlist(files);
-            MessageBox.Show(files.Length + "\n" + string.Join(",", files));
+        //    //Check if the file type or files are in the ExceptionList
+        //    MessageBox.Show(files.Length + "\n" + string.Join(",", files));
+        //    files = checkForExcpetionlist(files);
+        //    MessageBox.Show(files.Length + "\n" + string.Join(",", files));
 
-            int TotalFiles = files.Length;
-            C_TFiles ProcessedFiles = new C_TFiles();
-            for (int i = 0; i < TotalFiles; i++)
-            {
-                //fs.AddToIndex(files[i]);
-                Thread.Sleep(100);
-                switch (fs.AddToIndex(files[i]))
-                {
+        //    int TotalFiles = files.Length;
+        //    C_TFiles ProcessedFiles = new C_TFiles();
+        //    for (int i = 0; i < TotalFiles; i++)
+        //    {
+        //        //fs.AddToIndex(files[i]);
+        //        Thread.Sleep(100);
+        //        switch (fs.AddToIndex(files[i]))
+        //        {
 
-                    case -1: MessageBox.Show($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
-                    case -255: break; //Exception
-                    case 0: break;
+        //            case -1: MessageBox.Show($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
+        //            case -255: break; //Exception
+        //            case 0: break;
 
-                }
-                SetIndexProgress(files[i], i, TotalFiles);
-            }
-            MessageBox.Show(TotalFiles.ToString() + " Dateien erfolgreich hinzugefügt");
-        }
+        //        }
+        //        SetIndexProgress(files[i], i, TotalFiles);
+        //    }
+        //    MessageBox.Show(TotalFiles.ToString() + " Dateien erfolgreich hinzugefügt");
+        //}
 
         private string[] checkForExcpetionlist(string[] files)
         {
@@ -163,10 +164,11 @@ namespace WpfExplorer
             }
         }
 
+        
 
         private void ToExceptionList()
         {
-            List<string> _ = GetExceptionList();
+            //List<string> _ = MainWindowViewModel.GetExceptionList();
             //foreach(var d in _) ListBox.Items.Add(d);
             return;
         }
@@ -174,6 +176,7 @@ namespace WpfExplorer
 
         public List<string> GetExceptionList()
         {
+            
             return new main().getMVVM().FileExceptionList.ToList();
             //return ListBox.Items.Cast<string>().ToList();
         }
@@ -296,23 +299,6 @@ namespace WpfExplorer
                 newD.Add(d.Name);
             }
             return oldD.Except(newD).Concat(newD.Except(oldD)).ToList();
-        }
-
-        /** Diese Methode sollte in einem neuen Thread ausgrführt werden, um die UI nicht zu blockieren*/
-        public void SetIndexProgress(string FileName, int current, int total)
-        {
-            current++;
-            double p = 100 / Convert.ToDouble(total);
-            double prozent = p * Convert.ToDouble(current);
-
-            /** Gebe die Aufgabe zurück an den HauptThread. 
-             * Nur dieser darf auf die UI zugreifen
-             */
-            this.Dispatcher.Invoke(() =>
-            {
-                IndexProgress.Text = $"{FileName} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
-            });
-
         }
 
 

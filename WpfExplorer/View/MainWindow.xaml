@@ -27,7 +27,7 @@
         <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="150,10,6,212.837"></TextBlock>
         <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,1,232.837">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
         <TextBox HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Text="{Binding Path=tb_Search_Text, UpdateSourceTrigger=PropertyChanged}"  Name="tb_Search" Height="25" Margin="0,30,6,208.837"></TextBox>
-        <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="30" Click="Index_Click" Margin="0,64,6,170.837" Grid.Column="1" Grid.Row="0" Foreground="White">Neue Dateien indizieren</Button>
+        <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="30" Command="{Binding Index_Click}" Margin="0,64,6,170.837" Grid.Column="1" Grid.Row="0" Foreground="White">Neue Dateien indizieren</Button>
         <!-- <Button Command="{Binding ButtonCommand}" Margin="225,8,38,224.837"></Button> -->
         <Label HorizontalAlignment="Stretch" FontWeight="Bold" Content="Dateien ausschließen"  Margin="0,95,6,127.837" Grid.Column="1" Grid.Row="0"></Label>
         <TextBox Name="tb_AddExceptions" Text="{Binding tb_AddExceptionsText}" Height="25" Margin="0,125,6,114.837" Grid.Column="1">
@@ -47,7 +47,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ListBox>
-        <TextBlock Name="IndexProgress" Margin="10,131.163,10,10" Grid.ColumnSpan="2" Grid.Row="1"></TextBlock>
+        <TextBlock Text="{Binding IndexProgress}" Margin="10,131.163,10,10" Grid.ColumnSpan="2" Grid.Row="1"></TextBlock>
 
     </Grid>
 </Window>

@@ -6,16 +6,18 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using RelayCommand = CommandHelper.RelayCommand;
+using System.Threading;
 
 namespace WpfExplorer.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        string _PATH = "";
+        //string _PATH = "";
         public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
         public static DriveInfo[] allDrives;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -29,21 +31,28 @@ namespace WpfExplorer.ViewModel
             //MyCommand = new RelayCommand(o => My(o));
             fs.checkConfig();
             db.initDB();
-            if (main.PingDB()) { tb_Ping_Text = "Connected"; }
-            else { tb_Ping_Text = "Connection failed..."; main.ReportError(new Exception("Ping not successfull")); return; }
+            if (main.PingDB()) tb_Ping_Text = "Connected";
+            else 
+            {
+                tb_Ping_Text = "Connection failed..."; 
+                main.ReportError(new Exception("Ping not successfull")); 
+                return; 
+            }
             System.Windows.Threading.DispatcherTimer dT = new System.Windows.Threading.DispatcherTimer();
             dT.Tick += new EventHandler(SetPing);
             dT.Interval = new TimeSpan(0, 0, 1);
             dT.Start();
+           
 
             List<string> query = db.myquery("SELECT version();");
-            MessageBox.Show("MySQL " + query[0]);
+            MessageBox.Show(query[0]);
 
             allDrives = DriveInfo.GetDrives();
         }
 
         private void SetPing(object sender, EventArgs e)
         {
+            Console.WriteLine("PING");
             double PingTime = db.PingDB();
             tb_Ping_Text = $"{PingTime}ms";
         }
@@ -70,13 +79,6 @@ namespace WpfExplorer.ViewModel
         private void KeyDown()
         {
             // Hier Logik
-        }
-
-        private void ToExceptionList()
-        {
-            //List<string> _ = MainWindow.GetExceptionList();
-            //foreach (var d in _) MainWindow.ListBox.Items.Add(d);
-            return;
         }
 
         private ICommand _keyInputCommand;
@@ -164,6 +166,8 @@ namespace WpfExplorer.ViewModel
         public ICommand tb_Search_Command { get; set; }
         public ICommand MouseDoubleClick { get; set; }
 
+        //public ICommand Index_Click { get; set; }
+
         //public ICommand MyCommand { get; set; }
 
         public void MyCommand(object sender, SelectionChangedEventArgs e)
@@ -196,16 +200,19 @@ namespace WpfExplorer.ViewModel
             }
         }
 
-        public string _tb_Ping_Text { get; set; } = null;
+        public string _tb_Ping_Text = "";
         public string tb_Ping_Text
         {
             get { return _tb_Ping_Text; }
             set
             {
-                if (_tb_Ping_Text != value)
+                if (!_tb_Ping_Text.Equals(value))
                 {
                     _tb_Ping_Text = value;
-                    //PropertyChanged(this, new PropertyChangedEventArgs("_tb_Ping_Text"));
+                    if (this.PropertyChanged != null)
+                    {
+                        this.PropertyChanged(this, new PropertyChangedEventArgs("tb_Ping_Text"));
+                    }
                     //PropertyChanged(this, new PropertyChangedEventArgs("tb_Ping_Text"));
                 }
             }
@@ -246,6 +253,7 @@ namespace WpfExplorer.ViewModel
 
         private void My(object o)
         {
+            if (o == null) return;
             string p = o.ToString();
             string[] pp = p.Split('\n');
 
@@ -280,5 +288,142 @@ namespace WpfExplorer.ViewModel
         }        //public object SelectedFile { get => selectedFile; set => SetProperty(ref selectedFile, value); }
 
 
+        string _PATH = "";
+        List<string> ExcList;
+
+        public void Index_Click(object sender, RoutedEventArgs e)
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+            _PATH = main.getPathDialog();
+            ExcList = GetExceptionList();
+            if (_PATH == "") return;
+
+            worker.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+            worker.WorkerSupportsCancellation = true;
+            //worker.WorkerReportsProgress = true;
+            //worker.ProgressChanged += OnProgressChanged;
+            worker.RunWorkerAsync();
+            return;
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
+
+            string[] files = fs.readDirSync(_PATH, true, true);
+
+            //Check if the file type or files are in the ExceptionList
+            MessageBox.Show(files.Length + "\n" + string.Join(",", files));
+            files = checkForExcpetionlist(files);
+            MessageBox.Show(files.Length + "\n" + string.Join(",", files));
+
+            int TotalFiles = files.Length;
+            C_TFiles ProcessedFiles = new C_TFiles();
+            for (int i = 0; i < TotalFiles; i++)
+            {
+                //fs.AddToIndex(files[i]);
+                Thread.Sleep(100);
+                switch (fs.AddToIndex(files[i]))
+                {
+
+                    case -1: MessageBox.Show($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
+                    case -255: break; //Exception
+                    case 0: break;
+
+                }
+                SetIndexProgress(files[i], i, TotalFiles);
+            }
+            MessageBox.Show(TotalFiles.ToString() + " Dateien erfolgreich hinzugefügt");
+        }
+
+        private string[] checkForExcpetionlist(string[] files)
+        {
+            /*
+             * Wenn el[i][0] == *, el.Includes(el[i][el[i]-1]
+             * 
+             * prüfe ob Path.GetExtension(files[i]) != '' && ob in el, dann entferne
+             */
+
+            List<string> el = ExcList;
+            List<string> filesList = files.ToList();
+
+            //Entferne alle Dateitypen in der Liste
+            for (int i = 0; i < filesList.Count; i++)
+            {
+                string ext = Path.GetExtension(filesList[i]);
+                if (ext.Length > 0 && el.Contains(ext)) filesList.RemoveAt(i);
+            }
+
+            string[] _el = el.ToArray();
+            //Enterne alle Verzeichnisse 
+            for (int i = 0; i < _el.Length; i++)
+            {
+                for (int o = 0; o < filesList.Count; o++)
+                {
+                    //Prüfe, ob der Eintrag ein "Verzeichnis/" ist und prüfe anschließend, ob die Datei in solch einem Verzeichnis ist
+                    if (_el[i].EndsWith("/") && filesList[o].Replace("\\", "/").Contains(_el[i])) filesList.RemoveAt(o);
+                }
+            }
+
+            return filesList.ToArray();
+        }
+
+        class C_TFiles
+        {
+            public List<C_Files> FilesOk;
+            public List<C_Files> FilesErr;
+        }
+
+        public class C_Files
+        {
+            public string FileName;
+            public string Path;
+        }
+
+        ICommand _addToExceptList;
+
+        public ICommand AddToExceptionList
+        {
+            get
+            {
+                if (_addToExceptList == null) _addToExceptList = new RelayCommand(e => ToExceptionList());
+                return _addToExceptList;
+            }
+        }
+
+
+        private void ToExceptionList()
+        {
+            //List<string> _ = MainWindowViewModel.GetExceptionList();
+            //foreach(var d in _) ListBox.Items.Add(d);
+            return;
+        }
+
+
+        public List<string> GetExceptionList()
+        {
+
+            return new main().getMVVM().FileExceptionList.ToList();
+            //return ListBox.Items.Cast<string>().ToList();
+        }
+
+        public static string IndexProgress { get; set; }
+
+        /** Diese Methode sollte in einem neuen Thread ausgrführt werden, um die UI nicht zu blockieren*/
+        static public void SetIndexProgress(string FileName, int current, int total)
+        {
+            current++;
+            double p = 100 / Convert.ToDouble(total);
+            double prozent = p * Convert.ToDouble(current);
+
+            /** Gebe die Aufgabe zurück an den HauptThread. 
+             * Nur dieser darf auf die UI zugreifen
+             */
+            //this.Dispatcher.Invoke(() =>
+            //{
+                IndexProgress = $"{FileName} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
+            //});
+
+        }
     }
 }

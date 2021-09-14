@@ -59,12 +59,14 @@ namespace WpfExplorer
         {
             return Application.Current.Windows.Cast<MainWindow>().First();
         }
+
+        //Gebe das Objekt der ViewModel zurück
         public MainWindowViewModel getMVVM()
         {
-            MainWindowViewModel d = new MainWindowViewModel();
+            var d = new MainWindowViewModel();
             this.Dispatcher.BeginInvoke((Action)delegate ()
             {
-                d = Application.Current.Windows.Cast<MainWindowViewModel>().First();
+                d = Application.Current.Windows.Cast<MainWindowViewModel>().FirstOrDefault();
             });
             return d;
         }
