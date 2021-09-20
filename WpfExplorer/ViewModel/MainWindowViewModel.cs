@@ -440,5 +440,36 @@ namespace WpfExplorer.ViewModel
             //});
 
         }
+
+        private RelayCommand settings_Click;
+
+        public ICommand Settings_Click
+        {
+            get
+            {
+                if (settings_Click == null)
+                {
+                    settings_Click = new RelayCommand(PerformSettings_Click);
+                }
+
+                return settings_Click;
+            }
+        }
+
+
+        //In der Window sollte es Tickboxen geben, welche beim Anklick Variablen ändern.
+        //Z.B. ob rekursiv gesucht werden sollte. Unten im Eck sollte es einen "Schließen" Button geben
+        private void PerformSettings_Click(object commandParameter)
+        {
+            //Einstellungen wie rekursiv indizieren, Cache leeren
+            Window popup = new Window();
+            popup.MaxHeight = popup.MinHeight = popup.Height = 300;
+            popup.MaxWidth = popup.MinWidth = popup.Width = 400;
+            popup.Title = "Einstellungen - WpfExplorer";
+            var grid = new Grid();
+      
+            popup.ShowDialog();
+
+        }
     }
 }
