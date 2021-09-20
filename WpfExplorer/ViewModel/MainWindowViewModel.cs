@@ -12,18 +12,31 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using RelayCommand = CommandHelper.RelayCommand;
 using System.Threading;
+using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace WpfExplorer.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        //string _PATH = "";
+        public static string AUTH_KEY = "";
         public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
         public static DriveInfo[] allDrives;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindowViewModel()
         {
+
+            //Hole die ID von der Datei
+            var FILE = db.getConf<fs.C_IZ>("database");
+            if(FILE.AUTH_KEY == null)
+            {
+                FILE.AUTH_KEY = main.RandomString(512);
+                fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS+"\\database.json", JsonConvert.SerializeObject(FILE), true);
+            }
+
+            AUTH_KEY = FILE.AUTH_KEY;
+            Task.Run(db.sync);
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
@@ -183,18 +196,20 @@ namespace WpfExplorer.ViewModel
 
         public string tb_AddExceptionsText { get; set; } = null;
 
-        public string _tb_Search_Text { get; set; } = null;
+        public string _tb_Search_Text = "";
         public string tb_Search_Text
         {
             get { return _tb_Search_Text; }
             set
             {
-                if (_tb_Search_Text != value)
+                if (!_tb_Search_Text.Equals(value))
                 {
                     _tb_Search_Text = value;
-                    PropertyChanged(this, new PropertyChangedEventArgs("tb_Search_Text"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("_tb_Search_Text"));
-                    tb_Search_TextChanged();
+                    if (this.PropertyChanged != null)
+                    {
+                        this.PropertyChanged(this, new PropertyChangedEventArgs("tb_Search_Text"));
+                        tb_Search_TextChanged();
+                    }
                 }
 
             }

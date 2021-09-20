@@ -7,7 +7,7 @@ using System.IO;
 using System.Net.NetworkInformation;
 using System.Windows;
 using MySql.Data.MySqlClient;
-
+using WpfExplorer.ViewModel;
 
 namespace WpfExplorer
 {
@@ -35,7 +35,6 @@ namespace WpfExplorer
             string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             try
             {
-                JsonConvert.SerializeObject(text);
                 string _ = JsonConvert.SerializeObject(text);
                 fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", $"[{_}]", true);
                 return;
@@ -63,6 +62,21 @@ namespace WpfExplorer
             }
         }
 
+        //Bitte in Task.Run ausführen
+        public static void sync()
+        {
+            string _tmp = fs.readFileSync(MainWindow.CONFIG_LOCATIONS+"database.json");
+            fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+
+            var dbc = myquery($"SELECT PATH FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            
+            for(int i = 0; i < dbc.Count; i++)
+            {
+                fs.AddToIndex(dbc[i]);
+            }
+        }
+
+        //Create a function which returns a random number
 
         //baut eine Verbindung zur MariaDB auf und führt eine Query aus, gibt dann das Ergebnis zurück
         public static List<string> myquery(string command)

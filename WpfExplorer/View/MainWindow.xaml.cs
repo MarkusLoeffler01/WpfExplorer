@@ -23,6 +23,7 @@ namespace WpfExplorer
     public partial class MainWindow : Window
     {
         string _PATH = "";
+        public static int ID = -1;
         public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
         public static DriveInfo[] allDrives;
 

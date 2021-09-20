@@ -228,6 +228,9 @@ namespace WpfExplorer
         {
             [JsonProperty("Paths")]
             public List<C_Path> Paths { get; set; }
+
+            [JsonProperty("AUTH_KEY")]
+            public string AUTH_KEY {get; set;}
         }
 
         public partial class C_Path

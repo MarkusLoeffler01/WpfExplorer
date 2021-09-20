@@ -33,6 +33,14 @@ namespace WpfExplorer
             return cmd[0] == "2";
         }
 
+        private static Random random = new Random();
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
         public static FileStructure[] FoundFiles;
 
         public class FileStructure
@@ -55,6 +63,10 @@ namespace WpfExplorer
             return "";
 
         }
+
+        //Create a function which displays a messagebox with chechboxes inside
+
+        
         public static MainWindow getSession()
         {
             return Application.Current.Windows.Cast<MainWindow>().First();
