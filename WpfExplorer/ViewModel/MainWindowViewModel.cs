@@ -36,7 +36,7 @@ namespace WpfExplorer.ViewModel
             }
 
             AUTH_KEY = FILE.AUTH_KEY;
-            Task.Run(db.sync);
+            //Task.Run(db.sync);
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
