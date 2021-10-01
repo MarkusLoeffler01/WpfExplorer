@@ -95,18 +95,18 @@ namespace WpfExplorer
 
         }
         /** Sucht nach einer Datei nach ihrem Namen und gibt die Datei mit dem Pfad zurück */
-        public static List<main.FileStructure> searchFile(string Filename, bool SearchFileContent)
+        public static List<Model.FileStructure> searchFile(string Filename, bool SearchFileContent)
         {
             /** Es wird noch indiziert. Kann nicht gesucht werden*/
             int ___ = 0;
             while (main.isIndexerRunning) { System.Diagnostics.Debug.WriteLine("Still running" + ___); ___++; }
             C_IZ conf = db.getConf<C_IZ>("database");
-            List<main.FileStructure> FoundFiles = new List<main.FileStructure>();
+            List<Model.FileStructure> FoundFiles = new List<Model.FileStructure>();
             for (int i = 0; i < conf.Paths.Count; i++)
             {
                 for (int o = 0; o < conf.Paths[i].Files.Count; o++)
                 {
-                    if (conf.Paths[i].Files[o].Contains(Filename)) FoundFiles.Add(new main.FileStructure() { Filename = conf.Paths[i].Files[o], Path = conf.Paths[i].Path });
+                    if (conf.Paths[i].Files[o].Contains(Filename)) FoundFiles.Add(new Model.FileStructure() { Filename = conf.Paths[i].Files[o], Path = conf.Paths[i].Path });
                 }
             }
             return FoundFiles;
@@ -196,22 +196,6 @@ namespace WpfExplorer
                 main.ReportError(e);
             }
         }
-
-        interface index
-        {
-            string path { get; set; }
-        }
-
-        public class i
-        {
-            public i(string path)
-            {
-                this.path = path;
-            }
-            public string path;
-        }
-
-
 
 
         /** Welche Pfade sollen indiziert werden*/

@@ -132,18 +132,6 @@ namespace WpfExplorer
             return filesList.ToArray();
         }
 
-        class C_TFiles
-        {
-            public List<C_Files> FilesOk;
-            public List<C_Files> FilesErr;
-        }
-
-        public class C_Files
-        {
-            public string FileName;
-            public string Path;
-        }
-
         //private void OnProgressChanged(object sender, ProgressChangedEventArgs e)
         //{
         //    SetIndexProgress()
@@ -214,7 +202,7 @@ namespace WpfExplorer
         //    //{
 
         //    //    System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
-        //    //    List<main.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
+        //    //    List<Model.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
         //    //    oof.ForEach((p) =>
         //    //    {
         //    //        AddToGrid(p.Filename, p.Path);
