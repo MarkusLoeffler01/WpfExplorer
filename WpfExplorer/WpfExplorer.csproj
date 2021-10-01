@@ -201,6 +201,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataAccess\db.cs" />
+    <Compile Include="Model\FileStructure.cs" />
+    <Compile Include="Model\ScannedFiles.cs" />
     <Compile Include="Modules\DriveDetection.cs" />
     <Compile Include="Modules\fs.cs" />
     <Compile Include="Modules\index.cs" />
@@ -297,6 +299,7 @@
     <Content Include="Zubehör\NHibernate-5.3.8-bin\Tests\NUnit3.TestAdapter.dll" />
     <Resource Include="Zubehör\NHibernate-5.3.8-bin\Tests\TestEmbeddedConfig.cfg.xml" /> -->
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.1.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.1.0\build\MaterialDesignThemes.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
