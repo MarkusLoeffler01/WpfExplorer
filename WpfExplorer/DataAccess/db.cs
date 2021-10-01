@@ -76,6 +76,43 @@ namespace WpfExplorer
             }
         }
 
+
+        public static void push()
+        {
+            fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+            var dbc = myquery($"SELECT PATH FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+
+            int totalFiles = data.Paths.Count;
+
+
+            int cFile = 0;
+            //string datar = JsonConvert.SerializeObject(data);
+            for(int i = 0; i < data.Paths.Count; i++)
+            {
+                for(int o = 0; o < data.Paths[i].Files.Count; o++)
+                {
+                    cFile++;
+                    MainWindowViewModel.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
+                    //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
+                }
+
+
+
+                
+            }
+            myquery($"INSERT INTO data (ID, PATH, last_sync, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', ) WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+
+        }
+
+        public static void Display(string tFiles, string cFile, string cFileName)
+        {
+
+
+            //PropertyChanged-Event
+
+
+        }
+
         //Create a function which returns a random number
 
         //baut eine Verbindung zur MariaDB auf und führt eine Query aus, gibt dann das Ergebnis zurück

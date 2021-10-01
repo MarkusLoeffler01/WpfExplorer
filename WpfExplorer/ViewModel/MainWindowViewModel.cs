@@ -422,10 +422,8 @@ namespace WpfExplorer.ViewModel
             //return ListBox.Items.Cast<string>().ToList();
         }
 
-        public static string IndexProgress { get; set; }
-
         /** Diese Methode sollte in einem neuen Thread ausgrführt werden, um die UI nicht zu blockieren*/
-        static public void SetIndexProgress(string FileName, int current, int total)
+        public void SetIndexProgress(string FileName, int current, int total)
         {
             current++;
             double p = 100 / Convert.ToDouble(total);
@@ -436,7 +434,7 @@ namespace WpfExplorer.ViewModel
              */
             //this.Dispatcher.Invoke(() =>
             //{
-                IndexProgress = $"{FileName} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
+                FileProgress = $"{FileName} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
             //});
 
         }
@@ -470,6 +468,18 @@ namespace WpfExplorer.ViewModel
       
             popup.ShowDialog();
 
+        }
+
+        private string fileProgress;
+
+        public string FileProgress { 
+            get => fileProgress; 
+            set
+            {
+                if (value == fileProgress) return;
+                fileProgress = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(FileProgress)));
+            }
         }
     }
 }
