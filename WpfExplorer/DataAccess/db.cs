@@ -63,7 +63,7 @@ namespace WpfExplorer
         }
 
         //Bitte in Task.Run ausführen
-        public static void sync()
+        public static void pull()
         {
             string _tmp = fs.readFileSync(MainWindow.CONFIG_LOCATIONS+"database.json");
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
