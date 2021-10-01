@@ -31,7 +31,7 @@ namespace WpfExplorer.ViewModel
             var FILE = db.getConf<fs.C_IZ>("database");
             if(FILE.AUTH_KEY == null)
             {
-                FILE.AUTH_KEY = main.RandomString(512);
+                FILE.AUTH_KEY = main.RandomString(64);
                 fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS+"\\database.json", JsonConvert.SerializeObject(FILE), true);
             }
 
