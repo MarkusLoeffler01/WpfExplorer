@@ -55,7 +55,8 @@ namespace WpfExplorer
             }
             catch (Exception e)
             {
-                MessageBox.Show("Bei der Verbindung ist ein Fehler aufgetreten, prüfen Sie Ihre Verbindung\n\n" + e);
+                if (conf.Host == null) MessageBox.Show("Die config.json ist leer, es wurde kein Host eingetragen"); 
+                else MessageBox.Show("Bei der Verbindung ist ein Fehler aufgetreten, prüfen Sie Ihre Verbindung\n\n" + e);
                 Environment.Exit(1);
                 throw;
                 
@@ -63,10 +64,16 @@ namespace WpfExplorer
         }
 
         //Bitte in Task.Run ausführen
-        public static void pull()
+        //Wenn false, dann pull nicht nötig
+        //Wenn true, dann erfolgreich gepullt
+        public static bool pull()
         {
-            string _tmp = fs.readFileSync(MainWindow.CONFIG_LOCATIONS+"database.json");
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+            var last_sync = myquery($"SELECT last_sync from users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            DateTime dbTime = Convert.ToDateTime(last_sync[0]);
+            DateTime lcTime = Convert.ToDateTime(data.last_sync);
+            //Vergleiche dbs, wenn kleiner gleich 0, dann ist die DB später
+            if (DateTime.Compare(dbTime, lcTime)<=0) return false;
 
             var dbc = myquery($"SELECT PATH FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
             
@@ -74,14 +81,20 @@ namespace WpfExplorer
             {
                 fs.AddToIndex(dbc[i]);
             }
+            return true;
         }
 
-
-        public static void push(MainWindowViewModel window)
+        //Bitte in Task.Run ausführen
+        //Wenn false, dann push nicht nötig
+        //Wenn true, dann erfolgreich gepushed
+        public static bool push(MainWindowViewModel window)
         {
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
-            var dbc = myquery($"SELECT PATH FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
-
+            var last_sync = myquery($"SELECT last_sync FROM users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            DateTime dbTime = Convert.ToDateTime(last_sync[0]);
+            DateTime lcTime = Convert.ToDateTime(data.last_sync);
+            //Vergleiche dbs, wenn größer gleich 0, dann ist die DB vor
+            if (DateTime.Compare(dbTime, lcTime) >= 0) return false;
             int totalFiles = data.Paths.Count;
 
 
@@ -101,7 +114,7 @@ namespace WpfExplorer
 
             //Query die abfragt, ob der Pfad existiert
             myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', ) WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
-
+            return true;
         }
 
         public static void Display(string tFiles, string cFile, string cFileName)
@@ -119,15 +132,13 @@ namespace WpfExplorer
         public static List<string> myquery(string command)
         {
             DBConf item = getConf<DBConf>("config");
-            //MySqlConnection con = new MySqlConnection($"server={item.Host};database={item.Database};userid={item.Username};password={item.Password};");
-            //MySqlConnection con = new MySqlConnection($"server=***REMOVED***;database=wpf;userid=wpf;password=***REMOVED***;");
             var con = new MySqlConnection(new MySqlConnectionStringBuilder
             {
-                Server = "***REMOVED***",
-                UserID = "wpf",
-                Password = "***REMOVED***",
-                Port = 3306,
-                Database = "wpf"
+                Server = item.Host,
+                UserID = item.Username,
+                Password = item.Password,
+                Port = Convert.ToUInt16(item.Port),
+                Database = item.Database
             }.ConnectionString);
             try { con.Open(); }
             catch (Exception e) { main.ReportError(e); throw; }

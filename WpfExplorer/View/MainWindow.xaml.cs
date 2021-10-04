@@ -149,7 +149,7 @@ namespace WpfExplorer
         //    SetIndexProgress()
         //}
 
-        public static void AddToGrid(string FileName, string FullPath)
+        public static void AddToGrid(fs.C_File FileName, string FullPath)
         {
           
         }
@@ -175,11 +175,9 @@ namespace WpfExplorer
         }
 
 
-        public List<string> GetExceptionList()
+        public static List<string> GetExceptionList(MainWindowViewModel model)
         {
-            
-            return new main().getMVVM().FileExceptionList.ToList();
-            //return ListBox.Items.Cast<string>().ToList();
+            return model.FileExceptionList.ToList();
         }
 
 

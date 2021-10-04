@@ -12,7 +12,7 @@ using iTextSharp.text;
 
 namespace WpfExplorer
 {
-    class fs
+    public class fs
     {
 
 
@@ -58,7 +58,7 @@ namespace WpfExplorer
 
         public static string readFileSync(string path)
         {
-            using (StreamReader r = new StreamReader(path, Encoding.UTF8)) return r.ReadToEnd();
+            using (StreamReader r = new StreamReader(path, Encoding.UTF8)) try { return r.ReadToEnd(); } catch(Exception e) {  MessageBox.Show("Datenbank konnte nicht gefunden werden"); return null; }
         }
 
         public static void writeFileSync(string path, string context, bool overwrite = false)
@@ -107,9 +107,10 @@ namespace WpfExplorer
             List<main.FileStructure> FoundFiles = new List<main.FileStructure>();
             for (int i = 0; i < conf.Paths.Count; i++)
             {
-                for (int o = 0; o < conf.Paths[i].Files.Count; o++)
+                var _ = conf.Paths[i].Files.Where(p => p.Name == Filename);
+                for(int j = 0; j < _.Count(); j++)
                 {
-                    if (conf.Paths[i].Files[o].Contains(Filename)) FoundFiles.Add(new main.FileStructure() { Filename = conf.Paths[i].Files[o], Path = conf.Paths[i].Path });
+                    FoundFiles.Add(new main.FileStructure() { Filename = conf.Paths[i].Files[j].Name, Path = conf.Paths[i].Path });
                 }
             }
             return FoundFiles;
@@ -120,7 +121,8 @@ namespace WpfExplorer
             try
             {
                 string path = Path.GetDirectoryName(_file);
-                string file = Path.GetFileName(_file);
+                //string file = Path.GetFileName(_file);
+                C_File file = getFileInfo(_file);
 
                 //Hole die DB-Datei
                 C_IZ data = db.getConf<C_IZ>("database");
@@ -139,7 +141,7 @@ namespace WpfExplorer
                     }
                 }
                 //NEIN, lege einen neuen Path Eintrag an und füge die File hinzu
-                if (!found) { data.Paths.Add(new C_Path { Path = path, Files = new List<string> { file } }); }
+                if (!found) { data.Paths.Add(new C_Path { Path = path, Files = new List<C_File> { file } }); }
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
@@ -158,7 +160,7 @@ namespace WpfExplorer
             try
             {
                 string path = Path.GetDirectoryName(_file);
-                string file = Path.GetFileName(_file);
+                var file = getFileInfo(_file);
 
                 //Hole die DB-Datei
                 C_IZ data = db.getConf<C_IZ>("database");
@@ -171,9 +173,10 @@ namespace WpfExplorer
                     if (data.Paths[i].Path == path)
                     {
                         //JA, füge Eintrag zu Paths[i].Files hinzu
-                        if (data.Paths[i].Files.Contains(file))
+                        var f = data.Paths[i].Files.Where(p => p.Name == file.Name);
+                        if (f.Count() == 1)
                         {
-                            data.Paths[i].Files.Remove(file);
+                            data.Paths[i].Files.Remove(f.First());
                             found = true;
                             break;
                         }
@@ -200,15 +203,25 @@ namespace WpfExplorer
             }
         }
 
-        public static string ExtractText(string path)
+        public static string ExtractText(C_File file)
         {
-            FileAttributes attr = File.GetAttributes(path);
+            FileAttributes attr = File.GetAttributes(file.Name);
 
             if (attr.HasFlag(FileAttributes.Directory)) return "";
 
             TextExtractorD extractor = new TextExtractorD();
-            FileInfo sd = new FileInfo(path);
+            FileInfo sd = new FileInfo(file.Name);
             return extractor.Extract(sd.FullName);
+        }
+
+        public static C_File getFileInfo(string _f)
+        {
+            C_File file = new C_File();
+            file.Name = Path.GetFileName(_f);
+            file.FullPath = Path.GetFullPath(_f);
+            file.Content = null;
+            file.Size = Convert.ToUInt64(new FileInfo(file.FullPath).Length);
+            return file;
         }
 
         interface index
@@ -245,6 +258,9 @@ namespace WpfExplorer
 
             [JsonProperty("AUTH_KEY")]
             public string AUTH_KEY {get; set;}
+
+            [JsonProperty("last_sync")]
+            public string last_sync {get; set;}
         }
 
         public partial class C_Path
@@ -253,9 +269,32 @@ namespace WpfExplorer
             public string Path { get; set; }
 
             [JsonProperty("Files")]
-            public List<string> Files { get; set; }
+            public List<C_File> Files { get; set; }
         }
 
+        public partial class C_File
+        {
+            public string Name { get; set; }
+
+            public string FullPath { get; set; }
+
+            //<summary>
+            //Die Länge der Datei in Bytes
+            //</summary>
+            public ulong Size {  get; set; }
+            public string Date {  get; set; }
+            public string Content { get; set; }
+
+            //public C_File(string fullpath)
+            //{
+            //    var _ = getFileInfo(fullpath);
+            //    Name = _.Name;
+            //    FullPath = _.FullPath;
+            //    Size = _.Size;
+            //    Date = _.Date;
+            //    Content = _.Content;
+            //}
+        }
 
         public partial class C_Which
         {

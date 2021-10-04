@@ -29,25 +29,29 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
-            fs.ExtractText("C:\\Temp\\owo");
-            return;
-            //Hole die ID von der Datei
+            
+            fs.checkConfig();
+            db.initDB();
             var FILE = db.getConf<fs.C_IZ>("database");
-            if(FILE.AUTH_KEY == null)
+            if (FILE.AUTH_KEY == null)
             {
                 FILE.AUTH_KEY = main.RandomString(64);
-                fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS+"\\database.json", JsonConvert.SerializeObject(FILE), true);
+                fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS + "\\database.json", JsonConvert.SerializeObject(FILE), true);
             }
-
             AUTH_KEY = FILE.AUTH_KEY;
+            //fs.ExtractText("C:\\Temp\\owo");
+            db.pull();
+            //return;
+            //Hole die ID von der Datei
+            
             //Task.Run(db.sync);
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
+            Index_Click = new RelayCommand(o => Indiziere());
             tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
             MouseDoubleClick = new RelayCommand(o => My(o));
             //MyCommand = new RelayCommand(o => My(o));
-            fs.checkConfig();
-            db.initDB();
+            
             if (main.PingDB()) tb_Ping_Text = "Connected";
             else 
             {
@@ -61,8 +65,8 @@ namespace WpfExplorer.ViewModel
             dT.Start();
            
 
-            List<string> query = db.myquery("SELECT version();");
-            MessageBox.Show(query[0]);
+            //List<string> query = db.myquery("SELECT version();");
+            //MessageBox.Show(query[0]);
 
             allDrives = DriveInfo.GetDrives();
         }
@@ -183,7 +187,7 @@ namespace WpfExplorer.ViewModel
         public ICommand tb_Search_Command { get; set; }
         public ICommand MouseDoubleClick { get; set; }
 
-        //public ICommand Index_Click { get; set; }
+        public ICommand Index_Click { get; set; }
 
         //public ICommand MyCommand { get; set; }
 
@@ -310,14 +314,15 @@ namespace WpfExplorer.ViewModel
         string _PATH = "";
         List<string> ExcList;
 
-        public void Index_Click(object sender, RoutedEventArgs e)
+        public void Indiziere()
         {
             BackgroundWorker worker = new BackgroundWorker();
             _PATH = main.getPathDialog();
-            ExcList = GetExceptionList();
+            //ExcList = GetExceptionList();
             if (_PATH == "") return;
 
-            worker.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+            Task.Run(backgroundWorker1_DoWork);
+            //worker.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
             worker.WorkerSupportsCancellation = true;
             //worker.WorkerReportsProgress = true;
             //worker.ProgressChanged += OnProgressChanged;
@@ -325,16 +330,18 @@ namespace WpfExplorer.ViewModel
             return;
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        private void backgroundWorker1_DoWork()
         {
             string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
 
             string[] files = fs.readDirSync(_PATH, true, true);
+            List<fs.C_File> _files = new List<fs.C_File>();
+            for(int  i = 0; i < files.Length; i++) _files.Add(fs.getFileInfo(files[i]));
 
             //Check if the file type or files are in the ExceptionList
-            MessageBox.Show(files.Length + "\n" + string.Join(",", files));
+            //MessageBox.Show(files.Length + "\n" + string.Join(",", files));
             files = checkForExcpetionlist(files);
-            MessageBox.Show(files.Length + "\n" + string.Join(",", files));
+            //MessageBox.Show(files.Length + "\n" + string.Join(",", files));
 
             int TotalFiles = files.Length;
             C_TFiles ProcessedFiles = new C_TFiles();
@@ -350,7 +357,7 @@ namespace WpfExplorer.ViewModel
                     case 0: break;
 
                 }
-                SetIndexProgress(files[i], i, TotalFiles);
+                SetIndexProgress(_files[i], i, TotalFiles);
             }
             MessageBox.Show(TotalFiles.ToString() + " Dateien erfolgreich hinzugefügt");
         }
@@ -363,7 +370,7 @@ namespace WpfExplorer.ViewModel
              * prüfe ob Path.GetExtension(files[i]) != '' && ob in el, dann entferne
              */
 
-            List<string> el = ExcList;
+            List<string> el = ExcList ?? new List<string>();
             List<string> filesList = files.ToList();
 
             //Entferne alle Dateitypen in der Liste
@@ -387,7 +394,7 @@ namespace WpfExplorer.ViewModel
             return filesList.ToArray();
         }
 
-        class C_TFiles
+        public class C_TFiles
         {
             public List<C_Files> FilesOk;
             public List<C_Files> FilesErr;
@@ -419,15 +426,8 @@ namespace WpfExplorer.ViewModel
         }
 
 
-        public List<string> GetExceptionList()
-        {
-            return new main().getMVVM().FileExceptionList.ToList();
-            //return ListBox.Items.Cast<string>().ToList();
-        }
-
-
         /** Diese Methode sollte in einem neuen Thread ausgrführt werden, um die UI nicht zu blockieren*/
-        public void SetIndexProgress(string FileName, int current, int total)
+        public void SetIndexProgress(fs.C_File FileName, int current, int total)
         {
             current++;
             double p = 100 / Convert.ToDouble(total);
@@ -438,7 +438,7 @@ namespace WpfExplorer.ViewModel
              */
             //this.Dispatcher.Invoke(() =>
             //{
-                FileProgress = $"{FileName} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
+                FileProgress = $"{FileName.Name} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
             //});
 
         }
