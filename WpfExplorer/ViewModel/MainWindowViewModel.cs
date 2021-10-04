@@ -341,7 +341,7 @@ namespace WpfExplorer.ViewModel
                 switch (fs.AddToIndex(files[i]))
                 {
 
-                    case -1: MessageBox.Show($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
+                    case -1: SetIndexMessage($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
                     case -255: break; //Exception
                     case 0: break;
 
@@ -417,10 +417,10 @@ namespace WpfExplorer.ViewModel
 
         public List<string> GetExceptionList()
         {
-
             return new main().getMVVM().FileExceptionList.ToList();
             //return ListBox.Items.Cast<string>().ToList();
         }
+
 
         /** Diese Methode sollte in einem neuen Thread ausgrführt werden, um die UI nicht zu blockieren*/
         public void SetIndexProgress(string FileName, int current, int total)
@@ -437,6 +437,11 @@ namespace WpfExplorer.ViewModel
                 FileProgress = $"{FileName} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
             //});
 
+        }
+
+        public void SetIndexMessage(string message)
+        {
+            FileProgress = message;
         }
 
         private RelayCommand settings_Click;
