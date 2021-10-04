@@ -106,8 +106,7 @@ namespace WpfExplorer
                 {
                     cFile++;
                     window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
-                    string content = fs.ExtractText(data.Paths[i].Files[o]);
-                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o]}', '{content}')");
+                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o]}', '{data.Paths[i].Files[o].Content}')");
                     //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
                 }
             }

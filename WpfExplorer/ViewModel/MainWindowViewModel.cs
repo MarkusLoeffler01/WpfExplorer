@@ -348,7 +348,12 @@ namespace WpfExplorer.ViewModel
 
             string[] files = fs.readDirSync(_PATH, true, true);
             List<fs.C_File> _files = new List<fs.C_File>();
-            for(int  i = 0; i < files.Length; i++) _files.Add(fs.getFileInfo(files[i]));
+            for(int  i = 0; i < files.Length; i++)
+            {
+                _files.Add(fs.getFileInfo(files[i]));
+                SetIndexMessage("Dateien werden gesucht... "+i+" Dateien gefunden");
+            }
+            
 
             //Check if the file type or files are in the ExceptionList
             //MessageBox.Show(files.Length + "\n" + string.Join(",", files));
