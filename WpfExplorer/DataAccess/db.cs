@@ -77,7 +77,7 @@ namespace WpfExplorer
         }
 
 
-        public static void push()
+        public static void push(MainWindowViewModel window)
         {
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             var dbc = myquery($"SELECT PATH FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
@@ -92,7 +92,7 @@ namespace WpfExplorer
                 for(int o = 0; o < data.Paths[i].Files.Count; o++)
                 {
                     cFile++;
-                    MainWindowViewModel.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
+                    window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
                     //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
                 }
 
