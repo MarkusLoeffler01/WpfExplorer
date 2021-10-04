@@ -93,14 +93,14 @@ namespace WpfExplorer
                 {
                     cFile++;
                     window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
+                    string content = fs.ExtractText(data.Paths[i].Files[o]);
+                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o]}', '{content}')");
                     //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
                 }
-
-
-
-                
             }
-            myquery($"INSERT INTO data (ID, PATH, last_sync, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', ) WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+
+            //Query die abfragt, ob der Pfad existiert
+            myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', ) WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
 
         }
 

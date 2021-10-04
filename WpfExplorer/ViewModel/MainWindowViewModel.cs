@@ -29,7 +29,8 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
-
+            fs.ExtractText("C:\\Temp\\owo");
+            return;
             //Hole die ID von der Datei
             var FILE = db.getConf<fs.C_IZ>("database");
             if(FILE.AUTH_KEY == null)
