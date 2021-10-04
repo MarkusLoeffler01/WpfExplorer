@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using iTextSharp;
+using Visualis.Extractor;
+using iTextSharp.text;
 
 namespace WpfExplorer
 {
@@ -195,6 +198,17 @@ namespace WpfExplorer
             {
                 main.ReportError(e);
             }
+        }
+
+        public static string ExtractText(string path)
+        {
+            FileAttributes attr = File.GetAttributes(path);
+
+            if (attr.HasFlag(FileAttributes.Directory)) return "";
+
+            TextExtractorD extractor = new TextExtractorD();
+            FileInfo sd = new FileInfo(path);
+            return extractor.Extract(sd.FullName);
         }
 
         interface index
