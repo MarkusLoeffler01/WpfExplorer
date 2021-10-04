@@ -15,6 +15,9 @@ using System.Threading;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
+using iTextSharp;
+using iTextSharp.text;
+
 namespace WpfExplorer.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
