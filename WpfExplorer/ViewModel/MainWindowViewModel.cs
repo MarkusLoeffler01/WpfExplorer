@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 using iTextSharp;
 using iTextSharp.text;
+using System.Text.RegularExpressions;
 
 namespace WpfExplorer.ViewModel
 {
@@ -32,6 +33,10 @@ namespace WpfExplorer.ViewModel
             
             fs.checkConfig();
             db.initDB();
+            string test = "owo";
+
+            bool endsWithEx = Regex.IsMatch(test, fs.WildCardToRegular("*X*"));
+
             var FILE = db.getConf<fs.C_IZ>("database");
             if (FILE.AUTH_KEY == null)
             {
@@ -140,12 +145,19 @@ namespace WpfExplorer.ViewModel
             var File = fs.searchFile(tb_Search_Text, false);
             if (File.Count != 0)
             {
-
+                
                 foreach (var v in File)
                 {
+                    double size = 0;
+                    string end = "b";
+                    if(v.Size > 1000) { end = "kB"; size = Convert.ToDouble(v.Size / 1000); }
+                    else if (v.Size > 1000000) { end = "MB"; size = v.Size / 1000000; }
+                    else if (v.Size > 1000000000) { end = "GB"; size = v.Size / 1000000000; }
+
                     string res = "";
                     res += v.Filename + "\n";
-                    res += v.Path + "\n\n";
+                    res += v.Path + "\n";
+                    res += size+end + "\n\n";
 
                     FoundFiles.Add(res);
                 }
