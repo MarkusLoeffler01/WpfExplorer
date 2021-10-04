@@ -47,6 +47,7 @@ namespace WpfExplorer
         {
             public string Path;
             public string Filename;
+            public ulong Size;
         }
 
         public static string getPathDialog(string path = null)

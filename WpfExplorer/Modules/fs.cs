@@ -9,6 +9,7 @@ using System.Windows;
 using iTextSharp;
 using Visualis.Extractor;
 using iTextSharp.text;
+using System.Text.RegularExpressions;
 
 namespace WpfExplorer
 {
@@ -105,12 +106,17 @@ namespace WpfExplorer
             while (main.isIndexerRunning) { System.Diagnostics.Debug.WriteLine("Still running" + ___); ___++; }
             C_IZ conf = db.getConf<C_IZ>("database");
             List<main.FileStructure> FoundFiles = new List<main.FileStructure>();
+
+            Regex.IsMatch(Filename, WildCardToRegular(Filename));
+
             for (int i = 0; i < conf.Paths.Count; i++)
             {
-                var _ = conf.Paths[i].Files.Where(p => p.Name == Filename);
+                List<C_File> _ = new List<C_File>();
+                if (Filename.Contains("*")) _ = conf.Paths[i].Files.Where(p => Regex.IsMatch(p.Name, WildCardToRegular(Filename))).ToList<C_File>();
+                else _ = conf.Paths[i].Files.Where(p => p.Name.Contains(Filename)).ToList();
                 for(int j = 0; j < _.Count(); j++)
                 {
-                    FoundFiles.Add(new main.FileStructure() { Filename = conf.Paths[i].Files[j].Name, Path = conf.Paths[i].Path });
+                    FoundFiles.Add(new main.FileStructure() { Filename = _[j].Name, Path = _[j].FullPath, Size = _[j].Size });
                 }
             }
             return FoundFiles;
@@ -153,6 +159,11 @@ namespace WpfExplorer
             {
                 main.ReportError(e); return -255;
             }
+        }
+
+        public static string WildCardToRegular(string value)
+        {
+            return "^" + Regex.Escape(value).Replace("\\*", ".*") + "$";
         }
 
         public static void RemoveFromIndex(string _file)
