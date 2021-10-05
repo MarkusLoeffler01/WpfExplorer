@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.Windows;
 using MySql.Data.MySqlClient;
 using WpfExplorer.ViewModel;
+using System.Collections.ObjectModel;
 
 namespace WpfExplorer
 {
@@ -17,16 +18,18 @@ namespace WpfExplorer
         public static T getConf<T>(string name)
         {
             string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS + $"{name}.json"))
+            string json = "";
+
+            try
             {
-                string json = r.ReadToEnd();
-                try
+                using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS + $"{name}.json"))
                 {
-                    List<T> items = JsonConvert.DeserializeObject<List<T>>(json);
-                    return items[0];
+                    json = r.ReadToEnd();
                 }
-                catch (Exception e) { main.ReportError(e); throw; }
+                return JsonConvert.DeserializeObject<T>(json);
+
             }
+            catch (Exception e) { main.ReportError(e); throw; }
         }
 
         //Speichert eine Datei in Appdata\Roaming\WpfExplorer\. Nimmt den Dateinamen und den Text (in JSON) als Übergabewert
@@ -36,7 +39,7 @@ namespace WpfExplorer
             try
             {
                 string _ = JsonConvert.SerializeObject(text);
-                fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", $"[{_}]", true);
+                fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", _, true);
                 return;
             }
             catch (Exception e) { main.ReportError(e); throw; }
@@ -69,7 +72,23 @@ namespace WpfExplorer
         public static bool pull()
         {
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+
+            if (data.Paths == null) data.Paths = new List<fs.C_Path>();
+            if (data.AUTH_KEY == null) data.AUTH_KEY = main.RandomString(64);
+            if (data.last_sync == null) data.last_sync = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS + "\\database.json", JsonConvert.SerializeObject(data), true);
+            MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
             var last_sync = myquery($"SELECT last_sync from users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            if (last_sync.Count == 0)
+            {
+                string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                myquery($"INSERT INTO users(ID, last_sync) VALUES('{MainWindowViewModel.AUTH_KEY}', '{dt}')");
+                var db = getConf<fs.C_IZ>("database");
+                db.last_sync = dt;
+                setConf("database", db);
+                return false;
+            }
             DateTime dbTime = Convert.ToDateTime(last_sync[0]);
             DateTime lcTime = Convert.ToDateTime(data.last_sync);
             //Vergleiche dbs, wenn kleiner gleich 0, dann ist die DB später
@@ -77,10 +96,7 @@ namespace WpfExplorer
 
             var dbc = myquery($"SELECT PATH FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
             
-            for(int i = 0; i < dbc.Count; i++)
-            {
-                fs.AddToIndex(dbc[i]);
-            }
+            for(int i = 0; i < dbc.Count; i++) fs.AddToIndex(dbc[i]);
             return true;
         }
 
@@ -91,6 +107,12 @@ namespace WpfExplorer
         {
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             var last_sync = myquery($"SELECT last_sync FROM users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            if (last_sync.Count == 0)
+            {
+                string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                myquery($"INSERT INTO users(ID, last_sync) VALUES('{MainWindowViewModel.AUTH_KEY}', '{dt}')");
+                return false;
+            }
             DateTime dbTime = Convert.ToDateTime(last_sync[0]);
             DateTime lcTime = Convert.ToDateTime(data.last_sync);
             //Vergleiche dbs, wenn größer gleich 0, dann ist die DB vor
@@ -106,7 +128,7 @@ namespace WpfExplorer
                 {
                     cFile++;
                     window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
-                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o]}', '{data.Paths[i].Files[o].Content}')");
+                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o].FullPath}', '{data.Paths[i].Files[o].Content}')");
                     //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
                 }
             }
@@ -194,6 +216,13 @@ namespace WpfExplorer
             public string Password;
             public string Database;
             public int Port;
+        }
+
+        public class Properties
+        {
+            public ObservableCollection<string> Paths { get; set; }
+            public string AuthKey { get; set; }
+            public string LastSync { get; set; }
         }
     }
 }

@@ -30,20 +30,9 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
-            
             fs.checkConfig();
-            db.initDB();
-            string test = "owo";
-
-            bool endsWithEx = Regex.IsMatch(test, fs.WildCardToRegular("*X*"));
-
-            var FILE = db.getConf<fs.C_IZ>("database");
-            if (FILE.AUTH_KEY == null)
-            {
-                FILE.AUTH_KEY = main.RandomString(64);
-                fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS + "\\database.json", JsonConvert.SerializeObject(FILE), true);
-            }
-            AUTH_KEY = FILE.AUTH_KEY;
+            //db.initDB();
+            
             //fs.ExtractText("C:\\Temp\\owo");
             db.pull();
             //return;
@@ -365,18 +354,28 @@ namespace WpfExplorer.ViewModel
             for (int i = 0; i < TotalFiles; i++)
             {
                 //fs.AddToIndex(files[i]);
-                Thread.Sleep(100);
+                //Thread.Sleep(100);
                 switch (fs.AddToIndex(files[i]))
                 {
 
-                    case -1: SetIndexMessage($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
-                    case -255: break; //Exception
-                    case 0: break;
+                    case -1: SetIndexMessage($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesSkipped.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
+                    case -255: ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Exception
+                    case 0: ProcessedFiles.FilesOk.Add(new C_Files {FileName = Path.GetFileName(files[i]), Path = files[i] });  break;
 
                 }
                 SetIndexProgress(_files[i], i, TotalFiles);
             }
-            MessageBox.Show(TotalFiles.ToString() + " Dateien erfolgreich hinzugefügt");
+            var temp_file = db.getConf<fs.C_IZ>("database");
+            temp_file.last_sync = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            db.setConf("database", temp_file);
+            string MsgText = "";
+            if(ProcessedFiles.FilesSkipped.Count != 0) MsgText += $"{ProcessedFiles.FilesSkipped.Count} Dateien übersprungen\n";
+            if(ProcessedFiles.FilesErr.Count != 0) MsgText += $"{ProcessedFiles.FilesErr.Count} Dateien fehlerhaft\n";
+            if(ProcessedFiles.FilesOk.Count != 0) MsgText += $"{ProcessedFiles.FilesOk.Count} Dateien erfolgreich hinzugefügt\n";
+
+            int total = ProcessedFiles.FilesOk.Count + ProcessedFiles.FilesSkipped.Count + ProcessedFiles.FilesOk.Count;
+            MsgText += $"\n{total} von {TotalFiles} Dateien verarbeitet";
+            MessageBox.Show(MsgText);
         }
 
         private string[] checkForExcpetionlist(string[] files)
@@ -413,8 +412,9 @@ namespace WpfExplorer.ViewModel
 
         public class C_TFiles
         {
-            public List<C_Files> FilesOk;
-            public List<C_Files> FilesErr;
+            public List<C_Files> FilesOk = new List<C_Files>() { };
+            public List<C_Files> FilesErr = new List<C_Files>() { };
+            public List<C_Files> FilesSkipped = new List<C_Files>() { };
         }
 
         public class C_Files
