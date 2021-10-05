@@ -37,6 +37,7 @@ namespace WpfExplorer
             if (path == null) return null;
             if (!recursive)
             {
+                
                 if (fullpath) return Directory.GetFiles(path).Select(p => Path.GetFullPath(p)).ToArray();
                 return Directory.GetFiles(path).Select(p => Path.GetFileName(p)).ToArray();
             }
