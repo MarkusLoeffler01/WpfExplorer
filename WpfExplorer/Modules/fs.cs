@@ -101,7 +101,7 @@ namespace WpfExplorer
 
         }
         /** Sucht nach einer Datei nach ihrem Namen und gibt die Datei mit dem Pfad zurück */
-        public static List<main.FileStructure> searchFile(string Filename, bool SearchFileContent)
+        public static List<Model.FileStructure> searchFile(string Filename, bool SearchFileContent)
         {
             /** Es wird noch indiziert. Kann nicht gesucht werden*/
             int ___ = 0;

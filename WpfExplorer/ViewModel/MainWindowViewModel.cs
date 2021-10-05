@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using iTextSharp;
 using iTextSharp.text;
 using System.Text.RegularExpressions;
+using WpfExplorer.Model;
 
 namespace WpfExplorer.ViewModel
 {
@@ -162,7 +163,7 @@ namespace WpfExplorer.ViewModel
             //{
 
             //    System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
-            //    List<main.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
+            //    List<Model.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
             //    oof.ForEach((p) =>
             //    {
             //        AddToGrid(p.Filename, p.Path);
@@ -262,9 +263,9 @@ namespace WpfExplorer.ViewModel
 
         public object SelectedFileException { get => selectedFileException; set => SetProperty(ref selectedFileException, value); }
 
-        public main.FileStructure selectedFile;
+        public Model.FileStructure selectedFile;
 
-        public main.FileStructure SelectedFile
+        public Model.FileStructure SelectedFile
         {
             get { return selectedFile; }
             set
@@ -352,7 +353,7 @@ namespace WpfExplorer.ViewModel
             //MessageBox.Show(files.Length + "\n" + string.Join(",", files));
 
             int TotalFiles = files.Length;
-            C_TFiles ProcessedFiles = new C_TFiles();
+            ScannedFilesList ProcessedFiles = new ScannedFilesList();
             for (int i = 0; i < TotalFiles; i++)
             {
                 //fs.AddToIndex(files[i]);
