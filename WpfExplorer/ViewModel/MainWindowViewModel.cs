@@ -14,7 +14,8 @@ using RelayCommand = CommandHelper.RelayCommand;
 using System.Threading;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
-
+using System.Windows;
+using System.Windows.Threading;
 using iTextSharp;
 using iTextSharp.text;
 using System.Text.RegularExpressions;
@@ -31,19 +32,14 @@ namespace WpfExplorer.ViewModel
         public MainWindowViewModel()
         {
             fs.checkConfig();
-            //db.initDB();
-            
+
             //fs.ExtractText("C:\\Temp\\owo");
-            db.pull();
-            //return;
-            //Hole die ID von der Datei
             
-            //Task.Run(db.sync);
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             Index_Click = new RelayCommand(o => Indiziere());
             tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
-            MouseDoubleClick = new RelayCommand(o => My(o));
+            MouseDoubleClick = new RelayCommand(o => OpenFileInExplorer(o));
             //MyCommand = new RelayCommand(o => My(o));
             
             if (main.PingDB()) tb_Ping_Text = "Connected";
@@ -53,7 +49,9 @@ namespace WpfExplorer.ViewModel
                 main.ReportError(new Exception("Ping not successfull")); 
                 return; 
             }
-            System.Windows.Threading.DispatcherTimer dT = new System.Windows.Threading.DispatcherTimer();
+            DispatcherTimer dT = new DispatcherTimer();
+
+            //DispatcherTimer ready = new DispatcherTimer(TimeSpan.Zero, DispatcherPriority.ApplicationIdle, ready_Tick, Application.Current.Dispatcher);
             dT.Tick += new EventHandler(SetPing);
             dT.Interval = new TimeSpan(0, 0, 1);
             dT.Start();
@@ -63,6 +61,12 @@ namespace WpfExplorer.ViewModel
             //MessageBox.Show(query[0]);
 
             allDrives = DriveInfo.GetDrives();
+        }
+
+        public void ready_Tick()
+        {
+            db.push(this);
+            db.pull();
         }
 
         private void SetPing(object sender, EventArgs e)
@@ -179,9 +183,13 @@ namespace WpfExplorer.ViewModel
             return true;
         }
 
-        public List<string> getFileExceptions()
+        public void showFileExceptions()
         {
-            return new List<string>(FileExceptionList);
+            List<string> ex = new List<string>();
+
+            for(int i = 0; i < FileExceptionList.Count; i++) ex.Add(FileExceptionList[i]);
+
+            MessageBox.Show(ex.ToString());
         }
 
         public ICommand ButtonCommand { get; set; }
@@ -275,7 +283,7 @@ namespace WpfExplorer.ViewModel
             Process.Start(lbi.Content.ToString());
         }
 
-        private void My(object o)
+        private void OpenFileInExplorer(object o)
         {
             if (o == null) return;
             string p = o.ToString();
@@ -317,17 +325,11 @@ namespace WpfExplorer.ViewModel
 
         public void Indiziere()
         {
-            BackgroundWorker worker = new BackgroundWorker();
             _PATH = main.getPathDialog();
             //ExcList = GetExceptionList();
             if (_PATH == "") return;
 
             Task.Run(backgroundWorker1_DoWork);
-            //worker.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
-            worker.WorkerSupportsCancellation = true;
-            //worker.WorkerReportsProgress = true;
-            //worker.ProgressChanged += OnProgressChanged;
-            worker.RunWorkerAsync();
             return;
         }
 
@@ -455,7 +457,7 @@ namespace WpfExplorer.ViewModel
              */
             //this.Dispatcher.Invoke(() =>
             //{
-                FileProgress = $"{FileName.Name} | {current} von {total} ({Math.Round(prozent, 2)}%) ";
+                FileProgress = $"{current} von {total} ({Math.Round(prozent, 2)}%) | {FileName.Name}";
             //});
 
         }
@@ -504,7 +506,7 @@ namespace WpfExplorer.ViewModel
             {
                 if (value == fileProgress) return;
                 fileProgress = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(FileProgress)));
+                this?.PropertyChanged(this, new PropertyChangedEventArgs(nameof(FileProgress)));
             }
         }
     }

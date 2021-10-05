@@ -10,6 +10,7 @@ using iTextSharp;
 using Visualis.Extractor;
 using iTextSharp.text;
 using System.Text.RegularExpressions;
+using WpfExplorer.ViewModel;
 
 namespace WpfExplorer
 {
@@ -20,14 +21,15 @@ namespace WpfExplorer
         /** Prüft alle Dateien und erstellt diese, falls nicht vorhanden. Läuft im neuen Thread */
         public static void checkConfig()
         {
-            Task.Run(() =>
-            {
-                string path = MainWindow.CONFIG_LOCATIONS;
-                string[] files = { "config", "database", "WhichPaths" };
+            string path = MainWindow.CONFIG_LOCATIONS;
+            string[] files = { "config", "database", "WhichPaths" };
 
-                Directory.CreateDirectory(path);
-                for (int i = 0; i < files.Length; i++) { if (!File.Exists(path + files[i] + ".json")) File.WriteAllText(path + files[i] + ".json", "[{}]"); }
-            });
+            Directory.CreateDirectory(path);
+            for (int i = 0; i < files.Length; i++) { if (!File.Exists(path + files[i] + ".json")) File.WriteAllText(path + files[i] + ".json", "[{}]"); }
+
+            fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+            if (data.AUTH_KEY == null || data.AUTH_KEY.Length == 0) { data.AUTH_KEY = main.RandomString(64); }
+            MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
         }
 
         public static string[] readDirSync(string path, bool fullpath = false, bool recursive = false, string[] _dirs = null)
@@ -126,6 +128,7 @@ namespace WpfExplorer
         {
             try
             {
+                main.isIndexerRunning = true;
                 string path = Path.GetDirectoryName(_file);
                 //string file = Path.GetFileName(_file);
                 C_File file = getFileInfo(_file);
@@ -142,8 +145,8 @@ namespace WpfExplorer
                     {
                         //JA, füge Eintrag zu Paths[i].Files hinzu, wenn diese nicht schon vorhanden ist
                         if (data.Paths[i].Files.Where(p => p.FullPath == file.FullPath).Count() == 0) data.Paths[i].Files.Add(file);
-                        else return -1;
-                        if (!data.Paths[i].Files.Contains(file)) { data.Paths[i].Files.Add(file); } else { return -1; }
+                        else { main.isIndexerRunning = false; return -1; }
+                        if (!data.Paths[i].Files.Contains(file)) { data.Paths[i].Files.Add(file); } else { main.isIndexerRunning = false; return -1; }
                         found = true;
                         break;
                     }
@@ -155,6 +158,7 @@ namespace WpfExplorer
                 db.setConf("database", data);
                 //fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(data), true);
                 MainWindow.AddToGrid(file, path);
+                main.isIndexerRunning = false;
                 return 0;
             }
             catch (Exception e)
@@ -179,6 +183,7 @@ namespace WpfExplorer
         {
             try
             {
+                main.isIndexerRunning = true;
                 string path = Path.GetDirectoryName(_file);
                 var file = getFileInfo(_file);
 
@@ -204,6 +209,7 @@ namespace WpfExplorer
                         else
                         {
                             MessageBox.Show($"Die Datei ${_file} in {path} konnte nicht entfernt werden, da das Verzeichnis nicht indiziert wurde");
+                            main.isIndexerRunning = false;
                             return;
                         }
                     }
@@ -215,6 +221,7 @@ namespace WpfExplorer
                 db.setConf("database", data);
                 //fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(data), true);
                 MainWindow.AddToGrid(file, path);
+                main.isIndexerRunning = false;
                 return;
             }
             catch (Exception e)

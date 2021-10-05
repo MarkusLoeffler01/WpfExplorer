@@ -24,7 +24,7 @@ namespace WpfExplorer
             {
                 using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS + $"{name}.json"))
                 {
-                    json = r.ReadToEnd();
+                    json = r.ReadToEnd(); r.Close();
                 }
                 return JsonConvert.DeserializeObject<T>(json);
 
@@ -71,6 +71,7 @@ namespace WpfExplorer
         //Wenn true, dann erfolgreich gepullt
         public static bool pull()
         {
+            while (main.isIndexerRunning) ;
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
 
             if (data.Paths == null) data.Paths = new List<fs.C_Path>();
@@ -105,11 +106,14 @@ namespace WpfExplorer
         //Wenn true, dann erfolgreich gepushed
         public static bool push(MainWindowViewModel window)
         {
+            while (main.isIndexerRunning) ;
+            if (MainWindowViewModel.AUTH_KEY.Length == 0) return false;
+            string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             var last_sync = myquery($"SELECT last_sync FROM users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
             if (last_sync.Count == 0)
             {
-                string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                
                 myquery($"INSERT INTO users(ID, last_sync) VALUES('{MainWindowViewModel.AUTH_KEY}', '{dt}')");
                 return false;
             }
@@ -122,19 +126,26 @@ namespace WpfExplorer
 
             int cFile = 0;
             //string datar = JsonConvert.SerializeObject(data);
+            myquery($"DELETE FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
             for(int i = 0; i < data.Paths.Count; i++)
             {
                 for(int o = 0; o < data.Paths[i].Files.Count; o++)
                 {
                     cFile++;
+                    //4 Backslashes, damit die in der DB nicht verloren gehen
+                    data.Paths[i].Files[o].FullPath = data.Paths[i].Files[o].FullPath.Replace("\\", "\\\\");
                     window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
-                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o].FullPath}', '{data.Paths[i].Files[o].Content}')");
+                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o].FullPath}', '{data.Paths[i].Files[o].Content ?? ""}')");
                     //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
                 }
             }
 
             //Query die abfragt, ob der Pfad existiert
-            myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', ) WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            myquery($"UPDATE users SET last_sync = '{dt}' WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            var tmp_db = getConf<fs.C_IZ>("database");
+            tmp_db.last_sync = dt;
+            setConf("database", tmp_db);
+            //myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', ) WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
             return true;
         }
 

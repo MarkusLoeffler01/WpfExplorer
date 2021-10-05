@@ -45,6 +45,12 @@ namespace WpfExplorer
             //MessageBox.Show("MySQL " + query[0]);
 
             //allDrives = DriveInfo.GetDrives();
+            this.Loaded += InitVM;
+        }
+
+        private void InitVM(object sender, EventArgs e)
+        {
+            ((MainWindowViewModel)DataContext).ready_Tick();
         }
 
         private void SetPing(object sender, EventArgs e)
@@ -304,6 +310,11 @@ namespace WpfExplorer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Detect_Click(sender, e);
+        }
+
+        private void lb_Exceptions_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }
