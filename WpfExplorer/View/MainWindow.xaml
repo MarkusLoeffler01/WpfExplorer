@@ -36,11 +36,11 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="Auto" Command="{Binding Index_Click}" Margin="0" Grid.Column="0" Grid.Row="0" Foreground="White">Neue Dateien indizieren</Button>
+            <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="Auto" Command="{Binding Index_Click}" Margin="0" Grid.Column="0" Grid.Row="0" Foreground="White" Cursor="Hand">Neue Dateien indizieren</Button>
             <Button HorizontalAlignment="Stretch" Name="testbtn" Height="Auto" Command="{Binding Settings_Click}" Margin="0" Grid.Column="1" Grid.Row="1" Foreground="White">Settings</Button>
         </Grid>
-        
-        
+
+
         <!-- <Button Command="{Binding ButtonCommand}" Margin="225,8,38,224.837"></Button> -->
         <Label HorizontalAlignment="Stretch" FontWeight="Bold" Content="Dateien ausschließen"  Margin="0,95,6,127.837" Grid.Column="1" Grid.Row="0"></Label>
         <TextBox Name="tb_AddExceptions" Text="{Binding tb_AddExceptionsText}" Height="25" Margin="0,125,6,114.837" Grid.Column="1">
@@ -61,6 +61,8 @@
             </i:Interaction.Triggers>
         </ListBox>
         <TextBlock Text="{Binding IndexProgress}" Margin="10,131.163,10,10" Grid.ColumnSpan="2" Grid.Row="1"></TextBlock>
-
+        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="400" Height="13" Margin="10,0,0,4" Grid.Row="1">
+            <TextBlock Text="{Binding FileProgress}"></TextBlock>
+        </Grid>
     </Grid>
 </Window>

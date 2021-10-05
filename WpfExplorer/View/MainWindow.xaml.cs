@@ -45,6 +45,12 @@ namespace WpfExplorer
             //MessageBox.Show("MySQL " + query[0]);
 
             //allDrives = DriveInfo.GetDrives();
+            this.Loaded += InitVM;
+        }
+
+        private void InitVM(object sender, EventArgs e)
+        {
+            ((MainWindowViewModel)DataContext).ready_Tick();
         }
 
         private void SetPing(object sender, EventArgs e)
@@ -137,7 +143,7 @@ namespace WpfExplorer
         //    SetIndexProgress()
         //}
 
-        public static void AddToGrid(string FileName, string FullPath)
+        public static void AddToGrid(fs.C_File FileName, string FullPath)
         {
           
         }
@@ -163,11 +169,9 @@ namespace WpfExplorer
         }
 
 
-        public List<string> GetExceptionList()
+        public static List<string> GetExceptionList(MainWindowViewModel model)
         {
-            
-            return new main().getMVVM().FileExceptionList.ToList();
-            //return ListBox.Items.Cast<string>().ToList();
+            return model.FileExceptionList.ToList();
         }
 
 
@@ -294,6 +298,11 @@ namespace WpfExplorer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Detect_Click(sender, e);
+        }
+
+        private void lb_Exceptions_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

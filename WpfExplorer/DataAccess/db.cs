@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.Windows;
 using MySql.Data.MySqlClient;
 using WpfExplorer.ViewModel;
+using System.Collections.ObjectModel;
 
 namespace WpfExplorer
 {
@@ -17,16 +18,18 @@ namespace WpfExplorer
         public static T getConf<T>(string name)
         {
             string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS + $"{name}.json"))
+            string json = "";
+
+            try
             {
-                string json = r.ReadToEnd();
-                try
+                using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS + $"{name}.json"))
                 {
-                    List<T> items = JsonConvert.DeserializeObject<List<T>>(json);
-                    return items[0];
+                    json = r.ReadToEnd(); r.Close();
                 }
-                catch (Exception e) { main.ReportError(e); throw; }
+                return JsonConvert.DeserializeObject<T>(json);
+
             }
+            catch (Exception e) { main.ReportError(e); throw; }
         }
 
         //Speichert eine Datei in Appdata\Roaming\WpfExplorer\. Nimmt den Dateinamen und den Text (in JSON) als Übergabewert
@@ -36,7 +39,7 @@ namespace WpfExplorer
             try
             {
                 string _ = JsonConvert.SerializeObject(text);
-                fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", $"[{_}]", true);
+                fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", _, true);
                 return;
             }
             catch (Exception e) { main.ReportError(e); throw; }
@@ -55,7 +58,8 @@ namespace WpfExplorer
             }
             catch (Exception e)
             {
-                MessageBox.Show("Bei der Verbindung ist ein Fehler aufgetreten, prüfen Sie Ihre Verbindung\n\n" + e);
+                if (conf.Host == null) MessageBox.Show("Die config.json ist leer, es wurde kein Host eingetragen"); 
+                else MessageBox.Show("Bei der Verbindung ist ein Fehler aufgetreten, prüfen Sie Ihre Verbindung\n\n" + e);
                 Environment.Exit(1);
                 throw;
                 
@@ -63,17 +67,95 @@ namespace WpfExplorer
         }
 
         //Bitte in Task.Run ausführen
-        public static void pull()
+        //Wenn false, dann pull nicht nötig
+        //Wenn true, dann erfolgreich gepullt
+        public static bool pull()
         {
-            string _tmp = fs.readFileSync(MainWindow.CONFIG_LOCATIONS+"database.json");
+            while (main.isIndexerRunning) ;
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+
+            if (data.Paths == null) data.Paths = new List<fs.C_Path>();
+            if (data.AUTH_KEY == null) data.AUTH_KEY = main.RandomString(64);
+            if (data.last_sync == null) data.last_sync = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS + "\\database.json", JsonConvert.SerializeObject(data), true);
+            MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
+            var last_sync = myquery($"SELECT last_sync from users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            if (last_sync.Count == 0)
+            {
+                string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                myquery($"INSERT INTO users(ID, last_sync) VALUES('{MainWindowViewModel.AUTH_KEY}', '{dt}')");
+                var db = getConf<fs.C_IZ>("database");
+                db.last_sync = dt;
+                setConf("database", db);
+                return false;
+            }
+            DateTime dbTime = Convert.ToDateTime(last_sync[0]);
+            DateTime lcTime = Convert.ToDateTime(data.last_sync);
+            //Vergleiche dbs, wenn kleiner gleich 0, dann ist die DB später
+            if (DateTime.Compare(dbTime, lcTime)<=0) return false;
 
             var dbc = myquery($"SELECT PATH FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
             
-            for(int i = 0; i < dbc.Count; i++)
+            for(int i = 0; i < dbc.Count; i++) fs.AddToIndex(dbc[i]);
+            return true;
+        }
+
+        //Bitte in Task.Run ausführen
+        //Wenn false, dann push nicht nötig
+        //Wenn true, dann erfolgreich gepushed
+        public static bool push(MainWindowViewModel window)
+        {
+            while (main.isIndexerRunning) ;
+            if (MainWindowViewModel.AUTH_KEY.Length == 0) return false;
+            string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+            var last_sync = myquery($"SELECT last_sync FROM users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            if (last_sync.Count == 0)
             {
-                fs.AddToIndex(dbc[i]);
+                
+                myquery($"INSERT INTO users(ID, last_sync) VALUES('{MainWindowViewModel.AUTH_KEY}', '{dt}')");
+                return false;
             }
+            DateTime dbTime = Convert.ToDateTime(last_sync[0]);
+            DateTime lcTime = Convert.ToDateTime(data.last_sync);
+            //Vergleiche dbs, wenn größer gleich 0, dann ist die DB vor
+            if (DateTime.Compare(dbTime, lcTime) >= 0) return false;
+            int totalFiles = data.Paths.Count;
+
+
+            int cFile = 0;
+            //string datar = JsonConvert.SerializeObject(data);
+            myquery($"DELETE FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            for(int i = 0; i < data.Paths.Count; i++)
+            {
+                for(int o = 0; o < data.Paths[i].Files.Count; o++)
+                {
+                    cFile++;
+                    //4 Backslashes, damit die in der DB nicht verloren gehen
+                    data.Paths[i].Files[o].FullPath = data.Paths[i].Files[o].FullPath.Replace("\\", "\\\\");
+                    window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
+                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o].FullPath}', '{data.Paths[i].Files[o].Content ?? ""}')");
+                    //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
+                }
+            }
+
+            //Query die abfragt, ob der Pfad existiert
+            myquery($"UPDATE users SET last_sync = '{dt}' WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            var tmp_db = getConf<fs.C_IZ>("database");
+            tmp_db.last_sync = dt;
+            setConf("database", tmp_db);
+            //myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', ) WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            return true;
+        }
+
+        public static void Display(string tFiles, string cFile, string cFileName)
+        {
+
+
+            //PropertyChanged-Event
+
+
         }
 
         //Create a function which returns a random number
@@ -82,15 +164,13 @@ namespace WpfExplorer
         public static List<string> myquery(string command)
         {
             DBConf item = getConf<DBConf>("config");
-            //MySqlConnection con = new MySqlConnection($"server={item.Host};database={item.Database};userid={item.Username};password={item.Password};");
-            //MySqlConnection con = new MySqlConnection($"server=***REMOVED***;database=wpf;userid=wpf;password=***REMOVED***;");
             var con = new MySqlConnection(new MySqlConnectionStringBuilder
             {
-                Server = "***REMOVED***",
-                UserID = "wpf",
-                Password = "***REMOVED***",
-                Port = 3306,
-                Database = "wpf"
+                Server = item.Host,
+                UserID = item.Username,
+                Password = item.Password,
+                Port = Convert.ToUInt16(item.Port),
+                Database = item.Database
             }.ConnectionString);
             try { con.Open(); }
             catch (Exception e) { main.ReportError(e); throw; }
@@ -147,6 +227,13 @@ namespace WpfExplorer
             public string Password;
             public string Database;
             public int Port;
+        }
+
+        public class Properties
+        {
+            public ObservableCollection<string> Paths { get; set; }
+            public string AuthKey { get; set; }
+            public string LastSync { get; set; }
         }
     }
 }

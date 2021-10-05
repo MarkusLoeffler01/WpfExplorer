@@ -31,7 +31,7 @@ namespace WpfExplorer
             for(int i = 0; i < TotalFiles; i++)
             {
                 Thread.Sleep(100);
-                MainWindowViewModel.SetIndexProgress(files[i], i, TotalFiles);
+                //MainWindowViewModel.SetIndexProgress(files[i], i, TotalFiles);
             }
 
         }
