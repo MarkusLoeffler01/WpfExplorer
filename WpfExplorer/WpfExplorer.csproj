@@ -213,12 +213,8 @@
     <Compile Include="Model\ScannedFiles.cs" />
     <Compile Include="Modules\DriveDetection.cs" />
     <Compile Include="Modules\fs.cs" />
-    <Compile Include="Modules\index.cs" />
     <Compile Include="Modules\main.cs" />
-    <Compile Include="Modules\UI.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
