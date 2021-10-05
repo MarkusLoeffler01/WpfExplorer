@@ -136,7 +136,7 @@ namespace WpfExplorer.ViewModel
             if (tb_Search_Text.Length == 0) return;
             /**Es sollten zuerst die Dateinamen und DANN erst Dateien mit dem Inhalt durchsucht werden */
 
-            var File = fs.searchFile(tb_Search_Text, false);
+            List<FileStructure> File = fs.searchFile(tb_Search_Text, false);
             if (File.Count != 0)
             {
                 
@@ -353,7 +353,7 @@ namespace WpfExplorer.ViewModel
             //MessageBox.Show(files.Length + "\n" + string.Join(",", files));
 
             int TotalFiles = files.Length;
-            ScannedFilesList ProcessedFiles = new ScannedFilesList();
+            C_TFiles ProcessedFiles = new C_TFiles();
             for (int i = 0; i < TotalFiles; i++)
             {
                 //fs.AddToIndex(files[i]);
