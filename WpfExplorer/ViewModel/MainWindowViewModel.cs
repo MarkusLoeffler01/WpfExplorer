@@ -156,23 +156,6 @@ namespace WpfExplorer.ViewModel
                     FoundFiles.Add(res);
                 }
             }
-
-
-            //fs.C_IZ _ = db.getConf<fs.C_IZ>("database");
-            //for (int i = 0; i < _.Paths.Length; i++)
-            //{
-
-            //    System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
-            //    List<Model.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
-            //    oof.ForEach((p) =>
-            //    {
-            //        AddToGrid(p.Filename, p.Path);
-            //        txt.Text += $"\n\n{p.Filename} in {p.Path}";
-            //    });
-
-            //}
-
-
         }
 
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
@@ -242,11 +225,7 @@ namespace WpfExplorer.ViewModel
                 if (!_tb_Ping_Text.Equals(value))
                 {
                     _tb_Ping_Text = value;
-                    if (this.PropertyChanged != null)
-                    {
-                        this.PropertyChanged(this, new PropertyChangedEventArgs("tb_Ping_Text"));
-                    }
-                    //PropertyChanged(this, new PropertyChangedEventArgs("tb_Ping_Text"));
+                    if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs("tb_Ping_Text"));
                 }
             }
         }
@@ -258,7 +237,6 @@ namespace WpfExplorer.ViewModel
 
         public ObservableCollection<string> FileExceptionList { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> FoundFiles { get; set; } = new ObservableCollection<string>();
-        //public ObservableCollection<string> MyProperty { get; set; } = new ObservableCollection<string>();
         private object selectedFileException;
 
         public object SelectedFileException { get => selectedFileException; set => SetProperty(ref selectedFileException, value); }
@@ -318,7 +296,7 @@ namespace WpfExplorer.ViewModel
         private void Perform_bt_Help(object commandParameter)
         {
             MessageBox.Show("Bedienung:\n*.jpg => Filter alle JPG Dateien\nHa* => Filter alle Dateien, welche mit Ha beginnen\n*2021* => Filter alle Dateien, welche 2021 im Namen haben\n\nFiles/ ignoriert jedes Verzeichnis mit dem Namen Files\n*les/ ignoriert jedes Verzeichnis mit les am Ende\nC:\\Users\\ ignoriert NUR diesen einen Ordner\n\nDoppelklicken Sie auf einen Eintrag, um diesen zu entfernen");
-        }        //public object SelectedFile { get => selectedFile; set => SetProperty(ref selectedFile, value); }
+        }
 
 
         string _PATH = "";
@@ -327,7 +305,6 @@ namespace WpfExplorer.ViewModel
         public void Indiziere()
         {
             _PATH = main.getPathDialog();
-            //ExcList = GetExceptionList();
             if (_PATH == "") return;
 
             Task.Run(backgroundWorker1_DoWork);
@@ -348,9 +325,7 @@ namespace WpfExplorer.ViewModel
             
 
             //Check if the file type or files are in the ExceptionList
-            //MessageBox.Show(files.Length + "\n" + string.Join(",", files));
             files = checkForExcpetionlist(files);
-            //MessageBox.Show(files.Length + "\n" + string.Join(",", files));
 
             int TotalFiles = files.Length;
             C_TFiles ProcessedFiles = new C_TFiles();
@@ -440,8 +415,6 @@ namespace WpfExplorer.ViewModel
 
         private void ToExceptionList()
         {
-            //List<string> _ = MainWindowViewModel.GetExceptionList();
-            //foreach(var d in _) ListBox.Items.Add(d);
             return;
         }
 
@@ -456,10 +429,7 @@ namespace WpfExplorer.ViewModel
             /** Gebe die Aufgabe zurück an den HauptThread. 
              * Nur dieser darf auf die UI zugreifen
              */
-            //this.Dispatcher.Invoke(() =>
-            //{
                 FileProgress = $"{current} von {total} ({Math.Round(prozent, 2)}%) | {FileName.Name}";
-            //});
 
         }
 

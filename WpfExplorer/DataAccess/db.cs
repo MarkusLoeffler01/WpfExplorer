@@ -9,6 +9,7 @@ using System.Windows;
 using MySql.Data.MySqlClient;
 using WpfExplorer.ViewModel;
 using System.Collections.ObjectModel;
+using Npgsql;
 
 namespace WpfExplorer
 {
@@ -183,36 +184,37 @@ namespace WpfExplorer
                 for (int i = 0; i < reader.FieldCount; i++) res.Add(reader.GetValue(i).ToString());
             }
             reader.Close();
+            query("Hallo");
             return res;
         }
 
 
-//        [Obsolete("switching to MySQL, please use myquery(command);")]
-//        public static List<string> query(string command)
-//        {
-//#pragma warning disable 0649
-//            DBConf item = getConf<DBConf>("config");
-//            string conStr = $"Host={item.Host};Username={item.Username};Password={item.Password};Database={item.Database}";
-//            //MessageBox.Show(conStr);
-//            NpgsqlConnection con = new NpgsqlConnection(conStr);
-//            try { con.Open(); }
-//            catch (Exception e) { main.ReportError(e); throw; }
-//            NpgsqlCommand cmd = new NpgsqlCommand(command, con);
-//            //cmd.Prepare();
-//            var reader = cmd.ExecuteReader();
-//            //string[] x = new string[10000];
-//            List<string> result = new List<string>();
-//            while (reader.Read())
-//            {
-//                for (int i = 0; i < reader.FieldCount; i++) result.Add(reader.GetValue(i).ToString());
-//            };
-//            reader.Close();
-//            return result;
-//#pragma warning restore 0649
+        [Obsolete("switching to MySQL, please use myquery(command);")]
+        public static List<string> query(string command)
+        {
+#pragma warning disable 0649
+            DBConf item = getConf<DBConf>("config");
+            string conStr = $"Host={item.Host};Username={item.Username};Password={item.Password};Database={item.Database}";
+            //MessageBox.Show(conStr);
+            NpgsqlConnection con = new NpgsqlConnection(conStr);
+            try { con.Open(); }
+            catch (Exception e) { main.ReportError(e); throw; }
+            NpgsqlCommand cmd = new NpgsqlCommand(command, con);
+            //cmd.Prepare();
+            var reader = cmd.ExecuteReader();
+            //string[] x = new string[10000];
+            List<string> result = new List<string>();
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++) result.Add(reader.GetValue(i).ToString());
+            };
+            reader.Close();
+            return result;
+#pragma warning restore 0649
 
 
-//            //MessageBox.Show(reader.GetString(0));
-//        }
+            //MessageBox.Show(reader.GetString(0));
+        }
 
         public static void initDB()
         {

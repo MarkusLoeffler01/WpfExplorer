@@ -29,22 +29,6 @@ namespace WpfExplorer
 
         public MainWindow()
         {
-            //fs.checkConfig();
-            //InitializeComponent();
-
-
-            //db.initDB();
-            //if (main.PingDB()) { TB_Ping.Text = "Connected"; }
-            //else { TB_Ping.Text = "Connection failed..."; main.ReportError(new Exception("Ping not successfull")); return; }
-            //System.Windows.Threading.DispatcherTimer dT = new System.Windows.Threading.DispatcherTimer();
-            //dT.Tick += new EventHandler(SetPing);
-            //dT.Interval = new TimeSpan(0, 0, 1);
-            //dT.Start();
-
-            //List<string> query = db.myquery("SELECT version();");
-            //MessageBox.Show("MySQL " + query[0]);
-
-            //allDrives = DriveInfo.GetDrives();
             this.Loaded += InitVM;
         }
 
@@ -60,51 +44,6 @@ namespace WpfExplorer
         }
 
         List<string> ExcList;
-        //private void Index_Click(object sender, RoutedEventArgs e)
-        //{
-        //    BackgroundWorker worker = new BackgroundWorker();
-        //    _PATH = main.getPathDialog();
-        //    ExcList = GetExceptionList();
-        //    if (_PATH == "") return;
-
-        //    worker.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
-        //    worker.WorkerSupportsCancellation = true;
-        //    //worker.WorkerReportsProgress = true;
-        //    //worker.ProgressChanged += OnProgressChanged;
-        //    worker.RunWorkerAsync();
-        //    return;
-        //}
-
-        /**Neuer Thread, um die UI nicht zu blockieren */
-        //private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
-        //{
-        //    string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
-
-        //    string[] files = fs.readDirSync(_PATH, true, true);
-
-        //    //Check if the file type or files are in the ExceptionList
-        //    MessageBox.Show(files.Length + "\n" + string.Join(",", files));
-        //    files = checkForExcpetionlist(files);
-        //    MessageBox.Show(files.Length + "\n" + string.Join(",", files));
-
-        //    int TotalFiles = files.Length;
-        //    C_TFiles ProcessedFiles = new C_TFiles();
-        //    for (int i = 0; i < TotalFiles; i++)
-        //    {
-        //        //fs.AddToIndex(files[i]);
-        //        Thread.Sleep(100);
-        //        switch (fs.AddToIndex(files[i]))
-        //        {
-
-        //            case -1: MessageBox.Show($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
-        //            case -255: break; //Exception
-        //            case 0: break;
-
-        //        }
-        //        SetIndexProgress(files[i], i, TotalFiles);
-        //    }
-        //    MessageBox.Show(TotalFiles.ToString() + " Dateien erfolgreich hinzugefügt");
-        //}
 
         private string[] checkForExcpetionlist(string[] files)
         {
@@ -138,11 +77,6 @@ namespace WpfExplorer
             return filesList.ToArray();
         }
 
-        //private void OnProgressChanged(object sender, ProgressChangedEventArgs e)
-        //{
-        //    SetIndexProgress()
-        //}
-
         public static void AddToGrid(fs.C_File FileName, string FullPath)
         {
           
@@ -163,8 +97,6 @@ namespace WpfExplorer
 
         private void ToExceptionList()
         {
-            //List<string> _ = MainWindowViewModel.GetExceptionList();
-            //foreach(var d in _) ListBox.Items.Add(d);
             return;
         }
 
@@ -173,50 +105,6 @@ namespace WpfExplorer
         {
             return model.FileExceptionList.ToList();
         }
-
-
-        //private void tb_Search_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        //{
-        //    GD_Dateiausgabe.Children.Clear();
-
-        //    /** Nichts eingegeben = nichts anzeigen */
-        //    if (tb_Search.Text.Length == 0) return;
-        //    /**Es sollten zuerst die Dateinamen und DANN erst Dateien mit dem Inhalt durchsucht werden */
-
-        //    var File = fs.searchFile(tb_Search.Text, false);
-        //    if (File.Count != 0)
-        //    {
-        //        string res = "";
-        //        foreach (var v in File)
-        //        {
-        //            res += v.Filename + "\n";
-        //            res += v.Path + "\n\n";
-        //        }
-        //        TextBlock tb = new TextBlock();
-        //        //ObservableCollection tb = new System.Collections.ObjectModel.ObservableCollection();
-        //        tb.Text = res + "\n";
-
-        //        tb.MouseLeftButtonUp += Tb_MouseLeftButtonUp;
-        //        GD_Dateiausgabe.Children.Add(tb);
-        //    }
-
-
-        //    //fs.C_IZ _ = db.getConf<fs.C_IZ>("database");
-        //    //for (int i = 0; i < _.Paths.Length; i++)
-        //    //{
-
-        //    //    System.Windows.Controls.TextBox txt = new System.Windows.Controls.TextBox();
-        //    //    List<Model.FileStructure> oof = fs.searchFile(tb_Search.Text, false);
-        //    //    oof.ForEach((p) =>
-        //    //    {
-        //    //        AddToGrid(p.Filename, p.Path);
-        //    //        txt.Text += $"\n\n{p.Filename} in {p.Path}";
-        //    //    });
-
-        //    //}
-
-
-        //}
 
         private void Tb_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -237,7 +125,6 @@ namespace WpfExplorer
                 hwndSource.AddHook(UsbNotificationHandler);
                 USBDetector.RegisterUsbDeviceNotification(windowHandle);
             }
-            //DetectUSB.IsEnabled = false;
         }
         private IntPtr UsbNotificationHandler(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
@@ -276,10 +163,6 @@ namespace WpfExplorer
         public static List<string> ScanUSB()
         {
             DriveInfo[] currentDrives = DriveInfo.GetDrives();
-            //foreach (var drive in currentDrives)
-            //{
-            //    if (!allDrives.Contains(drive)) { MessageBox.Show(drive.Name); }
-            //}
 
             List<string> oldD = new List<string> { };
             List<string> newD = new List<string> { };

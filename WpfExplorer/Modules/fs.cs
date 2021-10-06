@@ -43,21 +43,6 @@ namespace WpfExplorer
             }
             if (fullpath) return Directory.GetFiles(path, "*", SearchOption.AllDirectories).Select(p => Path.GetFullPath(p)).ToArray();
             return Directory.GetFiles(path, "*", SearchOption.AllDirectories).Select(p => Path.GetFileName(p)).ToArray();
-
-
-            //string[] dirs = new string[] { };
-            //if (_dirs != null) dirs = _dirs;
-
-            //foreach(string d in Directory.GetDirectories(path))
-            //{
-            //    foreach(string f in Directory.GetFiles(d))
-            //    {
-            //        dirs.Append(f);
-            //    }
-            //    dirs.Append(string.Join("\n", readDirSync(d, fullpath, true, dirs)));
-            //    //readDirSync(d, fullpath, true, dirs);
-            //}
-            //return dirs;
         }
 
         public static string readFileSync(string path)
@@ -131,12 +116,10 @@ namespace WpfExplorer
             {
                 main.isIndexerRunning = true;
                 string path = Path.GetDirectoryName(_file);
-                //string file = Path.GetFileName(_file);
                 C_File file = getFileInfo(_file);
 
                 //Hole die DB-Datei
                 C_IZ data = db.getConf<C_IZ>("database");
-                //object db = JsonConvert.DeserializeObject<object>(jsonstring);
 
                 //Ist Paths[i].Path schon vorhanden?
                 bool found = false;
@@ -157,7 +140,6 @@ namespace WpfExplorer
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
-                //fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(data), true);
                 MainWindow.AddToGrid(file, path);
                 main.isIndexerRunning = false;
                 return 0;
@@ -190,7 +172,6 @@ namespace WpfExplorer
 
                 //Hole die DB-Datei
                 C_IZ data = db.getConf<C_IZ>("database");
-                //object db = JsonConvert.DeserializeObject<object>(jsonstring);
 
                 //Gibt es den Pfad zur Datei?
                 bool found = false;
@@ -220,7 +201,6 @@ namespace WpfExplorer
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
-                //fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + "database.json", JsonConvert.SerializeObject(data), true);
                 MainWindow.AddToGrid(file, path);
                 main.isIndexerRunning = false;
                 return;
@@ -268,18 +248,6 @@ namespace WpfExplorer
         }
 
 
-
-
-        /** Welche Pfade sollen indiziert werden*/
-        //public class CF_Ind
-        //{
-        //    public object[] Paths = {
-        //        string FileName,
-        //        string Path
-        //    };
-        //}
-
-
         public class C_IZ
         {
             [JsonProperty("Paths")]
@@ -313,17 +281,6 @@ namespace WpfExplorer
             public ulong Size {  get; set; }
             public string Date {  get; set; }
             public string Content { get; set; }
-
-            //public C_File(string fullpath)
-            //{
-            //    var _ = getFileInfo(fullpath);
-            //    Name = _.Name;
-            //    FullPath = _.FullPath;
-            //    Size = _.Size;
-            //    Date = _.Date;
-            //    Content = _.Content;
-            //}
-        }
 
         public partial class C_Which
         {

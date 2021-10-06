@@ -44,13 +44,6 @@ namespace WpfExplorer
         public static Model.FileStructure[] FoundFiles;
 
 
-        //public class FileStructure
-        //{
-        //    public string Path;
-        //    public string Filename;
-        //    public ulong Size;
-        //}
-
         public static string getPathDialog(string path = null)
         {
             WPFFolderBrowserDialog dia = new WPFFolderBrowserDialog();
