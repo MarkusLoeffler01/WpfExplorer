@@ -184,7 +184,6 @@ namespace WpfExplorer
                 for (int i = 0; i < reader.FieldCount; i++) res.Add(reader.GetValue(i).ToString());
             }
             reader.Close();
-            query("Hallo");
             return res;
         }
 
