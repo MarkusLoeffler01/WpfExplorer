@@ -278,10 +278,10 @@ namespace WpfExplorer
             //<summary>
             //Die Länge der Datei in Bytes
             //</summary>
-            public ulong Size {  get; set; }
-            public string Date {  get; set; }
+            public ulong Size { get; set; }
+            public string Date { get; set; }
             public string Content { get; set; }
-
+        }
         public partial class C_Which
         {
             [JsonProperty("Paths")]
