@@ -32,6 +32,7 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
             fs.checkConfig();
 
             //fs.ExtractText("C:\\Temp\\owo");
