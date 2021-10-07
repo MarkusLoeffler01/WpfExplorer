@@ -1,8 +1,10 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,6 +13,7 @@ using Visualis.Extractor;
 using iTextSharp.text;
 using System.Text.RegularExpressions;
 using WpfExplorer.ViewModel;
+using WpfExplorer.Modules;
 
 namespace WpfExplorer
 {
@@ -59,6 +62,39 @@ namespace WpfExplorer
         public static bool exists(string path)
         {
             return File.Exists(path) || Directory.Exists(path);
+        }
+
+
+        public static void import(string path)
+        {
+            if (!exists(path)) return;
+
+            string file;
+            try
+            {
+                file = fs.readFileSync(path);
+            }
+            catch (Exception e) { MessageBox.Show($"Konnte Datei nicht importieren: \n\n{e.Message}"); return; }
+
+            
+            try
+            {
+                MessageBox box = new MessageBox(this, "Test1", "Test2", MessageBoxButton.OKCancel, );
+                //Check if File is encrypted
+                if (!file.StartsWith("{")) decrypt(file);
+                C_IZ 
+            }
+        }
+
+
+        public static string decrypt(string content, string password)
+        {
+            return StringCipher.Decrypt(content, password);
+        }
+
+        public static string encrypt(string content, string password)
+        {
+            return StringCipher.Encrypt(content, password);
         }
 
 
