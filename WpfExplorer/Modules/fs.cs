@@ -79,11 +79,12 @@ namespace WpfExplorer
             
             try
             {
-                MessageBox box = new MessageBox(this, "Test1", "Test2", MessageBoxButton.OKCancel, );
+                //MessageBox box = new MessageBox(this, "Test1", "Test2", MessageBoxButton.OKCancel, );
                 //Check if File is encrypted
-                if (!file.StartsWith("{")) decrypt(file);
-                C_IZ 
+                //if (!file.StartsWith("{")) decrypt(file);
+                //C_IZ 
             }
+            catch(Exception e) { throw e; }
         }
 
 

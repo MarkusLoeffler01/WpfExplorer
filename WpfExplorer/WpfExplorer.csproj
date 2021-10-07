@@ -214,6 +214,7 @@
     <Compile Include="Modules\DriveDetection.cs" />
     <Compile Include="Modules\fs.cs" />
     <Compile Include="Modules\main.cs" />
+    <Compile Include="Modules\StringCipher.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
