@@ -14,6 +14,7 @@ using iTextSharp.text;
 using System.Text.RegularExpressions;
 using WpfExplorer.ViewModel;
 using WpfExplorer.Modules;
+using System.Diagnostics;
 
 namespace WpfExplorer
 {
@@ -69,33 +70,39 @@ namespace WpfExplorer
         {
             if (!exists(path)) return;
 
-            string file;
             try
             {
-                file = fs.readFileSync(path);
-            }
-            catch (Exception e) { MessageBox.Show($"Konnte Datei nicht importieren: \n\n{e.Message}"); return; }
+                string file = fs.readFileSync(path);
 
-            
+                string password = "";
+                string content = "";
+                //Check if File is encrypted
+                if (!file.StartsWith("{")) content = StringCipher.Decrypt(content, password);
+                C_IZ data = JsonConvert.DeserializeObject<C_IZ>(file);
+                db.setConf("database", data);
+                MessageBox.Show("Datei erfolgreich importiert");
+            }
+            catch (Exception e) { MessageBox.Show($"Konnte Datei '{path}' nicht importieren: \n\n{e.Message}"); return; }
+        }
+
+        public static void export(string path)
+        {
             try
             {
-                //MessageBox box = new MessageBox(this, "Test1", "Test2", MessageBoxButton.OKCancel, );
-                //Check if File is encrypted
-                //if (!file.StartsWith("{")) decrypt(file);
-                //C_IZ 
+                string password = "";
+                string content = "";
+                bool enc = false;
+
+                if (enc) content = StringCipher.Encrypt(content, password);
+
+                fs.writeFileSync(path, content);
+                var result = MessageBox.Show($"Datenbank erfolgreich unter {path} exportiert. Möchten Sie den Pfad öffnen?", "", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if(result.Equals(false)) return;
+
+                Process.Start(path);
+
             }
             catch(Exception e) { throw e; }
-        }
-
-
-        public static string decrypt(string content, string password)
-        {
-            return StringCipher.Decrypt(content, password);
-        }
-
-        public static string encrypt(string content, string password)
-        {
-            return StringCipher.Encrypt(content, password);
         }
 
 

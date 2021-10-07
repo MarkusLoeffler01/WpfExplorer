@@ -60,7 +60,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ListBox>
-        <TextBlock Text="{Binding IndexProgress}" Margin="10,131.163,10,10" Grid.ColumnSpan="2" Grid.Row="1"></TextBlock>
+        <!--<TextBlock Text="{Binding IndexProgress}" Margin="10,131.163,10,10" Grid.ColumnSpan="2" Grid.Row="1"></TextBlock> -->
         <Grid VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="400" Height="13" Margin="10,0,0,4" Grid.Row="1">
             <TextBlock Text="{Binding FileProgress}"></TextBlock>
         </Grid>
