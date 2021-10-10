@@ -104,6 +104,8 @@ namespace WpfExplorer
             return Application.Current.Windows.Cast<T>().First();
         }
 
+        
+
         //Gebe das Objekt der ViewModel zurück
         public MainWindow getMVVM()
         {

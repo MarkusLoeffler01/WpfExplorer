@@ -51,7 +51,7 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button FontSize="20" Command="{Binding ExportButton}"  CommandParameter="{Binding ElementName=Dialog}" Foreground="White" Grid.Column="1" BorderBrush="Blue" Background="Blue">Exportieren</Button>
-            <Button FontSize="20" Command="{Binding OKButton}" CommandParameter="{Binding ElementName=Dialog}" Foreground="White" Grid.Column="3" >OK</Button>
+            <Button FontSize="20" Command="{Binding CloseWindowCommand}" CommandParameter="{Binding ElementName=Dialog}" Foreground="White" Grid.Column="3" >OK</Button>
             <Button FontSize="20"
                     Foreground="White" 
                     Grid.Column="5" 
@@ -59,7 +59,7 @@
                     IsCancel="true"                    
                     BorderBrush="Blue"
                     Background="Blue"
-                    Command="{Binding CloseWindowCommand, Mode=OneWay}"
+                    Command="{Binding ImportButton, Mode=OneWay}"
                     CommandParameter="{Binding ElementName=Dialog}"
                     >Importieren</Button>
         </Grid>

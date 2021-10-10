@@ -9,7 +9,8 @@
         xmlns:ignore="http://www.galasoft.ch/ignore"
         mc:Ignorable="ignore"
 
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded"
+        Foreground="White">
     <Window.DataContext>
         <ViewModel:MainWindowViewModel x:Name="mvm"></ViewModel:MainWindowViewModel>
     </Window.DataContext>
@@ -42,7 +43,7 @@
 
 
         <!-- <Button Command="{Binding ButtonCommand}" Margin="225,8,38,224.837"></Button> -->
-        <Label HorizontalAlignment="Stretch" FontWeight="Bold" Content="Dateien ausschließen"  Margin="0,95,6,127.837" Grid.Column="1" Grid.Row="0"></Label>
+        <TextBlock HorizontalAlignment="Stretch" FontWeight="Bold" Margin="0,95,6,127.837" Grid.Column="1" Grid.Row="0">Dateien ausschließen</TextBlock>
         <TextBox Name="tb_AddExceptions" Text="{Binding tb_AddExceptionsText}" Height="25" Margin="0,125,6,114.837" Grid.Column="1">
             <TextBox.InputBindings>
                 <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=tb_AddExceptions, Path=Text}"/>
@@ -52,7 +53,14 @@
                  SelectedItem="{Binding SelectedFileException}" Grid.Column="1" BorderThickness="1px" BorderBrush="Black" Grid.RowSpan="2">
 
         </ListBox>
-        <Button Margin="323,93,10,47" Content="Hilfe" Command="{Binding _bt_Help}" FontSize="10" Grid.Column="1" Grid.Row="1" Height="Auto"/>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Hilfe" Foreground="White" Command="{Binding _bt_Help}" Height="Auto" Cursor="Hand" Grid.ColumnSpan="2" Margin="310,95,10,36"/>
+        </Grid>
+
         <ListBox MaxHeight="300px" Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.RowSpan="2">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">

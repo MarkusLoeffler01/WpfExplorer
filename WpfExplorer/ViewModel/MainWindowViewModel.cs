@@ -38,16 +38,7 @@ namespace WpfExplorer.ViewModel
         {
             
             fs.checkConfig();
-
-            //fs.ExtractText("C:\\Temp\\owo");
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
-            //var path = new OpenFileDialog();
-            //path.ShowDialog();
-            //fs.import(path.FileName);
-            fs.export();
-            return;
-            //fs.import(new FolderBrowserDialog().SelectedPath);
-
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             Index_Click = new RelayCommand(o => Indiziere());
