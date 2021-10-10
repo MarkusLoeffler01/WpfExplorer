@@ -487,13 +487,13 @@ namespace WpfExplorer.ViewModel
         private void PerformSettings_Click(object commandParameter)
         {
             //Einstellungen wie rekursiv indizieren, Cache leeren
-            Window popup = new Window();
-            popup.MaxHeight = popup.MinHeight = popup.Height = 300;
-            popup.MaxWidth = popup.MinWidth = popup.Width = 400;
-            popup.Title = "Einstellungen - WpfExplorer";
+            UserSettingsWindow window = new UserSettingsWindow();
+            window.MaxHeight = window.MinHeight = window.Height = 300;
+            window.MaxWidth = window.MinWidth = window.Width = 400;
+            window.Title = "Einstellungen - WpfExplorer";
             var grid = new Grid();
-      
-            popup.ShowDialog();
+
+            window.ShowDialog();
 
         }
 
