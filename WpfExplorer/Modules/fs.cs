@@ -30,7 +30,21 @@ namespace WpfExplorer
             string[] files = { "config", "database", "usersettings" };
 
             Directory.CreateDirectory(path);
-            for (int i = 0; i < files.Length; i++) { if (!File.Exists(path + files[i] + ".json")) File.WriteAllText(path + files[i] + ".json", "{}"); }
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (!File.Exists(path + files[i] + ".json"))
+                {
+                    File.WriteAllText(path + files[i] + ".json", "{}");
+
+                    switch(path)
+                    {
+                        case "config": 
+                            db.DBConf dBConf= new db.DBConf();
+                            dBConf.Host = "***REMOVED***"; dBConf.Database = "wpf"; dBConf.Password = "***REMOVED***"; dBConf.Username = "wpf"; dBConf.Port = 3306;
+                            db.setConf("config", dBConf); break;
+                    }
+                }
+            }
 
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             if (data.AUTH_KEY == null || data.AUTH_KEY.Length == 0) { data.AUTH_KEY = main.RandomString(64); }
