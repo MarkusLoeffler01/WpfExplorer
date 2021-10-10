@@ -1,5 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Interop;
 
 namespace WpfExplorer
 {
@@ -36,6 +42,7 @@ namespace WpfExplorer
     /// </summary>
     public class USBDetector
     {
+        public static DriveInfo[] allDrives;
         public const int NewUsbDeviceConnected = 0x8000;
         public const int UsbDeviceRemoved = 0x8004;
         public const int UsbDevicechange = 0x0219;
@@ -85,5 +92,76 @@ namespace WpfExplorer
         /// <returns>returns bool</returns>
         [DllImport("user32.dll")]
         private static extern bool UnregisterDeviceNotification(IntPtr handle);
+
+
+
+        public static void Detect_Click(object sender, RoutedEventArgs e)
+        {
+            HwndSource hwndSource = HwndSource.FromHwnd(Process.GetCurrentProcess().MainWindowHandle);
+            if (hwndSource != null)
+            {
+                IntPtr windowHandle = hwndSource.Handle;
+                hwndSource.AddHook(UsbNotificationHandler);
+                USBDetector.RegisterUsbDeviceNotification(windowHandle);
+            }
+        }
+
+        private static IntPtr UsbNotificationHandler(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        {
+            if (msg == USBDetector.UsbDevicechange)
+            {
+                switch ((int)wparam)
+                {
+                    case USBDetector.UsbDeviceRemoved:
+                        MessageBox.Show("USB Removed");
+                        break;
+                    case USBDetector.NewUsbDeviceConnected:
+
+                        MessageBoxResult res = MessageBox.Show("Neuer USB erkannt. Möchten Sie ihn indizieren?", "Neues USB Gerät", MessageBoxButton.YesNo);
+                        if (res == MessageBoxResult.Yes) { USBTools.NewIndex(); }
+                        break;
+                }
+            }
+            else
+            {
+
+            }
+
+            handled = false;
+            return IntPtr.Zero;
+        }
+
+        
+
     }
+
+    public static class USBTools
+    {
+        public static void NewIndex()
+        {
+            List<string> drive = ScanUSB();
+
+            if (drive == null || drive.Count == 0) { MessageBox.Show("USB Gerät wurde nicht erkannt\nBitte erneut probieren"); return; }
+            MessageBox.Show("Wählen Sie den Ordner aus, den Sie indizieren möchten");
+            main.getPathDialog(drive[0]);
+        }
+        public static List<string> ScanUSB()
+        {
+            DriveInfo[] currentDrives = DriveInfo.GetDrives();
+
+            List<string> oldD = new List<string> { };
+            List<string> newD = new List<string> { };
+            foreach (var curr in currentDrives)
+            {
+                oldD.Add(curr.Name);
+            }
+            foreach (var d in USBDetector.allDrives)
+            {
+                newD.Add(d.Name);
+            }
+            return oldD.Except(newD).Concat(newD.Except(oldD)).ToList();
+        }
+    }
+
+    
 }

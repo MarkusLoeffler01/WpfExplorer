@@ -186,6 +186,43 @@ namespace WpfExplorer.ViewModel
             return true;
         }
 
+        private string[] checkForExcpetionlist(string[] files)
+        {
+            /*
+             * Wenn el[i][0] == *, el.Includes(el[i][el[i]-1]
+             * 
+             * prüfe ob Path.GetExtension(files[i]) != '' && ob in el, dann entferne
+             */
+
+            List<string> el = ExcList;
+            List<string> filesList = files.ToList();
+
+            //Entferne alle Dateitypen in der Liste
+            for (int i = 0; i < filesList.Count; i++)
+            {
+                string ext = Path.GetExtension(filesList[i]);
+                if (ext.Length > 0 && el.Contains(ext)) filesList.RemoveAt(i);
+            }
+
+            string[] _el = el.ToArray();
+            //Enterne alle Verzeichnisse 
+            for (int i = 0; i < _el.Length; i++)
+            {
+                for (int o = 0; o < filesList.Count; o++)
+                {
+                    //Prüfe, ob der Eintrag ein "Verzeichnis/" ist und prüfe anschließend, ob die Datei in solch einem Verzeichnis ist
+                    if (_el[i].EndsWith("/") && filesList[o].Replace("\\", "/").Contains(_el[i])) filesList.RemoveAt(o);
+                }
+            }
+
+            return filesList.ToArray();
+        }
+
+         public static List<string> GetExceptionList(MainWindowViewModel model)
+        {
+            return model.FileExceptionList.ToList();
+        }
+
         public void showFileExceptions()
         {
             List<string> ex = new List<string>();
@@ -373,38 +410,6 @@ namespace WpfExplorer.ViewModel
             int total = ProcessedFiles.FilesOk.Count + ProcessedFiles.FilesSkipped.Count + ProcessedFiles.FilesOk.Count;
             MsgText += $"\n{total} von {TotalFiles} Dateien verarbeitet";
             MessageBox.Show(MsgText);
-        }
-
-        private string[] checkForExcpetionlist(string[] files)
-        {
-            /*
-             * Wenn el[i][0] == *, el.Includes(el[i][el[i]-1]
-             * 
-             * prüfe ob Path.GetExtension(files[i]) != '' && ob in el, dann entferne
-             */
-
-            List<string> el = ExcList ?? new List<string>();
-            List<string> filesList = files.ToList();
-
-            //Entferne alle Dateitypen in der Liste
-            for (int i = 0; i < filesList.Count; i++)
-            {
-                string ext = Path.GetExtension(filesList[i]);
-                if (ext.Length > 0 && el.Contains(ext)) filesList.RemoveAt(i);
-            }
-
-            string[] _el = el.ToArray();
-            //Enterne alle Verzeichnisse 
-            for (int i = 0; i < _el.Length; i++)
-            {
-                for (int o = 0; o < filesList.Count; o++)
-                {
-                    //Prüfe, ob der Eintrag ein "Verzeichnis/" ist und prüfe anschließend, ob die Datei in solch einem Verzeichnis ist
-                    if (_el[i].EndsWith("/") && filesList[o].Replace("\\", "/").Contains(_el[i])) filesList.RemoveAt(o);
-                }
-            }
-
-            return filesList.ToArray();
         }
 
         public class C_TFiles
