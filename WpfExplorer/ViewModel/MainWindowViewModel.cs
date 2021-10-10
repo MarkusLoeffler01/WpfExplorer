@@ -105,6 +105,23 @@ namespace WpfExplorer.ViewModel
             }
         }
 
+        private ICommand _deleteFileException;
+
+        public ICommand DeleteFileException
+        {
+            get
+            {
+                if (_deleteFileException == null) _deleteFileException = new RelayCommand(DeleteFromExceptionList);
+                return _deleteFileException;
+            }
+        }
+
+        public void DeleteFromExceptionList(object commandParamter)
+        {
+            FileExceptionList.Remove(commandParamter.ToString());
+            PropertyChanged(this, new PropertyChangedEventArgs(nameof(FileExceptionList)));
+        }
+
         public string Name
         {
             get => _name;
@@ -314,7 +331,7 @@ namespace WpfExplorer.ViewModel
 
         private void Perform_bt_Help(object commandParameter)
         {
-            MessageBox.Show("Bedienung:\n*.jpg => Filter alle JPG Dateien\nHa* => Filter alle Dateien, welche mit Ha beginnen\n*2021* => Filter alle Dateien, welche 2021 im Namen haben\n\nFiles/ ignoriert jedes Verzeichnis mit dem Namen Files\n*les/ ignoriert jedes Verzeichnis mit les am Ende\nC:\\Users\\ ignoriert NUR diesen einen Ordner\n\nDoppelklicken Sie auf einen Eintrag, um diesen zu entfernen");
+            MessageBox.Show("Bedienung:\n*.jpg => Filter alle JPG Dateien\nHa* => Filter alle Dateien, welche mit Ha beginnen\n*2021* => Filter alle Dateien, welche 2021 im Namen haben\n\nFiles/ ignoriert jedes Verzeichnis mit dem Namen Files\n*les/ ignoriert jedes Verzeichnis mit les am Ende\nC:\\Users\\ ignoriert NUR diesen einen Ordner\n\nRechtsklicken Sie auf einen Eintrag, um diesen zu entfernen");
         }
 
 

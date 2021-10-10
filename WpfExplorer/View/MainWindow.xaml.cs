@@ -100,12 +100,6 @@ namespace WpfExplorer
             return;
         }
 
-
-        public static List<string> GetExceptionList(MainWindowViewModel model)
-        {
-            return model.FileExceptionList.ToList();
-        }
-
         private void Tb_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             //Hier ein Event einfügen, welches den Pfad des angeklickten TextBlocks öffnet
