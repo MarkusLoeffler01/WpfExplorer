@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using WpfExplorer.ViewModel;
 using WpfExplorer.Modules;
 using System.Diagnostics;
+using WpfExplorer.View;
 
 namespace WpfExplorer
 {
@@ -85,20 +86,31 @@ namespace WpfExplorer
             catch (Exception e) { MessageBox.Show($"Konnte Datei '{path}' nicht importieren: \n\n{e.Message}"); return; }
         }
 
-        public static void export(string path)
+
+        public static string exportPassword;
+        public static void export()
         {
             try
             {
-                string password = "";
-                string content = "";
                 bool enc = false;
+                string path = null;
+                if (MessageBox.Show("Möchten Sie Ihre Datenbank verschlüsseln?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    path = main.getSaveDialog(null, true);
+                    DialogWindow dialogWindow = new DialogWindow();
+                    dialogWindow.Title = "Verschlüsseln der Datenbank";
+                    dialogWindow.ShowDialog();
+                    if (exportPassword == null) { MessageBox.Show("Feher"); return; }
+                    fs.writeFileSync(path, StringCipher.Encrypt(JsonConvert.SerializeObject(db.getConf<C_IZ>("database")), exportPassword));
 
-                if (enc) content = StringCipher.Encrypt(content, password);
+                }
+                else
+                {
+                    path = main.getSaveDialog(null, false);
+                    fs.writeFileSync(path, JsonConvert.SerializeObject(db.getConf<C_IZ>("database")));
+                }
 
-                fs.writeFileSync(path, content);
-                var result = MessageBox.Show($"Datenbank erfolgreich unter {path} exportiert. Möchten Sie den Pfad öffnen?", "", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if(result.Equals(false)) return;
-
+                if (MessageBox.Show($"Datenbank erfolgreich unter {path} exportiert. Möchten Sie den Pfad öffnen?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
                 Process.Start(path);
 
             }

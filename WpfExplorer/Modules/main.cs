@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -55,13 +56,46 @@ namespace WpfExplorer
                 dia.Title = "Verzeichnis zum Indizieren wählen";
                 return dia.FileName;
             }
-            return "";
+            return null;
+        }
 
+        public static string getSaveDialog(string path = null, bool encrypted = false)
+        {
+            SaveFileDialog dia = new SaveFileDialog();
+            dia.InitialDirectory = path;
+            dia.Title = "Verzeichnis zum Indizieren wählen";
+            if (encrypted)
+            {
+                dia.DefaultExt = MainWindowViewModel.DBEXTENSION;
+                UseDefaultExtAsFilterIndex(dia);
+                dia.Filter = $"Verschlüsselte DB Datei| *{MainWindowViewModel.DB_ENC_EXTENSION}";
+            }
+            else dia.Filter = $"DB Datei| *{MainWindowViewModel.DBEXTENSION}";
+            if (dia.ShowDialog() == true)
+            {
+                return dia.FileName;
+            }
+            return null;
+        }
+
+        public static void UseDefaultExtAsFilterIndex(FileDialog dialog)
+        {
+            var ext = "*." + dialog.DefaultExt;
+            var filter = dialog.Filter;
+            var filters = filter.Split('|');
+            for (int i = 1; i < filters.Length; i += 2)
+            {
+                if (filters[i] == ext)
+                {
+                    dialog.FilterIndex = 1 + (i - 1) / 2;
+                    return;
+                }
+            }
         }
 
         //Create a function which displays a messagebox with chechboxes inside
 
-        
+
         public static MainWindow getSession()
         {
             return Application.Current.Windows.Cast<MainWindow>().First();

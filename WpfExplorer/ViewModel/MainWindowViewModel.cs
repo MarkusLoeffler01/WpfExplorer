@@ -20,22 +20,30 @@ using iTextSharp;
 using iTextSharp.text;
 using System.Text.RegularExpressions;
 using WpfExplorer.Model;
+using WpfExplorer.View;
+using Microsoft.Win32;
 
 namespace WpfExplorer.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public static string AUTH_KEY = "";
+        public static string DBEXTENSION = ".wpfex";
+        public static string DB_ENC_EXTENSION = ".enc.wpfex";
         public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
         public static DriveInfo[] allDrives;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindowViewModel()
         {
+            
             fs.checkConfig();
 
             //fs.ExtractText("C:\\Temp\\owo");
-            
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
+            fs.export();
+            //fs.import(new FolderBrowserDialog().SelectedPath);
+
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             Index_Click = new RelayCommand(o => Indiziere());
@@ -64,6 +72,11 @@ namespace WpfExplorer.ViewModel
             allDrives = DriveInfo.GetDrives();
         }
 
+        public void OpenDialog()
+        {
+            DialogWindow window = new DialogWindow();
+            window.Show();
+        }
         public void ready_Tick()
         {
             db.push(this);
