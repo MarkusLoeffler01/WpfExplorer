@@ -83,6 +83,17 @@ namespace WpfExplorer.ViewModel
             db.pull();
         }
 
+        public static void CheckExtKey()
+        {
+            const string userRoot = "HKEY_CURRENT_USER";
+            const string subkey = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.wpfex\\OpenWithList";
+            const string subkey_enc = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.enc.wpfex\\OpenWithList";
+            const string keyName = userRoot + "\\" + subkey;
+            Registry.SetValue(keyName, "a", "WpfExplorer.exe", RegistryValueKind.String);
+            Registry.SetValue(keyName, "b", "a", RegistryValueKind.String);
+            Registry.SetValue(keyName, "MRUList", "ab", RegistryValueKind.String);
+        }
+
         private void SetPing(object sender, EventArgs e)
         {
             Console.WriteLine("PING");
