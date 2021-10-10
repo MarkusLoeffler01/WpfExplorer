@@ -78,6 +78,9 @@ namespace WpfExplorer
             return null;
         }
 
+
+
+
         public static void UseDefaultExtAsFilterIndex(FileDialog dialog)
         {
             var ext = "*." + dialog.DefaultExt;
@@ -96,9 +99,9 @@ namespace WpfExplorer
         //Create a function which displays a messagebox with chechboxes inside
 
 
-        public static MainWindow getSession()
+        public static T getSession<T>()
         {
-            return Application.Current.Windows.Cast<MainWindow>().First();
+            return Application.Current.Windows.Cast<T>().First();
         }
 
         //Gebe das Objekt der ViewModel zurück

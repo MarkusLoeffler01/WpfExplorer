@@ -74,16 +74,33 @@ namespace WpfExplorer
             try
             {
                 string file = fs.readFileSync(path);
+                string content = file;
 
-                string password = "";
-                string content = "";
+
+
+
+
                 //Check if File is encrypted
-                if (!file.StartsWith("{")) content = StringCipher.Decrypt(content, password);
-                C_IZ data = JsonConvert.DeserializeObject<C_IZ>(file);
+                if (!path.EndsWith(".wpfex") && !path.EndsWith(".enc.wpfex")) { MessageBox.Show("Die Datei ist keine Datenbank", "", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                if (!file.StartsWith("{"))
+                {
+                    DialogWindow dialogWindow = new DialogWindow();
+                    dialogWindow.Title = "Entschlüsseln der Datenbank";
+                    dialogWindow.txt_Info.Text = "Die Datei ist geschützt und benötigt ein Passwort";
+                    dialogWindow.ShowDialog();
+                    if (exportPassword == null) MessageBox.Show("Fehler");
+                    content = StringCipher.Decrypt(content, exportPassword);
+                }
+                
+                C_IZ data = JsonConvert.DeserializeObject<C_IZ>(content);
                 db.setConf("database", data);
                 MessageBox.Show("Datei erfolgreich importiert");
             }
-            catch (Exception e) { MessageBox.Show($"Konnte Datei '{path}' nicht importieren: \n\n{e.Message}"); return; }
+            catch (Exception e) { 
+                
+                if(e.GetType().ToString() == "")
+                
+                MessageBox.Show($"Konnte Datei '{path}' nicht importieren: \n\n{e.Message}"); return; }
         }
 
 
@@ -94,23 +111,27 @@ namespace WpfExplorer
             {
                 bool enc = false;
                 string path = null;
-                if (MessageBox.Show("Möchten Sie Ihre Datenbank verschlüsseln?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                var res = MessageBox.Show("Möchten Sie Ihre Datenbank verschlüsseln?", "Datenbank-Verschlüsselung", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if(res == MessageBoxResult.Cancel) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
+                if ( res == MessageBoxResult.Yes)
                 {
                     path = main.getSaveDialog(null, true);
+                    if(path == null) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
                     DialogWindow dialogWindow = new DialogWindow();
                     dialogWindow.Title = "Verschlüsseln der Datenbank";
                     dialogWindow.ShowDialog();
-                    if (exportPassword == null) { MessageBox.Show("Feher"); return; }
+                    if (exportPassword == null) { MessageBox.Show("Fehler"); return; }
                     fs.writeFileSync(path, StringCipher.Encrypt(JsonConvert.SerializeObject(db.getConf<C_IZ>("database")), exportPassword));
 
                 }
                 else
                 {
                     path = main.getSaveDialog(null, false);
+                    if (path == null) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
                     fs.writeFileSync(path, JsonConvert.SerializeObject(db.getConf<C_IZ>("database")));
                 }
 
-                if (MessageBox.Show($"Datenbank erfolgreich unter {path} exportiert. Möchten Sie den Pfad öffnen?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+                if (MessageBox.Show($"Datenbank erfolgreich unter {path} exportiert. Möchten Sie den Pfad öffnen?", "Datenbank-Verschlüsselung", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
                 Process.Start(path);
 
             }

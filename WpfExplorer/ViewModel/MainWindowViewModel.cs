@@ -41,7 +41,11 @@ namespace WpfExplorer.ViewModel
 
             //fs.ExtractText("C:\\Temp\\owo");
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
+            //var path = new OpenFileDialog();
+            //path.ShowDialog();
+            //fs.import(path.FileName);
             fs.export();
+            return;
             //fs.import(new FolderBrowserDialog().SelectedPath);
 
             tb_Ping_Text = "Connecting to Database...";
