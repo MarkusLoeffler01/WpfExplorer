@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using WpfExplorer.View;
 
 namespace WpfExplorer.ViewModel
 {
@@ -53,7 +54,9 @@ namespace WpfExplorer.ViewModel
 
         private void PerformOKButton(object commandParameter)
         {
-            MessageBox.Show(PasswordText);
+            fs.exportPassword = passwordText;
+            CloseWindowCommand.Execute(commandParameter);
+            
         }
 
         public RelayCommand<Window> CloseWindowCommand { get; private set; }
