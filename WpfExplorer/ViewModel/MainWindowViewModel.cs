@@ -20,23 +20,25 @@ using iTextSharp;
 using iTextSharp.text;
 using System.Text.RegularExpressions;
 using WpfExplorer.Model;
+using WpfExplorer.View;
+using Microsoft.Win32;
 
 namespace WpfExplorer.ViewModel
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public static string AUTH_KEY = "";
+        public static string DBEXTENSION = ".wpfex";
+        public static string DB_ENC_EXTENSION = ".enc.wpfex";
         public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
         public static DriveInfo[] allDrives;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindowViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
-            fs.checkConfig();
-
-            //fs.ExtractText("C:\\Temp\\owo");
             
+            fs.checkConfig();
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             Index_Click = new RelayCommand(o => Indiziere());
@@ -65,10 +67,26 @@ namespace WpfExplorer.ViewModel
             allDrives = DriveInfo.GetDrives();
         }
 
+        public void OpenDialog()
+        {
+            DialogWindow window = new DialogWindow();
+            window.Show();
+        }
         public void ready_Tick()
         {
             db.push(this);
             db.pull();
+        }
+
+        public static void CheckExtKey()
+        {
+            const string userRoot = "HKEY_CURRENT_USER";
+            const string subkey = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.wpfex\\OpenWithList";
+            const string subkey_enc = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\.enc.wpfex\\OpenWithList";
+            const string keyName = userRoot + "\\" + subkey;
+            Registry.SetValue(keyName, "a", "WpfExplorer.exe", RegistryValueKind.String);
+            Registry.SetValue(keyName, "b", "a", RegistryValueKind.String);
+            Registry.SetValue(keyName, "MRUList", "ab", RegistryValueKind.String);
         }
 
         private void SetPing(object sender, EventArgs e)
@@ -460,13 +478,13 @@ namespace WpfExplorer.ViewModel
         private void PerformSettings_Click(object commandParameter)
         {
             //Einstellungen wie rekursiv indizieren, Cache leeren
-            Window popup = new Window();
-            popup.MaxHeight = popup.MinHeight = popup.Height = 300;
-            popup.MaxWidth = popup.MinWidth = popup.Width = 400;
-            popup.Title = "Einstellungen - WpfExplorer";
+            UserSettingsWindow window = new UserSettingsWindow();
+            window.MaxHeight = window.MinHeight = window.Height = 300;
+            window.MaxWidth = window.MinWidth = window.Width = 400;
+            window.Title = "Einstellungen - WpfExplorer";
             var grid = new Grid();
-      
-            popup.ShowDialog();
+
+            window.ShowDialog();
 
         }
 

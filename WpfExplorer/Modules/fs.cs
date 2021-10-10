@@ -1,8 +1,10 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,6 +13,9 @@ using Visualis.Extractor;
 using iTextSharp.text;
 using System.Text.RegularExpressions;
 using WpfExplorer.ViewModel;
+using WpfExplorer.Modules;
+using System.Diagnostics;
+using WpfExplorer.View;
 
 namespace WpfExplorer
 {
@@ -22,10 +27,10 @@ namespace WpfExplorer
         public static void checkConfig()
         {
             string path = MainWindow.CONFIG_LOCATIONS;
-            string[] files = { "config", "database", "WhichPaths" };
+            string[] files = { "config", "database", "usersettings" };
 
             Directory.CreateDirectory(path);
-            for (int i = 0; i < files.Length; i++) { if (!File.Exists(path + files[i] + ".json")) File.WriteAllText(path + files[i] + ".json", "[{}]"); }
+            for (int i = 0; i < files.Length; i++) { if (!File.Exists(path + files[i] + ".json")) File.WriteAllText(path + files[i] + ".json", "{}"); }
 
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             if (data.AUTH_KEY == null || data.AUTH_KEY.Length == 0) { data.AUTH_KEY = main.RandomString(64); }
@@ -59,6 +64,78 @@ namespace WpfExplorer
         public static bool exists(string path)
         {
             return File.Exists(path) || Directory.Exists(path);
+        }
+
+
+        public static void import(string path)
+        {
+            if (!exists(path)) return;
+
+            try
+            {
+                string file = fs.readFileSync(path);
+                string content = file;
+
+
+
+
+
+                //Check if File is encrypted
+                if (!path.EndsWith(".wpfex") && !path.EndsWith(".enc.wpfex")) { MessageBox.Show("Die Datei ist keine Datenbank", "", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                if (!file.StartsWith("{"))
+                {
+                    DialogWindow dialogWindow = new DialogWindow();
+                    dialogWindow.Title = "Entschlüsseln der Datenbank";
+                    dialogWindow.txt_Info.Text = "Die Datei ist geschützt und benötigt ein Passwort";
+                    dialogWindow.ShowDialog();
+                    if (exportPassword == null) MessageBox.Show("Fehler");
+                    content = StringCipher.Decrypt(content, exportPassword);
+                }
+                
+                C_IZ data = JsonConvert.DeserializeObject<C_IZ>(content);
+                db.setConf("database", data);
+                MessageBox.Show("Datei erfolgreich importiert");
+            }
+            catch (Exception e) { 
+                
+                if(e.GetType().ToString() == "")
+                
+                MessageBox.Show($"Konnte Datei '{path}' nicht importieren: \n\n{e.Message}"); return; }
+        }
+
+
+        public static string exportPassword;
+        public static void export()
+        {
+            try
+            {
+                bool enc = false;
+                string path = null;
+                var res = MessageBox.Show("Möchten Sie Ihre Datenbank verschlüsseln?", "Datenbank-Verschlüsselung", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if(res == MessageBoxResult.Cancel) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
+                if ( res == MessageBoxResult.Yes)
+                {
+                    path = main.getSaveDialog(null, true);
+                    if(path == null) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
+                    DialogWindow dialogWindow = new DialogWindow();
+                    dialogWindow.Title = "Verschlüsseln der Datenbank";
+                    dialogWindow.ShowDialog();
+                    if (exportPassword == null) { MessageBox.Show("Fehler"); return; }
+                    fs.writeFileSync(path, StringCipher.Encrypt(JsonConvert.SerializeObject(db.getConf<C_IZ>("database")), exportPassword));
+
+                }
+                else
+                {
+                    path = main.getSaveDialog(null, false);
+                    if (path == null) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
+                    fs.writeFileSync(path, JsonConvert.SerializeObject(db.getConf<C_IZ>("database")));
+                }
+
+                if (MessageBox.Show($"Datenbank erfolgreich unter {path} exportiert. Möchten Sie den Pfad öffnen?", "Datenbank-Verschlüsselung", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+                Process.Start(path);
+
+            }
+            catch(Exception e) { throw e; }
         }
 
 
@@ -248,6 +325,14 @@ namespace WpfExplorer
         }
 
 
+        public class C_UC
+        {
+            [JsonProperty("DarkMode")]
+            public bool DarkMode { get; set; }
+
+            [JsonProperty("Recursive")]
+            public bool Recursive { get; set; }
+        };
         public class C_IZ
         {
             [JsonProperty("Paths")]
