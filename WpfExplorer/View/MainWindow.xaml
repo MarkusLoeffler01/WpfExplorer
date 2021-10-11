@@ -51,7 +51,12 @@
         </TextBox>
         <ListBox Margin="0,158,10,70" Height="200" Name="lb_Exceptions" ItemsSource="{Binding FileExceptionList}" 
                  SelectedItem="{Binding SelectedFileException}" Grid.Column="1" BorderThickness="1px" BorderBrush="Black" Grid.RowSpan="2">
-
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Delete" Command="{Binding DeleteFileException}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
+                                Path=PlacementTarget.SelectedItem}"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
         </ListBox>
         <Grid Grid.Column="1" Grid.Row="1">
             <Grid.ColumnDefinitions>
