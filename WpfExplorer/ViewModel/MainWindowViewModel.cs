@@ -28,6 +28,7 @@ namespace WpfExplorer.ViewModel
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public static string AUTH_KEY = "";
+        public static fs.C_UC us = new fs.C_UC();
         public static string DBEXTENSION = ".wpfex";
         public static string DB_ENC_EXTENSION = ".enc.wpfex";
         public static string CONFIG_LOCATIONS = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WpfExplorer\\");
@@ -37,6 +38,8 @@ namespace WpfExplorer.ViewModel
         public MainWindowViewModel()
         {
             fs.checkConfig();
+            //fs.checkUserSettings();
+            
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
@@ -44,7 +47,7 @@ namespace WpfExplorer.ViewModel
             tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
             MouseDoubleClick = new RelayCommand(o => OpenFileInExplorer(o));
             //MyCommand = new RelayCommand(o => My(o));
-
+            MainWindowViewModel.instance = this;
             if (main.PingDB()) tb_Ping_Text = "Connected";
             else
             {
@@ -65,6 +68,8 @@ namespace WpfExplorer.ViewModel
 
             allDrives = DriveInfo.GetDrives();
         }
+
+        public static MainWindowViewModel instance;
 
         public void OpenDialog()
         {
@@ -550,5 +555,38 @@ namespace WpfExplorer.ViewModel
                 this?.PropertyChanged(this, new PropertyChangedEventArgs(nameof(FileProgress)));
             }
         }
+
+
+        private System.Windows.Media.Brush color_ExceptionLabel;
+
+        public System.Windows.Media.Brush Color_ExceptionLabel { get => color_ExceptionLabel; set
+            {
+                SetProperty(ref color_ExceptionLabel, value);
+            }
+        }
+
+        private System.Windows.Media.Brush color_SuchFeldLabel;
+
+        public System.Windows.Media.Brush Color_SuchFeldLabel { get => color_SuchFeldLabel; set => SetProperty(ref color_SuchFeldLabel, value); }
+
+        private System.Windows.Media.Brush color_FileExceptionList;
+
+        public System.Windows.Media.Brush Color_FileExceptionList { get => color_FileExceptionList; set => SetProperty(ref color_FileExceptionList, value); }
+
+        private System.Windows.Media.Brush color_tb_Ping;
+
+        public System.Windows.Media.Brush Color_tb_Ping { get => color_tb_Ping; set => SetProperty(ref color_tb_Ping, value); }
+
+        private System.Windows.Media.Brush color_tb_Search;
+
+        public System.Windows.Media.Brush Color_tb_Search { get => color_tb_Search; set => SetProperty(ref color_tb_Search, value); }
+
+        private System.Windows.Media.Brush color_tb_AddExceptions;
+
+        public System.Windows.Media.Brush Color_tb_AddExceptions { get => color_tb_AddExceptions; set => SetProperty(ref color_tb_AddExceptions, value); }
+
+        private System.Windows.Media.Brush color_FoundFiles;
+
+        public System.Windows.Media.Brush Color_FoundFiles { get => color_FoundFiles; set => SetProperty(ref color_FoundFiles, value); }
     }
 }

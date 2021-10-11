@@ -23,10 +23,10 @@
             <RowDefinition Height="163.163"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Text="{Binding tb_Ping_Text}" Margin="10,10,129,212.837"></TextBlock>
+        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Text="{Binding tb_Ping_Text}" Foreground="{Binding Color_tb_Ping}" Margin="10,10,129,212.837"></TextBlock>
         <!--<TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="150,10,6,212.837"></TextBlock>-->
-        <TextBlock FontWeight="Bold" Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,1,232.837">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
-        <TextBox HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0" Text="{Binding Path=tb_Search_Text, UpdateSourceTrigger=PropertyChanged}"  Name="tb_Search" Height="25" Margin="0,30,6,208.837"></TextBox>
+        <TextBlock Foreground="{Binding Color_SuchFeldLabel}" FontWeight="Bold" Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,1,232.837">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
+        <TextBox HorizontalAlignment="Stretch" Grid.Column="1" BorderBrush="{Binding Color_tb_Search}" Grid.Row="0" Foreground="{Binding Color_tb_Search}" Text="{Binding Path=tb_Search_Text, UpdateSourceTrigger=PropertyChanged}"  Name="tb_Search" Height="25" Margin="0,30,6,208.837" Cursor="IBeam"></TextBox>
 
         <Grid Margin="0,64,6,170.837" Height="Auto" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
@@ -42,14 +42,14 @@
 
 
         <!-- <Button Command="{Binding ButtonCommand}" Margin="225,8,38,224.837"></Button> -->
-        <TextBlock HorizontalAlignment="Stretch" FontWeight="Bold" Margin="0,95,6,127.837" Grid.Column="1" Grid.Row="0">Dateien ausschließen</TextBlock>
-        <TextBox Name="tb_AddExceptions" Text="{Binding tb_AddExceptionsText}" Height="25" Margin="0,125,6,114.837" Grid.Column="1">
+        <TextBlock Foreground="{Binding Color_ExceptionLabel}" HorizontalAlignment="Stretch" FontWeight="Bold" Margin="0,95,6,127.837" Grid.Column="1" Grid.Row="0">Dateien ausschließen</TextBlock>
+        <TextBox Name="tb_AddExceptions" Foreground="{Binding Color_tb_AddExceptions}" BorderBrush="{Binding Color_tb_AddExceptions}" Text="{Binding tb_AddExceptionsText}" Height="25" Margin="0,125,6,114.837" Grid.Column="1">
             <TextBox.InputBindings>
                 <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=tb_AddExceptions, Path=Text}"/>
             </TextBox.InputBindings>
         </TextBox>
-        <ListBox Margin="0,158,10,70" Height="200" Name="lb_Exceptions" ItemsSource="{Binding FileExceptionList}" 
-                 SelectedItem="{Binding SelectedFileException}" Grid.Column="1" BorderThickness="1px" BorderBrush="Black" Grid.RowSpan="2">
+        <ListBox Foreground="{Binding Color_FileExceptionList}" Margin="0,158,10,70" Height="200" Name="lb_Exceptions" ItemsSource="{Binding FileExceptionList}" 
+                 SelectedItem="{Binding SelectedFileException}" Grid.Column="1" BorderThickness="1px" BorderBrush="{Binding Color_FileExceptionList}" Grid.RowSpan="2">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Delete" Command="{Binding DeleteFileException}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
@@ -65,7 +65,7 @@
             <Button Content="Hilfe" Foreground="White" Command="{Binding _bt_Help}" Height="Auto" Cursor="Hand" Grid.ColumnSpan="2" Margin="310,95,10,36"/>
         </Grid>
 
-        <ListBox MaxHeight="300px" Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.RowSpan="2">
+        <ListBox Foreground="{Binding Color_FoundFiles}" MaxHeight="300px" Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.RowSpan="2">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
                     <i:InvokeCommandAction Command="{Binding MouseDoubleClick}" CommandParameter="{Binding ElementName=GD_Dateiausgabe, Path=SelectedItem}"/>

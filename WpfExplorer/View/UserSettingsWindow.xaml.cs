@@ -24,6 +24,12 @@ namespace WpfExplorer.View
         public UserSettingsWindow()
         {
             InitializeComponent();
+            this.Loaded += InitVM;
+        }
+        private void InitVM(object sender, RoutedEventArgs e)
+        {
+            
+            fs.checkUserSettings(true);
         }
     }
 }

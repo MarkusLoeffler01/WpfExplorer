@@ -8,7 +8,7 @@
         x:Name="Dialog"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" MinHeight="400" MinWidth="700" MaxHeight="400" MaxWidth="700"
-        Background="#252525">
+        Background="{Binding Color_Window}">
     <Window.DataContext>
         <ViewModel:UserSettingsViewModel></ViewModel:UserSettingsViewModel>
     </Window.DataContext>
@@ -18,22 +18,22 @@
             <RowDefinition Height="94.68"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="txt_Info" Foreground="White" TextAlignment="Center" TextWrapping="Wrap" FontSize="30"><Run Language="en-gb" Text="User Settings"/><LineBreak/><Run Language="en-gb"/></TextBlock>
-        <Border BorderBrush="White" Height="94.68" Width="300" BorderThickness="1" Grid.Row="1">
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="txt_Info" Foreground="{Binding Color_UserSettingsFore}" TextAlignment="Center" TextWrapping="Wrap" FontSize="30"><Run Language="en-gb" Text="User Settings"/><LineBreak/><Run Language="en-gb"/></TextBlock>
+        <Border BorderBrush="{Binding Color_MiddleBorderBrush}" Background="{Binding Color_MiddleBorder}"  Height="94.68" Width="300" BorderThickness="1" Grid.Row="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <CheckBox  Foreground="White" Grid.Row="0" IsChecked="{Binding Path=RecursiveCheck, Mode=Twoway}" Content="Rekursiv indizieren" >
+                <CheckBox Foreground="{Binding Color_CheckBox1Fore}" BorderBrush="{Binding Color_CheckBox1Back}" Background="{Binding Color_CheckBox1Back}" Grid.Row="0" IsChecked="{Binding Path=RecursiveCheck, Mode=Twoway}" Content="Rekursiv indizieren" >
                     <CheckBox.Resources>
-                        <SolidColorBrush x:Key="MaterialDesignCheckBoxOff" Color="White" />
+                        <SolidColorBrush x:Key="MaterialDesignCheckBoxOff" Color="{Binding Color_CheckBox1BackRev}" />
                         <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="Lime" />
                     </CheckBox.Resources>
                 </CheckBox>
-                <CheckBox Foreground="White" Grid.Row="1" Content="Dark Mode" IsChecked="{Binding Path=DarkModeCheck, Mode=Twoway}">
+                <CheckBox Foreground="{Binding Color_CheckBox1Fore}" BorderBrush="{Binding Color_CheckBox1Back}"  Background="{Binding Color_CheckBox1Back}" Grid.Row="1" Content="Dark Mode" IsChecked="{Binding Path=DarkModeCheck, Mode=Twoway}">
                 <CheckBox.Resources>
-                    <SolidColorBrush x:Key="MaterialDesignCheckBoxOff" Color="White" />
+                        <SolidColorBrush x:Key="MaterialDesignCheckBoxOff" Color="{Binding Color_CheckBox1BackRev}" />
                     <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="Lime" />
                 </CheckBox.Resources>
                 </CheckBox>
@@ -51,7 +51,7 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button FontSize="20" Command="{Binding ExportButton}"  CommandParameter="{Binding ElementName=Dialog}" Foreground="White" Grid.Column="1" BorderBrush="Blue" Background="Blue">Exportieren</Button>
-            <Button FontSize="20" Command="{Binding CloseWindowCommand}" CommandParameter="{Binding ElementName=Dialog}" Foreground="White" Grid.Column="3" >OK</Button>
+            <Button FontSize="20" Command="{Binding CloseWindowCommand}" CommandParameter="{Binding ElementName=Dialog}" Foreground="White" Grid.Column="3" Cursor="Hand" >OK</Button>
             <Button FontSize="20"
                     Foreground="White" 
                     Grid.Column="5" 

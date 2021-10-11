@@ -105,9 +105,9 @@ namespace WpfExplorer
         //Create a function which displays a messagebox with chechboxes inside
 
 
-        public static T getSession<T>()
+        public static MainWindow getSession<MainWindow>()
         {
-            return Application.Current.Windows.Cast<T>().First();
+            return Application.Current.Windows.Cast<MainWindow>().First();
         }
 
         

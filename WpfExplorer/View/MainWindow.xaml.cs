@@ -25,13 +25,16 @@ namespace WpfExplorer
     {
         public MainWindow()
         {
+            MainWindow.instance = this;
             this.Loaded += InitVM;
+            
         }
-
+        public static MainWindow instance;
         private void InitVM(object sender, RoutedEventArgs e)
         {
             ((MainWindowViewModel)DataContext).ready_Tick();
             USBDetector.Detect_Click(sender, e);
+            fs.checkUserSettings(false);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
