@@ -534,8 +534,8 @@ namespace WpfExplorer.ViewModel
         {
             //Einstellungen wie rekursiv indizieren, Cache leeren
             UserSettingsWindow window = new UserSettingsWindow();
-            window.MaxHeight = window.MinHeight = window.Height = 300;
-            window.MaxWidth = window.MinWidth = window.Width = 400;
+            //window.MaxHeight = window.MinHeight = window.Height = 300;
+            //window.MaxWidth = window.MinWidth = window.Width = 400;
             window.Title = "Einstellungen - WpfExplorer";
             var grid = new Grid();
 

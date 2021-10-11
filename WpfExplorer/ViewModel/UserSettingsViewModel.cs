@@ -112,7 +112,7 @@ namespace WpfExplorer.ViewModel
                         Color_CheckBox1Back = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
                         Color_MiddleBorder = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
                         Color_MiddleBorderBrush = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
-                        Color_Window = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        Color_Window = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
                     }
                     else
                     {

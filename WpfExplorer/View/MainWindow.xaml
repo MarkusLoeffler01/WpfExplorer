@@ -9,7 +9,7 @@
         xmlns:ignore="http://www.galasoft.ch/ignore"
         mc:Ignorable="ignore"
 
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="WpfExplorer" Height="450" Width="800" Loaded="Window_Loaded">
     <Window.DataContext>
         <ViewModel:MainWindowViewModel x:Name="mvm"></ViewModel:MainWindowViewModel>
     </Window.DataContext>
