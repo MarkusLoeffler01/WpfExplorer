@@ -8,73 +8,99 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         mc:Ignorable="ignore"
-
-        Title="WpfExplorer" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <Window.DataContext>
         <ViewModel:MainWindowViewModel x:Name="mvm"></ViewModel:MainWindowViewModel>
     </Window.DataContext>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="2*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="264.837"/>
-            <RowDefinition Height="163.163"/>
-        </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="0" Grid.Row="0" Name="TB_Ping" Text="{Binding tb_Ping_Text}" Foreground="{Binding Color_tb_Ping}" Margin="10,10,129,212.837"></TextBlock>
-        <!--<TextBlock Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="150,10,6,212.837"></TextBlock>-->
-        <TextBlock Foreground="{Binding Color_SuchFeldLabel}" FontWeight="Bold" Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0,8,1,232.837">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
-        <TextBox HorizontalAlignment="Stretch" Grid.Column="1" BorderBrush="{Binding Color_tb_Search}" Grid.Row="0" Foreground="{Binding Color_tb_Search}" Text="{Binding Path=tb_Search_Text, UpdateSourceTrigger=PropertyChanged}"  Name="tb_Search" Height="25" Margin="0,30,6,208.837" Cursor="IBeam"></TextBox>
+    <DockPanel LastChildFill="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
-        <Grid Margin="0,64,6,170.837" Height="Auto" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch">
+        <Grid Background="#142880" DockPanel.Dock="Bottom" Width="Auto" Height="35">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".5*"/>
-                <ColumnDefinition Width=".5*"/>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
+                <RowDefinition />
             </Grid.RowDefinitions>
-            <Button HorizontalAlignment="Stretch" Name="IndexNewFiles" Height="Auto" Command="{Binding Index_Click}" Margin="0" Grid.Column="0" Grid.Row="0" Foreground="White" Cursor="Hand">Neue Dateien indizieren</Button>
-            <Button HorizontalAlignment="Stretch" Name="testbtn" Height="Auto" Command="{Binding Settings_Click}" Margin="0" Grid.Column="1" Grid.Row="1" Foreground="White">Settings</Button>
+            <TextBlock Text="{Binding db_connect_status}" Foreground="White" Margin="0 10 0 0" Grid.Column="0" Grid.Row="0" ></TextBlock>
+            <Button Grid.Column="0" Grid.Row="0" Background="Transparent" FontSize="35" BorderBrush="Blue" BorderThickness="0 0 0 0" Margin="-25 -15 0 0" Foreground="White" Height="55" Width="60">⟳</Button>
+            <Button Grid.Column="0" Grid.Row="0" Background="Transparent" FontSize="25" BorderBrush="Blue" BorderThickness="0 0 0 0" Margin="70 -12 0 0" Foreground="White" Height="55">0↓</Button>
+            <Button Grid.Column="0" Grid.Row="0" Background="Transparent" FontSize="25" BorderBrush="Blue" BorderThickness="0 0 0 0" Margin="150 -12 0 0" Foreground="White" Height="55">1↑</Button>
+            <TextBlock Grid.Column="1" Grid.Row="0" Text="X Dateien in der Datenbank" Foreground="White" Margin="0 10 0 0" TextAlignment="Center"></TextBlock>
+            <TextBlock Grid.Column="2" Grid.Row="0" Text="100/100 Dateien indiziert(100%)" Foreground="White" Margin="0 10 10 0"  TextAlignment="Right"></TextBlock>
         </Grid>
 
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".5*" />
+                <ColumnDefinition Width=".5*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".05*" />
+                <RowDefinition Height=".8*" />
+            </Grid.RowDefinitions>
 
-        <!-- <Button Command="{Binding ButtonCommand}" Margin="225,8,38,224.837"></Button> -->
-        <TextBlock Foreground="{Binding Color_ExceptionLabel}" HorizontalAlignment="Stretch" FontWeight="Bold" Margin="0,95,6,127.837" Grid.Column="1" Grid.Row="0">Dateien ausschließen</TextBlock>
-        <TextBox Name="tb_AddExceptions" Foreground="{Binding Color_tb_AddExceptions}" BorderBrush="{Binding Color_tb_AddExceptions}" Text="{Binding tb_AddExceptionsText}" Height="25" Margin="0,125,6,114.837" Grid.Column="1">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=tb_AddExceptions, Path=Text}"/>
-            </TextBox.InputBindings>
-        </TextBox>
-        <ListBox Foreground="{Binding Color_FileExceptionList}" Margin="0,158,10,70" Height="200" Name="lb_Exceptions" ItemsSource="{Binding FileExceptionList}" 
-                 SelectedItem="{Binding SelectedFileException}" Grid.Column="1" BorderThickness="1px" BorderBrush="{Binding Color_FileExceptionList}" Grid.RowSpan="2">
-            <ListBox.ContextMenu>
+            <!-- COL 0 | ROW 0-->
+            <TextBlock Foreground="{Binding Color_tb_Ping}" Grid.Column="0" Grid.Row="0" Name="TB_Ping" Margin=" 0 5 0 0 " Text="{Binding tb_Ping_Text}"></TextBlock>
+            <TextBlock Foreground="{Binding Color_tb_Ping}" Grid.Column="0" Grid.Row="0" Name="TB_PingTime" Margin="50 5 0 0"></TextBlock>
+
+            <!-- COL 1 | ROW 0 -->
+            <TextBlock Foreground="{Binding Color_SuchFeldLabel}" FontWeight="Bold" Grid.Column="1" Grid.Row="0" Name="TB_SearchText" Margin="0 4 0 0">Suchen Sie nach einem Dateinamen oder nach dem Inhalt einer Datei</TextBlock>
+
+            <!-- COL 0 | ROW 1 -->
+            <Grid Grid.Column="0" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <ListBox Foreground="{Binding Color_FileExceptionList}" Height="Auto" Name="lb_Exceptions" ItemsSource="{Binding FileExceptionList}" SelectedItem="{Binding SelectedFileException}" Grid.Row="0" BorderThickness="1px" BorderBrush="{Binding Color_FileExceptionList}">
+                <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Delete" Command="{Binding DeleteFileException}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
                                 Path=PlacementTarget.SelectedItem}"/>
                 </ContextMenu>
-            </ListBox.ContextMenu>
-        </ListBox>
-        <Grid Grid.Column="1" Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button Content="Hilfe" Foreground="White" Command="{Binding _bt_Help}" Height="Auto" Cursor="Hand" Grid.ColumnSpan="2" Margin="310,95,10,36"/>
+            </ListBox.ContextMenu></ListBox>
+            </Grid>
+
+            <!-- COL 1 | ROW 1 :::: Note: Neues Grid damit man nicht für alle Elemente extra nen Margin angibt, sondern das sich automatisch ausrichtet. Dafür muss aber jede Row manuell hinzugefügt werden -->
+            <Grid Grid.Column="1" Grid.Row="1" Height="Auto">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBox Grid.Row="1" Text="{Binding Path=tb_Search_Text, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding Color_tb_Search}" HorizontalAlignment="Stretch" Name="tb_Search" Height="25" Foreground="{Binding Color_tb_Search}" BorderThickness="0,0,0,2" Cursor="IBeam"></TextBox>
+                <Grid Grid.Row="2" Margin="0 20 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=".5*"/>
+                        <ColumnDefinition Width=".5*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Name="IndexNewFiles" Command="{Binding Index_Click}" Grid.Column="0" Foreground="White" Cursor="Hand">Neue Dateien indizieren</Button>
+                    <Button Name="testbtn" Command="{Binding Settings_Click}" Grid.Column="1" Foreground="White">Settings</Button>
+                </Grid>
+                <Label Foreground="{Binding Color_ExceptionLabel}" Grid.Row="3" FontWeight="Bold" Content="Dateien ausschließen"></Label>
+                <TextBox Foreground="{Binding Color_tb_AddExceptions}" Grid.Row="4" BorderBrush="{Binding Color_tb_AddExceptions}" Name="tb_AddExceptions" Text="{Binding tb_AddExceptionsText}" Height="25" BorderThickness="0,0,0,2">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=tb_AddExceptions, Path=Text}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Foreground="White" Grid.Row="5" Content="Hilfe" Command="{Binding _bt_Help}" Margin=" 0 20 0 0"/>
+                <ListBox Foreground="{Binding Color_FoundFiles}" Grid.Row="6" MaxHeight="300px" Name="GD_Dateiausgabe" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding MouseDoubleClick}" CommandParameter="{Binding ElementName=GD_Dateiausgabe, Path=SelectedItem}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ListBox>
+                <TextBlock Foreground="White" Grid.Row="7" Text="{Binding IndexProgress}"></TextBlock>
+            </Grid>
         </Grid>
 
-        <ListBox Foreground="{Binding Color_FoundFiles}" MaxHeight="300px" Name="GD_Dateiausgabe" Margin="10,60,10,68" Grid.Column="0" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.RowSpan="2">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding MouseDoubleClick}" CommandParameter="{Binding ElementName=GD_Dateiausgabe, Path=SelectedItem}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </ListBox>
-        <!--<TextBlock Text="{Binding IndexProgress}" Margin="10,131.163,10,10" Grid.ColumnSpan="2" Grid.Row="1"></TextBlock> -->
-        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="400" Height="13" Margin="10,0,0,4" Grid.Row="1">
-            <TextBlock Text="{Binding FileProgress}"></TextBlock>
-        </Grid>
-    </Grid>
+    </DockPanel>
 </Window>
