@@ -36,13 +36,6 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
-            string[] files = fs.readDirSync(@"C:\Temp\test", true);
-            List<bool> ls = new List<bool>();
-            for (int i = 0; i < files.Length; i++) ls.Add(IsExceptedFile(files[i]));
-
-            bool x = false;
-
-            return;
             fs.checkConfig();
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
             tb_Ping_Text = "Connecting to Database...";
@@ -51,13 +44,13 @@ namespace WpfExplorer.ViewModel
             tb_Search_Command = new RelayCommand(o => tb_Search_TextChanged());
             MouseDoubleClick = new RelayCommand(o => OpenFileInExplorer(o));
             //MyCommand = new RelayCommand(o => My(o));
-            
+
             if (main.PingDB()) tb_Ping_Text = "Connected";
-            else 
+            else
             {
-                tb_Ping_Text = "Connection failed..."; 
-                main.ReportError(new Exception("Ping not successfull")); 
-                return; 
+                tb_Ping_Text = "Connection failed...";
+                main.ReportError(new Exception("Ping not successfull"));
+                return;
             }
             DispatcherTimer dT = new DispatcherTimer();
 
@@ -65,7 +58,7 @@ namespace WpfExplorer.ViewModel
             dT.Tick += new EventHandler(SetPing);
             dT.Interval = new TimeSpan(0, 0, 1);
             dT.Start();
-           
+
 
             //List<string> query = db.myquery("SELECT version();");
             //MessageBox.Show(query[0]);
@@ -183,19 +176,19 @@ namespace WpfExplorer.ViewModel
             List<FileStructure> File = fs.searchFile(tb_Search_Text, false);
             if (File.Count != 0)
             {
-                
+
                 foreach (var v in File)
                 {
                     double size = 0;
                     string end = "b";
-                    if(v.Size > 1000) { end = "kB"; size = Convert.ToDouble(v.Size / 1000); }
+                    if (v.Size > 1000) { end = "kB"; size = Convert.ToDouble(v.Size / 1000); }
                     else if (v.Size > 1000000) { end = "MB"; size = v.Size / 1000000; }
                     else if (v.Size > 1000000000) { end = "GB"; size = v.Size / 1000000000; }
 
                     string res = "";
                     res += v.Filename + "\n";
                     res += v.Path + "\n";
-                    res += size+end + "\n\n";
+                    res += size + end + "\n\n";
 
                     FoundFiles.Add(res);
                 }
@@ -243,7 +236,7 @@ namespace WpfExplorer.ViewModel
             return filesList.ToArray();
         }
 
-         public static List<string> GetExceptionList(MainWindowViewModel model)
+        public static List<string> GetExceptionList(MainWindowViewModel model)
         {
             return model.FileExceptionList.ToList();
         }
@@ -252,7 +245,7 @@ namespace WpfExplorer.ViewModel
         {
             List<string> ex = new List<string>();
 
-            for(int i = 0; i < FileExceptionList.Count; i++) ex.Add(FileExceptionList[i]);
+            for (int i = 0; i < FileExceptionList.Count; i++) ex.Add(FileExceptionList[i]);
 
             MessageBox.Show(ex.ToString());
         }
@@ -398,22 +391,22 @@ namespace WpfExplorer.ViewModel
             var valid = false;
             List<string> ExceptionList = new List<string>
             {
-                @"C:\Temp\" 
+                @"C:\Temp\"
             };
-            for(int i = 0; i < ExceptionList.Count; i++)
+            for (int i = 0; i < ExceptionList.Count; i++)
             {
                 if (ExceptionList[i].EndsWith("/"))
                 {
                     List<string> split = ExceptionList[i].Split('/').ToList();
-                    if (file.Contains(split[0]+"\\")) return true;
+                    if (file.Contains(split[0] + "\\")) return true;
                 }
-                if(ExceptionList[i].EndsWith("\\"))
+                if (ExceptionList[i].EndsWith("\\"))
                 {
-                    if (Path.GetDirectoryName(file)+"\\" == ExceptionList[i]) return true;
+                    if (Path.GetDirectoryName(file) + "\\" == ExceptionList[i]) return true;
                 }
-                if (Regex.IsMatch(file, fs.WildCardToRegular(ExceptionList[i]))) { return true; } 
+                if (Regex.IsMatch(file, fs.WildCardToRegular(ExceptionList[i]))) { return true; }
             }
-            
+
             return valid;
         }
 
@@ -423,14 +416,14 @@ namespace WpfExplorer.ViewModel
 
             string[] files = fs.readDirSync(_PATH, true, true);
             List<fs.C_File> _files = new List<fs.C_File>();
-            
-            for(int  i = 0; i < files.Length; i++)
+
+            for (int i = 0; i < files.Length; i++)
             {
                 if (IsExceptedFile(files[i])) continue;
                 _files.Add(fs.getFileInfo(files[i]));
-                SetIndexMessage("Dateien werden gesucht... "+i+" Dateien gefunden");
+                SetIndexMessage("Dateien werden gesucht... " + i + " Dateien gefunden");
             }
-            
+
 
             //Check if the file type or files are in the ExceptionList
             files = checkForExcpetionlist(files);
@@ -446,7 +439,7 @@ namespace WpfExplorer.ViewModel
 
                     case -1: SetIndexMessage($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesSkipped.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
                     case -255: ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Exception
-                    case 0: ProcessedFiles.FilesOk.Add(new C_Files {FileName = Path.GetFileName(files[i]), Path = files[i] });  break;
+                    case 0: ProcessedFiles.FilesOk.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break;
 
                 }
                 SetIndexProgress(_files[i], i, TotalFiles);
@@ -455,9 +448,9 @@ namespace WpfExplorer.ViewModel
             temp_file.last_sync = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             db.setConf("database", temp_file);
             string MsgText = "";
-            if(ProcessedFiles.FilesSkipped.Count != 0) MsgText += $"{ProcessedFiles.FilesSkipped.Count} Dateien übersprungen\n";
-            if(ProcessedFiles.FilesErr.Count != 0) MsgText += $"{ProcessedFiles.FilesErr.Count} Dateien fehlerhaft\n";
-            if(ProcessedFiles.FilesOk.Count != 0) MsgText += $"{ProcessedFiles.FilesOk.Count} Dateien erfolgreich hinzugefügt\n";
+            if (ProcessedFiles.FilesSkipped.Count != 0) MsgText += $"{ProcessedFiles.FilesSkipped.Count} Dateien übersprungen\n";
+            if (ProcessedFiles.FilesErr.Count != 0) MsgText += $"{ProcessedFiles.FilesErr.Count} Dateien fehlerhaft\n";
+            if (ProcessedFiles.FilesOk.Count != 0) MsgText += $"{ProcessedFiles.FilesOk.Count} Dateien erfolgreich hinzugefügt\n";
 
             int total = ProcessedFiles.FilesOk.Count + ProcessedFiles.FilesSkipped.Count + ProcessedFiles.FilesOk.Count;
             MsgText += $"\n{total} von {TotalFiles} Dateien verarbeitet";
@@ -505,7 +498,7 @@ namespace WpfExplorer.ViewModel
             /** Gebe die Aufgabe zurück an den HauptThread. 
              * Nur dieser darf auf die UI zugreifen
              */
-                FileProgress = $"{current} von {total} ({Math.Round(prozent, 2)}%) | {FileName.Name}";
+            FileProgress = $"{current} von {total} ({Math.Round(prozent, 2)}%) | {FileName.Name}";
 
         }
 
@@ -547,8 +540,9 @@ namespace WpfExplorer.ViewModel
 
         private string fileProgress;
 
-        public string FileProgress { 
-            get => fileProgress; 
+        public string FileProgress
+        {
+            get => fileProgress;
             set
             {
                 if (value == fileProgress) return;
