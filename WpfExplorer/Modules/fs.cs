@@ -26,7 +26,7 @@ namespace WpfExplorer
         /** Prüft alle Dateien und erstellt diese, falls nicht vorhanden. Läuft im neuen Thread */
         public static void checkConfig()
         {
-            string path = MainWindow.CONFIG_LOCATIONS;
+            string path = MainWindowViewModel.CONFIG_LOCATIONS;
             string[] files = { "config", "database", "usersettings" };
 
             Directory.CreateDirectory(path);
@@ -231,7 +231,7 @@ namespace WpfExplorer
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
-                MainWindow.AddToGrid(file, path);
+                main.AddToGrid(file, path);
                 main.isIndexerRunning = false;
                 return 0;
             }
@@ -292,7 +292,7 @@ namespace WpfExplorer
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
-                MainWindow.AddToGrid(file, path);
+                main.AddToGrid(file, path);
                 main.isIndexerRunning = false;
                 return;
             }

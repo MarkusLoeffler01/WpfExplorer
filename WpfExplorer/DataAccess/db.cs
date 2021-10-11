@@ -23,7 +23,7 @@ namespace WpfExplorer
 
             try
             {
-                using (StreamReader r = new StreamReader(MainWindow.CONFIG_LOCATIONS + $"{name}.json"))
+                using (StreamReader r = new StreamReader(MainWindowViewModel.CONFIG_LOCATIONS + $"{name}.json"))
                 {
                     json = r.ReadToEnd(); r.Close();
                 }
@@ -40,7 +40,7 @@ namespace WpfExplorer
             try
             {
                 string _ = JsonConvert.SerializeObject(text);
-                fs.writeFileSync(MainWindow.CONFIG_LOCATIONS + $"{name}.json", _, true);
+                fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS + $"{name}.json", _, true);
                 return;
             }
             catch (Exception e) { main.ReportError(e); throw; }
