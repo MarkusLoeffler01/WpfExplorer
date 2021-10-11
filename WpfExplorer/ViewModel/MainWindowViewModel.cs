@@ -36,7 +36,13 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
-            
+            string[] files = fs.readDirSync(@"C:\Temp\test", true);
+            List<bool> ls = new List<bool>();
+            for (int i = 0; i < files.Length; i++) ls.Add(IsExceptedFile(files[i]));
+
+            bool x = false;
+
+            return;
             fs.checkConfig();
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
             tb_Ping_Text = "Connecting to Database...";
@@ -104,6 +110,25 @@ namespace WpfExplorer.ViewModel
                 return _keyInputCommand;
             }
         }
+
+        private ICommand _deleteFileException;
+
+        public ICommand DeleteFileException
+        {
+            get
+            {
+                if (_deleteFileException == null) _deleteFileException = new RelayCommand(DeleteFromExceptionList);
+                return _deleteFileException;
+            }
+        }
+
+        public void DeleteFromExceptionList(object commandParamter)
+        {
+            FileExceptionList.Remove(commandParamter.ToString());
+            PropertyChanged(this, new PropertyChangedEventArgs(nameof(FileExceptionList)));
+        }
+
+        public List<string> getFileExceptionList() => FileExceptionList.ToList<string>();
 
         public string Name
         {
@@ -351,7 +376,7 @@ namespace WpfExplorer.ViewModel
 
         private void Perform_bt_Help(object commandParameter)
         {
-            MessageBox.Show("Bedienung:\n*.jpg => Filter alle JPG Dateien\nHa* => Filter alle Dateien, welche mit Ha beginnen\n*2021* => Filter alle Dateien, welche 2021 im Namen haben\n\nFiles/ ignoriert jedes Verzeichnis mit dem Namen Files\n*les/ ignoriert jedes Verzeichnis mit les am Ende\nC:\\Users\\ ignoriert NUR diesen einen Ordner\n\nDoppelklicken Sie auf einen Eintrag, um diesen zu entfernen");
+            MessageBox.Show("Bedienung:\n*.jpg => Filter alle JPG Dateien\nHa* => Filter alle Dateien, welche mit Ha beginnen\n*2021* => Filter alle Dateien, welche 2021 im Namen haben\n\nFiles/ ignoriert jedes Verzeichnis mit dem Namen Files\n*les/ ignoriert jedes Verzeichnis mit les am Ende\nC:\\Users\\ ignoriert NUR diesen einen Ordner\n\nRechtsklicken Sie auf einen Eintrag, um diesen zu entfernen");
         }
 
 
@@ -367,14 +392,41 @@ namespace WpfExplorer.ViewModel
             return;
         }
 
+        public bool IsExceptedFile(string file)
+        {
+            //List<string> ExceptionList = getFileExceptionList();
+            var valid = false;
+            List<string> ExceptionList = new List<string>
+            {
+                @"C:\Temp\" 
+            };
+            for(int i = 0; i < ExceptionList.Count; i++)
+            {
+                if (ExceptionList[i].EndsWith("/"))
+                {
+                    List<string> split = ExceptionList[i].Split('/').ToList();
+                    if (file.Contains(split[0]+"\\")) return true;
+                }
+                if(ExceptionList[i].EndsWith("\\"))
+                {
+                    if (Path.GetDirectoryName(file)+"\\" == ExceptionList[i]) return true;
+                }
+                if (Regex.IsMatch(file, fs.WildCardToRegular(ExceptionList[i]))) { return true; } 
+            }
+            
+            return valid;
+        }
+
         private void backgroundWorker1_DoWork()
         {
             string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
 
             string[] files = fs.readDirSync(_PATH, true, true);
             List<fs.C_File> _files = new List<fs.C_File>();
+            
             for(int  i = 0; i < files.Length; i++)
             {
+                if (IsExceptedFile(files[i])) continue;
                 _files.Add(fs.getFileInfo(files[i]));
                 SetIndexMessage("Dateien werden gesucht... "+i+" Dateien gefunden");
             }
