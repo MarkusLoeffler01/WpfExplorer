@@ -26,7 +26,7 @@ namespace WpfExplorer
         /** Prüft alle Dateien und erstellt diese, falls nicht vorhanden. Läuft im neuen Thread */
         public static void checkConfig()
         {
-            string path = MainWindow.CONFIG_LOCATIONS;
+            string path = MainWindowViewModel.CONFIG_LOCATIONS;
             string[] files = { "config", "database", "usersettings" };
 
             Directory.CreateDirectory(path);
@@ -42,6 +42,8 @@ namespace WpfExplorer
                             db.DBConf dBConf= new db.DBConf();
                             dBConf.Host = "***REMOVED***"; dBConf.Database = "wpf"; dBConf.Password = "***REMOVED***"; dBConf.Username = "wpf"; dBConf.Port = 3306;
                             db.setConf("config", dBConf); break;
+
+
                     }
                 }
             }
@@ -49,6 +51,70 @@ namespace WpfExplorer
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             if (data.AUTH_KEY == null || data.AUTH_KEY.Length == 0) { data.AUTH_KEY = main.RandomString(64); }
             MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
+        }
+
+        public static void checkUserSettings(bool initSettingsWindow)
+        {
+            string path = MainWindowViewModel.CONFIG_LOCATIONS;
+            if(File.Exists(MainWindowViewModel.CONFIG_LOCATIONS+"usersettings.json"))
+            {
+                var converter = new System.Windows.Media.BrushConverter();
+                MainWindowViewModel.us = db.getConf<fs.C_UC>("usersettings");
+                var win2 = MainWindowViewModel.instance;
+                var win = MainWindow.instance;
+                
+                if (MainWindowViewModel.us.DarkMode)
+                {
+                    win.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
+                    win2.Color_ExceptionLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win2.Color_FileExceptionList = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win2.Color_SuchFeldLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win2.Color_tb_Ping = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win2.Color_FoundFiles = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win2.Color_tb_AddExceptions = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win2.Color_tb_Search = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    if (initSettingsWindow)
+                    {
+                        var win3 = UserSettingsViewModel.instance;
+                        win3.Color_UserSettingsFore = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win3.Color_CheckBox1Fore = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win3.Color_CheckBox1Back = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win3.Color_MiddleBorder = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win3.Color_MiddleBorderBrush = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win3.Color_Window = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win3.DarkModeCheck = MainWindowViewModel.us.DarkMode;
+                        win3.RecursiveCheck = MainWindowViewModel.us.Recursive;
+                    }
+                    
+                }
+                else
+                {
+
+                    win.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win2.Color_ExceptionLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win2.Color_FileExceptionList = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win2.Color_SuchFeldLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win2.Color_tb_Ping = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win2.Color_FoundFiles = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win2.Color_tb_AddExceptions = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win2.Color_tb_Search = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+
+                    if (initSettingsWindow)
+                    {
+                        var win3 = UserSettingsViewModel.instance;
+                        win3.Color_UserSettingsFore = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win3.Color_CheckBox1Fore = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win3.Color_CheckBox1Back = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win3.Color_MiddleBorder = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win3.Color_MiddleBorderBrush = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win3.Color_Window = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win3.DarkModeCheck = MainWindowViewModel.us.DarkMode;
+                        win3.RecursiveCheck = MainWindowViewModel.us.Recursive;
+                    }
+                    
+                }
+
+                }
         }
 
         public static string[] readDirSync(string path, bool fullpath = false, bool recursive = false, string[] _dirs = null)
@@ -231,7 +297,7 @@ namespace WpfExplorer
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
-                MainWindow.AddToGrid(file, path);
+                main.AddToGrid(file, path);
                 main.isIndexerRunning = false;
                 return 0;
             }
@@ -292,7 +358,7 @@ namespace WpfExplorer
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
-                MainWindow.AddToGrid(file, path);
+                main.AddToGrid(file, path);
                 main.isIndexerRunning = false;
                 return;
             }

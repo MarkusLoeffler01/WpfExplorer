@@ -34,6 +34,12 @@ namespace WpfExplorer
             return cmd[0] == "2";
         }
 
+
+        public static void AddToGrid(fs.C_File FileName, string FullPath)
+        {
+
+        }
+
         private static Random random = new Random();
         public static string RandomString(int length)
         {
@@ -99,9 +105,9 @@ namespace WpfExplorer
         //Create a function which displays a messagebox with chechboxes inside
 
 
-        public static T getSession<T>()
+        public static MainWindow getSession<MainWindow>()
         {
-            return Application.Current.Windows.Cast<T>().First();
+            return Application.Current.Windows.Cast<MainWindow>().First();
         }
 
         

@@ -17,6 +17,7 @@ namespace WpfExplorer.ViewModel
 {
     public class UserSettingsViewModel : INotifyPropertyChanged
     {
+        
         public string windowTitle = "UserSettingsViewModel";
         public string WindowTitle { get => windowTitle; set => SetProperty(ref windowTitle, value); }
 
@@ -29,6 +30,7 @@ namespace WpfExplorer.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
         public UserSettingsViewModel()
         {
+            UserSettingsViewModel.instance = this;
             //windowTitle = title;
             this.CloseWindowCommand = new RelayCommand<Window>(this.CloseWindow);
         }
@@ -79,24 +81,71 @@ namespace WpfExplorer.ViewModel
 
         public bool RecursiveCheck { get => recursiveCheck1; set => SetProperty(ref recursiveCheck1, value); }
 
-        private bool darkModeCheck;
+        public bool darkModeCheck;
         public bool DarkModeCheck { get => darkModeCheck; set
                 {
                     SetProperty(ref darkModeCheck, value);
-                    MainWindow win = main.getSession<MainWindow>();
-                    //UserSettingsWindow win2 = main.getSession<UserSettingsWindow>();
+                MainWindow win = main.getSession<MainWindow>();
+                
+                
+                //UserSettingsWindow win2 = main.getSession<UserSettingsWindow>();
                 if (win != null)
                 {
                     var converter = new System.Windows.Media.BrushConverter();
+                    var win2 = MainWindowViewModel.instance;
+                    //RecursiveCheck = MainWindowViewModel.us.Recursive;
+                    //DarkModeCheck = MainWindowViewModel.us.DarkMode;
+                    if (darkModeCheck)
+                    {
+                        
+                        win.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
+                        win2.Color_ExceptionLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win2.Color_FileExceptionList = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win2.Color_SuchFeldLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win2.Color_tb_Ping = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win2.Color_FoundFiles = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win2.Color_tb_AddExceptions = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win2.Color_tb_Search = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
 
-                    if (darkModeCheck) win.Background  = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
-                    else win.Background  = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        Color_UserSettingsFore = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        Color_CheckBox1Fore = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        Color_CheckBox1Back = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        Color_MiddleBorder = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        Color_MiddleBorderBrush = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        Color_Window = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
+                    }
+                    else
+                    {
+                        win.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        win2.Color_ExceptionLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win2.Color_FileExceptionList = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win2.Color_SuchFeldLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win2.Color_tb_Ping = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win2.Color_FoundFiles = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win2.Color_tb_AddExceptions = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        win2.Color_tb_Search = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+
+                        
+                        Color_UserSettingsFore = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        Color_CheckBox1Fore = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        Color_CheckBox1Back = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        Color_MiddleBorder = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                        Color_MiddleBorderBrush = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                        Color_Window = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    }
                 }
-                fs.C_UC conf = db.getConf<fs.C_UC>("userconfig");
-                conf.Recursive = darkModeCheck;
+                fs.C_UC conf = db.getConf<fs.C_UC>("usersettings");
+                conf.DarkMode = darkModeCheck;
                 db.setConf("usersettings", conf);
             }
         }
+
+        public void checkOwnDarkMode()
+        {
+
+        }
+
+        public static UserSettingsViewModel instance;
 
         private RelayCommand<Window> importButton;
 
@@ -139,5 +188,33 @@ namespace WpfExplorer.ViewModel
         {
             fs.export();
         }
+
+        private System.Windows.Media.Brush color_Window;
+
+        public System.Windows.Media.Brush Color_Window { get => color_Window; set => SetProperty(ref color_Window, value); }
+
+        private System.Windows.Media.Brush color_MiddleBorder;
+
+        public System.Windows.Media.Brush Color_MiddleBorder { get => color_MiddleBorder; set => SetProperty(ref color_MiddleBorder, value); }
+
+        private System.Windows.Media.Brush color_MiddleBorderBrush;
+
+        public System.Windows.Media.Brush Color_MiddleBorderBrush { get => color_MiddleBorderBrush; set => SetProperty(ref color_MiddleBorderBrush, value); }
+
+        private System.Windows.Media.Brush color_CheckBox1Fore;
+
+        public System.Windows.Media.Brush Color_CheckBox1Fore { get => color_CheckBox1Fore; set => SetProperty(ref color_CheckBox1Fore, value); }
+
+        private System.Windows.Media.Brush color_CheckBox1Back;
+
+        public System.Windows.Media.Brush Color_CheckBox1Back { get => color_CheckBox1Back; set => SetProperty(ref color_CheckBox1Back, value); }
+
+        private System.Windows.Media.Brush color_UserSettingsFore;
+
+        public System.Windows.Media.Brush Color_UserSettingsFore { get => color_UserSettingsFore; set => SetProperty(ref color_UserSettingsFore, value); }
+
+        private System.Windows.Media.Color color_CheckBox1BackRev;
+
+        public System.Windows.Media.Color Color_CheckBox1BackRev { get => color_CheckBox1BackRev; set => SetProperty(ref color_CheckBox1BackRev, value); }
     }
 }
