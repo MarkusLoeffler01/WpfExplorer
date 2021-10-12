@@ -30,7 +30,7 @@ namespace WpfExplorer
                 return JsonConvert.DeserializeObject<T>(json);
 
             }
-            catch (Exception e) { main.ReportError(e); throw; }
+            catch (Exception e) { main.ReportError(e, main.status.error); throw; }
         }
 
         //Speichert eine Datei in Appdata\Roaming\WpfExplorer\. Nimmt den Dateinamen und den Text (in JSON) als Übergabewert
@@ -43,7 +43,7 @@ namespace WpfExplorer
                 fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS + $"{name}.json", _, true);
                 return;
             }
-            catch (Exception e) { main.ReportError(e); throw; }
+            catch (Exception e) { main.ReportError(e, main.status.error); throw; }
         }
 
         //Pingt die Datenbank an und gibt den Ping in ms zurück. Falls fehlgeschlagen, gebe -1 zurück
@@ -174,7 +174,7 @@ namespace WpfExplorer
                 Database = item.Database
             }.ConnectionString);
             try { con.Open(); }
-            catch (Exception e) { main.ReportError(e); throw; }
+            catch (Exception e) { main.ReportError(e, main.status.error, "Konnte Verbindung zur Datenbank nicht öffnen"); throw; }
 
             var cmd = new MySqlCommand(command, con);
             var reader = cmd.ExecuteReader();
@@ -197,7 +197,7 @@ namespace WpfExplorer
             //MessageBox.Show(conStr);
             NpgsqlConnection con = new NpgsqlConnection(conStr);
             try { con.Open(); }
-            catch (Exception e) { main.ReportError(e); throw; }
+            catch (Exception e) { main.ReportError(e, main.status.error, "Die Datenbank ist nicht erreichbar. Stellen Sie sicher, dass Sie den Port 3306 von ***REMOVED*** erreichen können"); throw; }
             NpgsqlCommand cmd = new NpgsqlCommand(command, con);
             //cmd.Prepare();
             var reader = cmd.ExecuteReader();

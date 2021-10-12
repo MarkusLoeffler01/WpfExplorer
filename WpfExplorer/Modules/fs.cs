@@ -225,13 +225,14 @@ namespace WpfExplorer
         public static string[] getPath(string fileName)
         {
             /**Error handling. Ungültige Zeichen wie ", ' oder ` geben -1 zurück */
-            if (fileName.Contains("'") || fileName.Contains('"') || fileName.Contains('`')) { main.ReportError(new Exception("Ungültiger Dateiname")); return new string[] { "-1" }; }
+            if (fileName.Contains("'") || fileName.Contains('"') || fileName.Contains('`')) { main.ReportError(new Exception(), main.status.warning, "Ungültiger Dateiname. Die Datei enthält ungültige Zeichen wie \", ' oder `. Aus Sicherheit wird die Query abgebrochen"); return new string[] { "-1" }; }
             return db.myquery("SELECT * FROM test WHERE fileName =" + fileName).ToArray();
         }
 
         public static string[] getContent(string content)
         {
-            if (content.Contains("'") || content.Contains('"') || content.Contains('`')) { main.ReportError(new Exception("Ungültiger Dateiname")); return new string[] { "-1" }; }
+            if (content.Contains("'") || content.Contains('"') || content.Contains('`')) { main.ReportError(new Exception(), main.status.warning, "Ungültiger Dateiname. Die Datei enthält ungültige Zeichen wie \", ' oder `. Aus Sicherheit wird die Query abgebrochen"); return new string[] { "-1" };
+        }
             return db.myquery("SELECT * FROM test WHERE content =" + content).ToArray();
         }
 
@@ -303,7 +304,7 @@ namespace WpfExplorer
             }
             catch (Exception e)
             {
-                main.ReportError(e); return -255;
+                main.ReportError(e, main.status.warning, "Datei konnte nicht indiziert werden: "+e.Message); return -255;
             }
         }
 
@@ -347,14 +348,16 @@ namespace WpfExplorer
                         //Der Directory ist nicht indiziert
                         else
                         {
-                            MessageBox.Show($"Die Datei ${_file} in {path} konnte nicht entfernt werden, da das Verzeichnis nicht indiziert wurde");
+                            string log = $"Die Datei ${_file} in {path} konnte nicht entfernt werden, da das Verzeichnis nicht indiziert wurde";
+                            main.AddLog(log, main.status.warning);
+                            MessageBox.Show(log);
                             main.isIndexerRunning = false;
                             return;
                         }
                     }
                 }
                 //NEIN, der Directory ist nicht im Index und die Datei wurde nicht gefunden
-                if (!found) { MessageBox.Show($"Die Datei ${_file} in {path} konnte nicht entfernt werden, da diese nicht indiziert wurde"); }
+                if (!found) { string log = $"Die Datei ${_file} in {path} konnte nicht entfernt werden, da diese nicht indiziert wurde"; main.AddLog(log, main.status.warning); MessageBox.Show(log);  }
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
@@ -364,7 +367,7 @@ namespace WpfExplorer
             }
             catch (Exception e)
             {
-                main.ReportError(e);
+                main.ReportError(e, main.status.warning, "Die Datei konnte nicht indiziert werden");
             }
         }
 

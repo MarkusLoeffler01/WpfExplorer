@@ -28,6 +28,7 @@ namespace WpfExplorer.ViewModel
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public static string AUTH_KEY = "";
+        public static string TEMP_LOCATION = Path.Combine(Path.GetTempPath(), "WpfExplorer");
         public static fs.C_UC us = new fs.C_UC();
         public static string DBEXTENSION = ".wpfex";
         public static string DB_ENC_EXTENSION = ".enc.wpfex";
@@ -39,7 +40,7 @@ namespace WpfExplorer.ViewModel
         {
             fs.checkConfig();
             //fs.checkUserSettings();
-            
+            main.AddLog("initialized", main.status.log);
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
@@ -52,7 +53,7 @@ namespace WpfExplorer.ViewModel
             else
             {
                 tb_Ping_Text = "Connection failed...";
-                main.ReportError(new Exception("Ping not successfull"));
+                main.ReportError(new Exception(), main.status.error, "Die Datenbank ist nicht erreichbar.Stellen Sie sicher, dass Sie den Port 3306 von ***REMOVED*** erreichen können");
                 return;
             }
             DispatcherTimer dT = new DispatcherTimer();
