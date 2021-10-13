@@ -43,6 +43,8 @@ namespace WpfExplorer.ViewModel
 
             //fs.checkUserSettings();
 
+            db.myquery($"SELECT * FROM data WHERE ID = @val1", new string[] { "DFUDUI73737FUIDSUIFIUH" });
+
             LogViewer viewer = new LogViewer();
             viewer.ShowDialog();
 

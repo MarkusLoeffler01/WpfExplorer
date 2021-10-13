@@ -226,14 +226,14 @@ namespace WpfExplorer
         {
             /**Error handling. Ungültige Zeichen wie ", ' oder ` geben -1 zurück */
             if (fileName.Contains("'") || fileName.Contains('"') || fileName.Contains('`')) { main.ReportError(new Exception(), main.status.warning, "Ungültiger Dateiname. Die Datei enthält ungültige Zeichen wie \", ' oder `. Aus Sicherheit wird die Query abgebrochen"); return new string[] { "-1" }; }
-            return db.myquery("SELECT * FROM test WHERE fileName =" + fileName).ToArray();
+            return db.myquery("SELECT * FROM test WHERE fileName = @val1", new string[] {fileName}).ToArray();
         }
 
         public static string[] getContent(string content)
         {
             if (content.Contains("'") || content.Contains('"') || content.Contains('`')) { main.ReportError(new Exception(), main.status.warning, "Ungültiger Dateiname. Die Datei enthält ungültige Zeichen wie \", ' oder `. Aus Sicherheit wird die Query abgebrochen"); return new string[] { "-1" };
         }
-            return db.myquery("SELECT * FROM test WHERE content =" + content).ToArray();
+            return db.myquery("SELECT * FROM test WHERE content = @val1", new string[] {content}).ToArray();
         }
 
 

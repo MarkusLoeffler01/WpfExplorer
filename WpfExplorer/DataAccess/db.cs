@@ -81,11 +81,11 @@ namespace WpfExplorer
 
             fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS + "\\database.json", JsonConvert.SerializeObject(data), true);
             MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
-            var last_sync = myquery($"SELECT last_sync from users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            var last_sync = myquery($"SELECT last_sync from users WHERE ID = @val1", new string[] {MainWindowViewModel.AUTH_KEY});
             if (last_sync.Count == 0)
             {
                 string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                myquery($"INSERT INTO users(ID, last_sync) VALUES('{MainWindowViewModel.AUTH_KEY}', '{dt}')");
+                myquery($"INSERT INTO users(ID, last_sync) VALUES(@val1, @val2)", new string[] {MainWindowViewModel.AUTH_KEY, dt});
                 var db = getConf<fs.C_IZ>("database");
                 db.last_sync = dt;
                 setConf("database", db);
@@ -96,7 +96,7 @@ namespace WpfExplorer
             //Vergleiche dbs, wenn kleiner gleich 0, dann ist die DB später
             if (DateTime.Compare(dbTime, lcTime)<=0) return false;
 
-            var dbc = myquery($"SELECT PATH FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            var dbc = myquery($"SELECT PATH FROM data WHERE ID = @val1", new string[] { MainWindowViewModel.AUTH_KEY });
             
             for(int i = 0; i < dbc.Count; i++) fs.AddToIndex(dbc[i]);
             return true;
@@ -111,11 +111,11 @@ namespace WpfExplorer
             if (MainWindowViewModel.AUTH_KEY.Length == 0) return false;
             string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
-            var last_sync = myquery($"SELECT last_sync FROM users WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            var last_sync = myquery($"SELECT last_sync FROM users WHERE ID = @val1", new string[] { MainWindowViewModel.AUTH_KEY });
             if (last_sync.Count == 0)
             {
                 
-                myquery($"INSERT INTO users(ID, last_sync) VALUES('{MainWindowViewModel.AUTH_KEY}', '{dt}')");
+                myquery($"INSERT INTO users(ID, last_sync) VALUES(@val1, @val2)", new string[] {MainWindowViewModel.AUTH_KEY, dt});
                 return false;
             }
             DateTime dbTime = Convert.ToDateTime(last_sync[0]);
@@ -127,7 +127,7 @@ namespace WpfExplorer
 
             int cFile = 0;
             //string datar = JsonConvert.SerializeObject(data);
-            myquery($"DELETE FROM data WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            myquery($"DELETE FROM data WHERE ID = @val1", new [] { MainWindowViewModel.AUTH_KEY });
             for(int i = 0; i < data.Paths.Count; i++)
             {
                 for(int o = 0; o < data.Paths[i].Files.Count; o++)
@@ -138,13 +138,13 @@ namespace WpfExplorer
                     window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
                     var content = data.Paths[i].Files[o].Content ?? "";
                     content = content.Replace('"', '\"');
-                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o].FullPath}', '{content}')");
+                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES (@val1, @val2, @val3)", new string[]{ MainWindowViewModel.AUTH_KEY, data.Paths[i].Files[o].FullPath, content});
                     //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
                 }
             }
 
             //Query die abfragt, ob der Pfad existiert
-            myquery($"UPDATE users SET last_sync = '{dt}' WHERE ID = '{MainWindowViewModel.AUTH_KEY}'");
+            myquery($"UPDATE users SET last_sync = @val1 WHERE ID = @val2", new string[] { dt, MainWindowViewModel.AUTH_KEY });
             var tmp_db = getConf<fs.C_IZ>("database");
             tmp_db.last_sync = dt;
             setConf("database", tmp_db);
@@ -164,7 +164,7 @@ namespace WpfExplorer
         //Create a function which returns a random number
 
         //baut eine Verbindung zur MariaDB auf und führt eine Query aus, gibt dann das Ergebnis zurück
-        public static List<string> myquery(string command)
+        public static List<string> myquery(string command, string[] values = null)
         {
             DBConf item = getConf<DBConf>("config");
             var con = new MySqlConnection(new MySqlConnectionStringBuilder
@@ -179,6 +179,11 @@ namespace WpfExplorer
             catch (Exception e) { main.ReportError(e, main.status.error, "Konnte Verbindung zur Datenbank nicht öffnen"); throw; }
 
             var cmd = new MySqlCommand(command, con);
+            if (values != null)
+            {
+                for(int i = 0; i < values.Length; i++) cmd.Parameters.AddWithValue($"@val{i+1}", values[i]);
+                cmd.Prepare();   
+            }
             var reader = cmd.ExecuteReader();
             List<string> res = new List<string> { };
             while (reader.Read())
@@ -219,8 +224,7 @@ namespace WpfExplorer
 
         public static void initDB()
         {
-            var command = "CREATE TABLE IF NOT EXISTS data (id integer NOT NULL, fileName varchar(255) NOT NULL, fileContent text, PRIMARY KEY(id));";
-            myquery(command);
+            myquery("CREATE TABLE IF NOT EXISTS data (id integer NOT NULL, fileName varchar(255) NOT NULL, fileContent text, PRIMARY KEY(id));");
         }
 
         public class DBConf
