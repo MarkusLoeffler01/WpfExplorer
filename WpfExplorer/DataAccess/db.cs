@@ -136,7 +136,9 @@ namespace WpfExplorer
                     //4 Backslashes, damit die in der DB nicht verloren gehen
                     data.Paths[i].Files[o].FullPath = data.Paths[i].Files[o].FullPath.Replace("\\", "\\\\");
                     window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
-                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o].FullPath}', '{data.Paths[i].Files[o].Content ?? ""}')");
+                    var content = data.Paths[i].Files[o].Content ?? "";
+                    content = content.Replace('"', '\"');
+                    myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES ('{MainWindowViewModel.AUTH_KEY}', '{data.Paths[i].Files[o].FullPath}', '{content}')");
                     //Display(totalFiles, cFile.ToString(), data.Paths[i].Files[o]);
                 }
             }

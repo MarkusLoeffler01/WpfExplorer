@@ -8,7 +8,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         mc:Ignorable="ignore"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" Height="450" Width="800">
     <Window.DataContext>
         <ViewModel:MainWindowViewModel x:Name="mvm"></ViewModel:MainWindowViewModel>
     </Window.DataContext>
@@ -54,13 +54,11 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <ListBox Foreground="{Binding Color_FileExceptionList}" Height="Auto" Name="lb_Exceptions" ItemsSource="{Binding FileExceptionList}" SelectedItem="{Binding SelectedFileException}" Grid.Row="0" BorderThickness="1px" BorderBrush="{Binding Color_FileExceptionList}">
-                <ListBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Delete" Command="{Binding DeleteFileException}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
-                                Path=PlacementTarget.SelectedItem}"/>
-                </ContextMenu>
-            </ListBox.ContextMenu></ListBox>
+                <TextBox Foreground="{Binding Color_tb_AddExceptions}" Grid.Row="4" BorderBrush="{Binding Color_tb_AddExceptions}" Name="tb_AddExceptions" Text="{Binding tb_AddExceptionsText}" Height="25" BorderThickness="0,0,0,2">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=tb_AddExceptions, Path=Text}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
             </Grid>
 
             <!-- COL 1 | ROW 1 :::: Note: Neues Grid damit man nicht für alle Elemente extra nen Margin angibt, sondern das sich automatisch ausrichtet. Dafür muss aber jede Row manuell hinzugefügt werden -->
@@ -82,14 +80,18 @@
                         <ColumnDefinition Width=".5*"/>
                     </Grid.ColumnDefinitions>
                     <Button Name="IndexNewFiles" Command="{Binding Index_Click}" Grid.Column="0" Foreground="White" Cursor="Hand">Neue Dateien indizieren</Button>
-                    <Button Name="testbtn" Command="{Binding Settings_Click}" Grid.Column="1" Foreground="White">Settings</Button>
+                    <Button Name="testbtn" Command="{Binding Settings_Click}" Grid.Column="1" Foreground="White" Cursor="Hand">Settings</Button>
                 </Grid>
                 <Label Foreground="{Binding Color_ExceptionLabel}" Grid.Row="3" FontWeight="Bold" Content="Dateien ausschließen"></Label>
-                <TextBox Foreground="{Binding Color_tb_AddExceptions}" Grid.Row="4" BorderBrush="{Binding Color_tb_AddExceptions}" Name="tb_AddExceptions" Text="{Binding tb_AddExceptionsText}" Height="25" BorderThickness="0,0,0,2">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Return" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=tb_AddExceptions, Path=Text}"/>
-                    </TextBox.InputBindings>
-                </TextBox>
+                <ListBox Foreground="{Binding Color_FileExceptionList}" Height="Auto" Name="lb_Exceptions" ItemsSource="{Binding FileExceptionList}" SelectedItem="{Binding SelectedFileException}" Grid.Row="0" BorderThickness="1px" BorderBrush="{Binding Color_FileExceptionList}">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Delete" Command="{Binding DeleteFileException}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
+                                Path=PlacementTarget.SelectedItem}"/>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                </ListBox>
+                
                 <Button Foreground="White" Grid.Row="5" Content="Hilfe" Command="{Binding _bt_Help}" Margin=" 0 20 0 0"/>
                 <ListBox Foreground="{Binding Color_FoundFiles}" Grid.Row="6" MaxHeight="300px" Name="GD_Dateiausgabe" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <i:Interaction.Triggers>

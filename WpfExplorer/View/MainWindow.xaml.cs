@@ -36,10 +36,5 @@ namespace WpfExplorer
             USBDetector.Detect_Click(sender, e);
             fs.checkUserSettings(false);
         }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

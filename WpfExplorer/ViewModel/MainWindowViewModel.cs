@@ -38,10 +38,16 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
-            fs.checkConfig();
-            //fs.checkUserSettings();
-            main.AddLog("initialized", main.status.log);
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
+            fs.checkConfig();
+
+            //fs.checkUserSettings();
+
+            LogViewer viewer = new LogViewer();
+            viewer.ShowDialog();
+
+            main.AddLog("initialized", main.status.log);
+            
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             Index_Click = new RelayCommand(o => Indiziere());
@@ -60,7 +66,7 @@ namespace WpfExplorer.ViewModel
 
             //DispatcherTimer ready = new DispatcherTimer(TimeSpan.Zero, DispatcherPriority.ApplicationIdle, ready_Tick, Application.Current.Dispatcher);
             dT.Tick += new EventHandler(SetPing);
-            dT.Interval = new TimeSpan(0, 0, 1);
+            dT.Interval = new TimeSpan(0, 0, 0);
             dT.Start();
 
 
@@ -380,7 +386,7 @@ namespace WpfExplorer.ViewModel
 
 
         string _PATH = "";
-        List<string> ExcList;
+        List<string> ExcList = new List<string>();
 
         public void Indiziere()
         {
@@ -528,6 +534,19 @@ namespace WpfExplorer.ViewModel
             }
         }
 
+        public ICommand Log_Click
+        {
+            get
+            {
+                if (settings_Click == null)
+                {
+                    settings_Click = new RelayCommand(PerformLogs_Click);
+                }
+
+                return settings_Click;
+            }
+        }
+
 
         //In der Window sollte es Tickboxen geben, welche beim Anklick Variablen ändern.
         //Z.B. ob rekursiv gesucht werden sollte. Unten im Eck sollte es einen "Schließen" Button geben
@@ -535,11 +554,16 @@ namespace WpfExplorer.ViewModel
         {
             //Einstellungen wie rekursiv indizieren, Cache leeren
             UserSettingsWindow window = new UserSettingsWindow();
-            //window.MaxHeight = window.MinHeight = window.Height = 300;
-            //window.MaxWidth = window.MinWidth = window.Width = 400;
             window.Title = "Einstellungen - WpfExplorer";
-            var grid = new Grid();
+            window.ShowDialog();
 
+        }
+
+        private void PerformLogs_Click(object commandParameter)
+        {
+            //Einstellungen wie rekursiv indizieren, Cache leeren
+            LogViewer window = new LogViewer();
+            window.Title = "LogViewer - WpfExplorer";
             window.ShowDialog();
 
         }
