@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommandHelper;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,6 +17,7 @@ using System.Text.RegularExpressions;
 using WpfExplorer.Model;
 using WpfExplorer.View;
 using Microsoft.Win32;
+using System.Threading.Tasks;
 
 namespace WpfExplorer.ViewModel
 {
@@ -76,9 +78,28 @@ namespace WpfExplorer.ViewModel
         }
         public void ready_Tick()
         {
-            db.push(this);
-            db.pull();
+            var res = db.fetch();
+            if(res == 1)
+            {
+                PPbtn = "↓";
+            }
+            else if(res == 0)
+            {
+                PPbtn = "↑";
+            }
+            else if(res == -2)
+            {
+                PPbtn = "✓";
+            }
         }
+
+        public void sync()
+        {
+            
+            db.pull();
+            db.push();
+        }
+        
 
         public static void CheckExtKey()
         {
@@ -175,7 +196,8 @@ namespace WpfExplorer.ViewModel
             if (tb_Search_Text.Length == 0) return;
             /**Es sollten zuerst die Dateinamen und DANN erst Dateien mit dem Inhalt durchsucht werden */
 
-            List<FileStructure> File = fs.searchFile(tb_Search_Text, false);
+            List<FileStructure> File = fs.searchFile(tb_Search_Text, true);
+            Task.Run(searchContext);
             if (File.Count != 0)
             {
 
@@ -197,6 +219,11 @@ namespace WpfExplorer.ViewModel
                     FoundFiles.Add(res);
                 }
             }
+        }
+
+        public void searchContext()
+        {
+
         }
 
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
@@ -450,6 +477,7 @@ namespace WpfExplorer.ViewModel
             BW_Files _progress = new BW_Files();
             
             string[] files = fs.readDirSync(_PATH, true, true);
+            if (files == null) return;
             List<fs.C_File> _files = new List<fs.C_File>();
 
             for (int i = 0; i < files.Length; i++)
@@ -669,5 +697,74 @@ namespace WpfExplorer.ViewModel
         private string tb_FoundFiles1;
 
         public string tb_FoundFiles { get => tb_FoundFiles1; set => SetProperty(ref tb_FoundFiles1, value); }
+
+        private RelayCommand removeFromDB;
+        public ICommand RemoveFromDB
+        {
+            get
+            {
+                if (removeFromDB == null) removeFromDB = new RelayCommand(Perform_removeFromDB);
+                return removeFromDB;
+            }
+        }
+
+        private void Perform_removeFromDB(object commandParameter)
+        {
+            string[] splitted = commandParameter.ToString().Split('\n') ?? new string[] {};
+            fs.RemoveFromIndex(Path.Combine(splitted[1], splitted[0]));
+        }
+
+        private object pPbtn;
+
+        public object PPbtn { get => pPbtn; set => SetProperty(ref pPbtn, value); }
+
+        private double syncbtn_Rotate;
+
+        public double Syncbtn_Rotate { get => syncbtn_Rotate; set => SetProperty(ref syncbtn_Rotate, value); }
+
+        private RelayCommand rotate_button1;
+
+        public void _rotate_button(object commandParameter)
+        {
+            MainWindow.instance.AnimationBoard.Begin();
+            //MainWindow.instance.AnimationBoard.BeginAnimation()
+            ready_Tick();
+            //MainWindow.instance.AnimationBoard.Stop();
+        }
+
+        public ICommand rotate_button
+        {
+            get
+            {
+                if (rotate_button1 == null)
+                {
+                    rotate_button1 = new RelayCommand(_rotate_button);
+                }
+
+                return rotate_button1;
+            }
+        }
+
+        private RelayCommand syncbtn_Sync;
+
+        public ICommand Syncbtn_Sync
+        {
+            get
+            {
+                if (syncbtn_Sync == null)
+                {
+                    syncbtn_Sync = new RelayCommand(PerformSyncbtn_Sync);
+                }
+
+                return syncbtn_Sync;
+            }
+        }
+
+        private void PerformSyncbtn_Sync(object commandParameter)
+        {
+            db.pull();
+            db.push();
+            ready_Tick();
+        }
     }
 }

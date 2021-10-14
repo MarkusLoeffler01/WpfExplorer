@@ -14,7 +14,6 @@ namespace WpfExplorer
         public static bool isIndexerRunning = false;
         public static void ReportError(Exception e, main.status status, string message = null)
         {
-            throw e;
             string msg;
             if (e.GetType().ToString() == "Npgsql.NpgsqlException") msg = "Es wurde ein Fehler festgestellt. Stellen Sie sicher, dass sie mit dem Internet verbunden sind. Bei weiteren Fragen wenden Sie sich an ihren System Administrator\n\n\nFehlertext: " + e.Message;
             else msg = $"Es ist ein kritischer Fehler aufgetreten, das Programm muss beendet werden: \n\n{e.Message}Die Log Datei finden Sie unter {Path.Combine(MainWindowViewModel.TEMP_LOCATION)} oder Sie nutzen den internen Log-Viewer\nWeitere Hilfe erhalten Sie hier: " + e.HelpLink;

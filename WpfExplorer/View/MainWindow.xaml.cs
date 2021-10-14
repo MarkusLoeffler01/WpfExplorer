@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using WpfExplorer.ViewModel;
 using WpfExplorer.Modules;
+using System.Threading.Tasks;
 #pragma warning disable 0649
 
 namespace WpfExplorer
@@ -34,7 +35,7 @@ namespace WpfExplorer
         {
             ((MainWindowViewModel)DataContext).tb_DatenbankFiles = $"{db.CountFiles()} Dateien in der Datenbank";
             ((MainWindowViewModel)DataContext).tb_IndizierteFiles = "";
-            ((MainWindowViewModel)DataContext).ready_Tick();
+            MainWindowViewModel.instance.ready_Tick();
             USBDetector.Detect_Click(sender, e);
             fs.checkWindowColors(fs.Window.MainWindow);
         }

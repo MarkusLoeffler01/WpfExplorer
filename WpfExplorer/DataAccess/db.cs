@@ -88,53 +88,60 @@ namespace WpfExplorer
             while (main.isIndexerRunning) ;
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
 
-            if (data.Paths == null) data.Paths = new List<fs.C_Path>();
-            if (data.AUTH_KEY == null) data.AUTH_KEY = main.RandomString(64);
-            if (data.last_sync == null) data.last_sync = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            if (fetch() == 0) return false;
 
-            fs.writeFileSync(MainWindowViewModel.CONFIG_LOCATIONS + "\\database.json", JsonConvert.SerializeObject(data), true);
             MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
             var last_sync = myquery($"SELECT last_sync from users WHERE ID = @val1", new string[] {MainWindowViewModel.AUTH_KEY});
             if (last_sync.Count == 0)
             {
                 string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 myquery($"INSERT INTO users(ID, last_sync) VALUES(@val1, @val2)", new string[] {MainWindowViewModel.AUTH_KEY, dt});
-                var db = getConf<fs.C_IZ>("database");
-                db.last_sync = dt;
-                setConf("database", db);
+                data.last_sync = dt;
+                setConf("database", data);
                 return false;
             }
-            DateTime dbTime = Convert.ToDateTime(last_sync[0]);
-            DateTime lcTime = Convert.ToDateTime(data.last_sync);
-            //Vergleiche dbs, wenn kleiner gleich 0, dann ist die DB später
-            if (DateTime.Compare(dbTime, lcTime)<=0) return false;
-
             var dbc = myquery($"SELECT PATH FROM data WHERE ID = @val1", new string[] { MainWindowViewModel.AUTH_KEY });
             
             for(int i = 0; i < dbc.Count; i++) fs.AddToIndex(dbc[i]);
+            data.last_sync = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            setConf("database", data);
             return true;
         }
 
-        //Bitte in Task.Run ausführen
-        //Wenn false, dann push nicht nötig
-        //Wenn true, dann erfolgreich gepushed
-        public static bool push(MainWindowViewModel window)
+        /// <summary>
+        /// Prüft, ob die globale Datenbank neuer als die lokale ist
+        /// </summary>
+        public static int fetch()
         {
-            while (main.isIndexerRunning) ;
-            if (MainWindowViewModel.AUTH_KEY.Length == 0) return false;
+            if (MainWindowViewModel.AUTH_KEY.Length == 0) MainWindowViewModel.AUTH_KEY = main.RandomString(64);
             string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             var last_sync = myquery($"SELECT last_sync FROM users WHERE ID = @val1", new string[] { MainWindowViewModel.AUTH_KEY });
             if (last_sync.Count == 0)
             {
-                
-                myquery($"INSERT INTO users(ID, last_sync) VALUES(@val1, @val2)", new string[] {MainWindowViewModel.AUTH_KEY, dt});
-                return false;
+
+                myquery($"INSERT INTO users(ID, last_sync) VALUES(@val1, @val2)", new string[] { MainWindowViewModel.AUTH_KEY, dt });
+                return -1;
             }
             DateTime dbTime = Convert.ToDateTime(last_sync[0]);
             DateTime lcTime = Convert.ToDateTime(data.last_sync);
-            //Vergleiche dbs, wenn größer gleich 0, dann ist die DB vor
-            if (DateTime.Compare(dbTime, lcTime) >= 0) return false;
+
+            //Vergleiche dbs, wenn größer gleich 0, dann ist die globale DB vor
+            if (DateTime.Compare(dbTime, lcTime) == 0) return -2; 
+            else if (DateTime.Compare(dbTime, lcTime) >= 0) return 1; 
+            return 0;
+        }
+
+        //Bitte in Task.Run ausführen
+        //Wenn false, dann push nicht nötig
+        //Wenn true, dann erfolgreich gepushed
+        public static bool push()
+        {
+            if (fetch() == 1) return false;
+            string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var window = MainWindowViewModel.instance;
+            while (main.isIndexerRunning) ;
+            fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             int totalFiles = data.Paths.Count;
 
 
