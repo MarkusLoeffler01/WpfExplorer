@@ -235,7 +235,20 @@ namespace WpfExplorer
 
         public static string readFileSync(string path)
         {
-            using (StreamReader r = new StreamReader(path, Encoding.UTF8)) try { return r.ReadToEnd(); } catch(Exception e) { main.ReportError(e, main.status.warning, "Datei konnte nicht gelesen werden"); return null; }
+            using (StreamReader r = new StreamReader(path, Encoding.UTF8)) {
+                string _ = null;
+                try 
+                { 
+                    _ = r.ReadToEnd(); 
+                }
+
+                catch (Exception e)
+                {
+                    main.ReportError(e, main.status.warning, "Datei konnte nicht gelesen werden");
+                }
+                finally { r.Close(); }
+                return _;
+            }
         }
 
         public static void writeFileSync(string path, string context, bool overwrite = false)

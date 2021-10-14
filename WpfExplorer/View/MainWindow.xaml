@@ -67,7 +67,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <ListBox Foreground="{Binding Color_FoundFiles}" Grid.Row="6" MaxHeight="300px" Name="GD_Dateiausgabe" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox Foreground="{Binding Color_FoundFiles}" Grid.Row="6" Name="GD_Dateiausgabe" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseDoubleClick">
                             <i:InvokeCommandAction Command="{Binding MouseDoubleClick}" CommandParameter="{Binding ElementName=GD_Dateiausgabe, Path=SelectedItem}"/>

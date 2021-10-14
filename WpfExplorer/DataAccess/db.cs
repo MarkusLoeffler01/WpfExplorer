@@ -20,22 +20,23 @@ namespace WpfExplorer
         {
             string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string json = "";
+            StreamReader r = null;
 
             try
             {
-                using (StreamReader r = new StreamReader(MainWindowViewModel.CONFIG_LOCATIONS + $"{name}.json"))
-                {
-                    json = r.ReadToEnd(); r.Close();
-                }
+                r = new StreamReader(MainWindowViewModel.CONFIG_LOCATIONS + $"{name}.json");
+                json = r.ReadToEnd(); r.Close();
                 return JsonConvert.DeserializeObject<T>(json);
 
             }
             catch (Exception e) { main.ReportError(e, main.status.error); throw; }
+            finally { r.Close(); }
         }
 
+        public static fs.C_IZ dbdata = db.getConf<fs.C_IZ>("database");
         public static uint CountFiles()
         {
-            fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+            fs.C_IZ data = dbdata;
             uint count = 0;
 
             for(int i = 0; i < data.Paths.Count; i++)

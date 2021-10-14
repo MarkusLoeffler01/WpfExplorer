@@ -93,7 +93,6 @@ namespace WpfExplorer.ViewModel
 
         private void SetPing(object sender, EventArgs e)
         {
-            Console.WriteLine("PING");
             double PingTime = db.PingDB();
             tb_Ping_Text = $"{PingTime}ms";
         }
