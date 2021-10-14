@@ -18,20 +18,17 @@
             <RowDefinition Height="94.68"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="txt_Info" Foreground="{Binding Color_UserSettingsFore}" TextAlignment="Center" TextWrapping="Wrap" FontSize="30"><Run Language="en-gb" Text="User Settings"/><LineBreak/><Run Language="en-gb"/></TextBlock>
-        <Border BorderBrush="{Binding Color_MiddleBorderBrush}" Background="{Binding Color_MiddleBorder}"  Height="94.68" Width="300" BorderThickness="1" Grid.Row="1">
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="txt_Info" Foreground="{Binding Color_UserSettingsFore}" TextAlignment="Center" TextWrapping="Wrap" FontSize="30"><Run Text="User Settings"/><LineBreak/></TextBlock>
+        <Border BorderBrush="{Binding Color_MiddleBorderBrush}" Background="{Binding Color_Window}"  Height="94.68" Width="300" BorderThickness="1" Grid.Row="1">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <CheckBox Foreground="{Binding Color_CheckBox1Fore}" BorderBrush="{Binding Color_CheckBox1Back}" Background="{Binding Color_CheckBox1Back}" Grid.Row="0" IsChecked="{Binding Path=RecursiveCheck, Mode=Twoway}" Content="Rekursiv indizieren" >
-                    <CheckBox.Resources>
-                        <SolidColorBrush x:Key="MaterialDesignCheckBoxOff" Color="{Binding Color_CheckBox1BackRev}" />
-                        <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="Lime" />
-                    </CheckBox.Resources>
+                <CheckBox Style="{DynamicResource CheckboxStyle}" Foreground="{Binding Color_CheckBox1Fore}" BorderBrush="{Binding Color_CheckBox1Back}" Background="White" Grid.Row="0" IsChecked="{Binding Path=RecursiveCheck, Mode=Twoway}" Content="Rekursiv indizieren" >
+                    
                 </CheckBox>
-                <CheckBox Foreground="{Binding Color_CheckBox1Fore}" BorderBrush="{Binding Color_CheckBox1Back}"  Background="{Binding Color_CheckBox1Back}" Grid.Row="1" Content="Dark Mode" IsChecked="{Binding Path=DarkModeCheck, Mode=Twoway}">
+                <CheckBox Foreground="{Binding Color_CheckBox1Fore}" BorderBrush="{Binding Color_CheckBox1Back}"  Background="White" Grid.Row="1" Content="Dark Mode" IsChecked="{Binding Path=DarkModeCheck, Mode=Twoway}">
                 <CheckBox.Resources>
                         <SolidColorBrush x:Key="MaterialDesignCheckBoxOff" Color="{Binding Color_CheckBox1BackRev}" />
                     <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="Lime" />

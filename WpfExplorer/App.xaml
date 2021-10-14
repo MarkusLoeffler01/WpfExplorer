@@ -9,6 +9,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="Blue" SecondaryColor="White" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="/WpfExplorer;component/Styles/ComboBoxStyles.xaml" />
+                <ResourceDictionary Source="/WpfExplorer;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="/WpfExplorer;component/Styles/BrushColors.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -27,7 +27,10 @@ namespace WpfExplorer.ViewModel
         {
             //windowTitle = title;
             this.CloseWindowCommand = new RelayCommand<Window>(this.CloseWindow);
+            instance = this;
         }
+
+        public static MessageDialog instance;
 
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
         {
@@ -67,8 +70,19 @@ namespace WpfExplorer.ViewModel
         }
 
 
+        private string titleText;
+        public string TitleText { get => titleText; set => SetProperty(ref titleText, value); }
+
         private string passwordText;
 
         public string PasswordText { get => passwordText; set => SetProperty(ref passwordText, value); }
+
+        private System.Windows.Media.Brush color_Foreground;
+        public System.Windows.Media.Brush Color_Foreground { get => color_Foreground; set => SetProperty(ref color_Foreground, value); }
+
+        private System.Windows.Media.Brush color_Background;
+        public System.Windows.Media.Brush Color_Background { get => color_Background; set => SetProperty(ref color_Background, value); }
+
+
     }
 }

@@ -28,6 +28,7 @@ namespace WpfExplorer.ViewModel
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         public static string AUTH_KEY = "";
+        public static string TEMP_LOCATION = Path.Combine(Path.GetTempPath(), "WpfExplorer");
         public static fs.C_UC us = new fs.C_UC();
         public static string DBEXTENSION = ".wpfex";
         public static string DB_ENC_EXTENSION = ".enc.wpfex";
@@ -37,10 +38,13 @@ namespace WpfExplorer.ViewModel
 
         public MainWindowViewModel()
         {
-            fs.checkConfig();
-            //fs.checkUserSettings();
-            
             if (DesignerProperties.GetIsInDesignMode(new DependencyObject())) return;
+            fs.checkConfig();
+
+            //fs.checkUserSettings();
+
+            main.AddLog("initialized", main.status.log);
+            
             tb_Ping_Text = "Connecting to Database...";
             ButtonCommand = new RelayCommand(o => Debug_Click());
             Index_Click = new RelayCommand(o => Indiziere());
@@ -52,14 +56,14 @@ namespace WpfExplorer.ViewModel
             else
             {
                 tb_Ping_Text = "Connection failed...";
-                main.ReportError(new Exception("Ping not successfull"));
+                main.ReportError(new Exception(), main.status.error, "Die Datenbank ist nicht erreichbar.Stellen Sie sicher, dass Sie den Port 3306 von ***REMOVED*** erreichen können");
                 return;
             }
             DispatcherTimer dT = new DispatcherTimer();
 
             //DispatcherTimer ready = new DispatcherTimer(TimeSpan.Zero, DispatcherPriority.ApplicationIdle, ready_Tick, Application.Current.Dispatcher);
             dT.Tick += new EventHandler(SetPing);
-            dT.Interval = new TimeSpan(0, 0, 1);
+            dT.Interval = new TimeSpan(0, 0, 0);
             dT.Start();
 
 
@@ -189,6 +193,8 @@ namespace WpfExplorer.ViewModel
                     if (v.Size > 1000) { end = "kB"; size = Convert.ToDouble(v.Size / 1000); }
                     else if (v.Size > 1000000) { end = "MB"; size = v.Size / 1000000; }
                     else if (v.Size > 1000000000) { end = "GB"; size = v.Size / 1000000000; }
+
+                    v.Path = Path.GetDirectoryName(v.Path);
 
                     string res = "";
                     res += v.Filename + "\n";
@@ -346,15 +352,13 @@ namespace WpfExplorer.ViewModel
             if (o == null) return;
             string p = o.ToString();
             string[] pp = p.Split('\n');
+            string path = Path.Combine(pp[1], pp[0]);
 
-            Process cmd = new Process();
-            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.Arguments = "/c " + $"explorer.exe /select,\"{pp[1]}\\{pp[0]}\"";
-            cmd.EnableRaisingEvents = true;
-            cmd.Start();
+            string argument = "/select, \"" + path + "\"";
+            Process.Start("explorer.exe", argument);
+            //cmd.StartInfo.Arguments = "/c " + $"explorer.exe /select,\"{pp[1]}\\{pp[0]}\"";
+            //cmd.EnableRaisingEvents = true;
+            //cmd.Start();
         }
 
         private RelayCommand _bt_Help1;
@@ -379,7 +383,7 @@ namespace WpfExplorer.ViewModel
 
 
         string _PATH = "";
-        List<string> ExcList;
+        List<string> ExcList = new List<string>();
 
         public void Indiziere()
         {
@@ -417,8 +421,6 @@ namespace WpfExplorer.ViewModel
 
         private void backgroundWorker1_DoWork()
         {
-            string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
-
             string[] files = fs.readDirSync(_PATH, true, true);
             List<fs.C_File> _files = new List<fs.C_File>();
 
@@ -442,9 +444,9 @@ namespace WpfExplorer.ViewModel
                 switch (fs.AddToIndex(files[i]))
                 {
 
-                    case -1: SetIndexMessage($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesSkipped.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
+                    case -1: string msg = $"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"; SetIndexMessage(msg); main.AddLog(msg, main.status.warning); ProcessedFiles.FilesSkipped.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
                     case -255: ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Exception
-                    case 0: ProcessedFiles.FilesOk.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break;
+                    case 0: ProcessedFiles.FilesOk.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); main.AddLog($"Die Datei {Path.GetFileName(files[i])} wurde zur Datenbank hinzugefügt", main.status.log); break;
 
                 }
                 SetIndexProgress(_files[i], i, TotalFiles);
@@ -459,6 +461,7 @@ namespace WpfExplorer.ViewModel
 
             int total = ProcessedFiles.FilesOk.Count + ProcessedFiles.FilesSkipped.Count + ProcessedFiles.FilesOk.Count;
             MsgText += $"\n{total} von {TotalFiles} Dateien verarbeitet";
+            main.AddLog(MsgText.Replace("\n", " | "), main.status.log);
             MessageBox.Show(MsgText);
         }
 
@@ -527,6 +530,19 @@ namespace WpfExplorer.ViewModel
             }
         }
 
+        public ICommand Log_Click
+        {
+            get
+            {
+                if (settings_Click == null)
+                {
+                    settings_Click = new RelayCommand(PerformLogs_Click);
+                }
+
+                return settings_Click;
+            }
+        }
+
 
         //In der Window sollte es Tickboxen geben, welche beim Anklick Variablen ändern.
         //Z.B. ob rekursiv gesucht werden sollte. Unten im Eck sollte es einen "Schließen" Button geben
@@ -534,11 +550,16 @@ namespace WpfExplorer.ViewModel
         {
             //Einstellungen wie rekursiv indizieren, Cache leeren
             UserSettingsWindow window = new UserSettingsWindow();
-            //window.MaxHeight = window.MinHeight = window.Height = 300;
-            //window.MaxWidth = window.MinWidth = window.Width = 400;
             window.Title = "Einstellungen - WpfExplorer";
-            var grid = new Grid();
+            window.ShowDialog();
 
+        }
+
+        private void PerformLogs_Click(object commandParameter)
+        {
+            //Einstellungen wie rekursiv indizieren, Cache leeren
+            LogViewer window = new LogViewer();
+            window.Title = "LogViewer - WpfExplorer";
             window.ShowDialog();
 
         }
@@ -588,5 +609,22 @@ namespace WpfExplorer.ViewModel
         private System.Windows.Media.Brush color_FoundFiles;
 
         public System.Windows.Media.Brush Color_FoundFiles { get => color_FoundFiles; set => SetProperty(ref color_FoundFiles, value); }
+
+        private RelayCommand _bt_Log1;
+
+        public ICommand _bt_Log
+        {
+            get
+            {
+                if (_bt_Log1 == null) _bt_Log1 = new RelayCommand(Perform_bt_Log);
+                return _bt_Log1;
+            }
+        }
+
+        private void Perform_bt_Log(object commandParameter)
+        {
+            LogViewer viewer = new LogViewer();
+            viewer.ShowDialog();
+        }
     }
 }
