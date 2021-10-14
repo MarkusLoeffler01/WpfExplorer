@@ -33,6 +33,18 @@ namespace WpfExplorer
             catch (Exception e) { main.ReportError(e, main.status.error); throw; }
         }
 
+        public static uint CountFiles()
+        {
+            fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+            uint count = 0;
+
+            for(int i = 0; i < data.Paths.Count; i++)
+            {
+                count += (uint)data.Paths[i].Files.Count;
+            }
+            return count;
+        }
+
         //Speichert eine Datei in Appdata\Roaming\WpfExplorer\. Nimmt den Dateinamen und den Text (in JSON) als Übergabewert
         public static void setConf(string name, object text)
         {
@@ -135,7 +147,7 @@ namespace WpfExplorer
                     cFile++;
                     //4 Backslashes, damit die in der DB nicht verloren gehen
                     data.Paths[i].Files[o].FullPath = data.Paths[i].Files[o].FullPath.Replace("\\", "\\\\");
-                    window.SetIndexProgress(data.Paths[i].Files[o], cFile, totalFiles);
+                    window.SetIndexProgress(data.Paths[i].Files[o].Name, cFile, totalFiles);
                     var content = data.Paths[i].Files[o].Content ?? "";
                     content = content.Replace('"', '\"');
                     myquery($"INSERT INTO data (ID, PATH, CONTENT) VALUES (@val1, @val2, @val3)", new string[]{ MainWindowViewModel.AUTH_KEY, data.Paths[i].Files[o].FullPath, content});

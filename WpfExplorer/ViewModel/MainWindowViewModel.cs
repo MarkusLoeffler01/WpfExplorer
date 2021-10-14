@@ -1,5 +1,4 @@
-﻿using CommandHelper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,13 +10,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using RelayCommand = CommandHelper.RelayCommand;
-using System.Threading;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
-using iTextSharp;
-using iTextSharp.text;
 using System.Text.RegularExpressions;
 using WpfExplorer.Model;
 using WpfExplorer.View;
@@ -390,7 +384,12 @@ namespace WpfExplorer.ViewModel
             _PATH = main.getPathDialog();
             if (_PATH == "") return;
 
-            Task.Run(backgroundWorker1_DoWork);
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.WorkerSupportsCancellation = true;
+            worker.ProgressChanged += backgroundWorker1_ProgressChanged;
+            worker.DoWork += backgroundWorker1_DoWork;
+            worker.RunWorkerAsync();
             return;
         }
 
@@ -419,8 +418,38 @@ namespace WpfExplorer.ViewModel
             return valid;
         }
 
-        private void backgroundWorker1_DoWork()
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            BW_Files files = JsonConvert.DeserializeObject<BW_Files>(e.UserState.ToString());
+            if (files.Message != null) SetIndexMessage(files.Message);
+            if(files.Current != null) SetIndexProgress(files.Current.FileName, files.Current.FileCount, files.Total);
+
+        }
+
+        private class BW_Files
+        {
+            public class File
+            {
+                public string FileName;
+                public int FileCount;
+            };
+            public int Total;
+            public uint InDB;
+            public File Current;
+            public string Message;
+
+            public BW_Files()
+            {
+                this.InDB = db.CountFiles();
+                this.Current = new File();
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            BW_Files _progress = new BW_Files();
+            
             string[] files = fs.readDirSync(_PATH, true, true);
             List<fs.C_File> _files = new List<fs.C_File>();
 
@@ -428,7 +457,8 @@ namespace WpfExplorer.ViewModel
             {
                 if (IsExceptedFile(files[i])) continue;
                 _files.Add(fs.getFileInfo(files[i]));
-                SetIndexMessage("Dateien werden gesucht... " + i + " Dateien gefunden");
+                _progress.Message = "Dateien werden gesucht... " + i + " Dateien gefunden";
+                worker.ReportProgress(0, JsonConvert.SerializeObject(_progress));
             }
 
 
@@ -436,6 +466,7 @@ namespace WpfExplorer.ViewModel
             files = checkForExcpetionlist(files);
 
             int TotalFiles = files.Length;
+            _progress.Total = TotalFiles;
             C_TFiles ProcessedFiles = new C_TFiles();
             for (int i = 0; i < TotalFiles; i++)
             {
@@ -449,7 +480,10 @@ namespace WpfExplorer.ViewModel
                     case 0: ProcessedFiles.FilesOk.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); main.AddLog($"Die Datei {Path.GetFileName(files[i])} wurde zur Datenbank hinzugefügt", main.status.log); break;
 
                 }
-                SetIndexProgress(_files[i], i, TotalFiles);
+                _progress.Current.FileCount++;
+                _progress.Current.FileName = _files[i].Name;
+                worker.ReportProgress(0, JsonConvert.SerializeObject(_progress));
+                //SetIndexProgress(_files[i], i, TotalFiles);
             }
             var temp_file = db.getConf<fs.C_IZ>("database");
             temp_file.last_sync = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -496,23 +530,21 @@ namespace WpfExplorer.ViewModel
         }
 
 
-        /** Diese Methode sollte in einem neuen Thread ausgrführt werden, um die UI nicht zu blockieren*/
-        public void SetIndexProgress(fs.C_File FileName, int current, int total)
+        public void SetIndexProgress(string FileName, int current, int total)
         {
-            current++;
             double p = 100 / Convert.ToDouble(total);
             double prozent = p * Convert.ToDouble(current);
+            if (Double.IsInfinity(prozent)) prozent = 0; 
 
-            /** Gebe die Aufgabe zurück an den HauptThread. 
-             * Nur dieser darf auf die UI zugreifen
-             */
-            FileProgress = $"{current} von {total} ({Math.Round(prozent, 2)}%) | {FileName.Name}";
+            tb_IndizierteFiles = $"{current} von {total} ({Math.Round(prozent, 2)}%) | {FileName}";
+            tb_DatenbankFiles = $"{current} Dateien in der Datenbank";
 
         }
 
         public void SetIndexMessage(string message)
         {
-            FileProgress = message;
+            tb_FoundFiles = message;
+            //FileProgress = message;
         }
 
         private RelayCommand settings_Click;
@@ -626,5 +658,17 @@ namespace WpfExplorer.ViewModel
             LogViewer viewer = new LogViewer();
             viewer.ShowDialog();
         }
+
+        private string tb_DatenbankFiles1;
+
+        public string tb_DatenbankFiles { get => tb_DatenbankFiles1; set => SetProperty(ref tb_DatenbankFiles1, value); }
+
+        private string tb_IndizierteFiles1;
+
+        public string tb_IndizierteFiles { get => tb_IndizierteFiles1; set => SetProperty(ref tb_IndizierteFiles1, value); }
+
+        private string tb_FoundFiles1;
+
+        public string tb_FoundFiles { get => tb_FoundFiles1; set => SetProperty(ref tb_FoundFiles1, value); }
     }
 }
