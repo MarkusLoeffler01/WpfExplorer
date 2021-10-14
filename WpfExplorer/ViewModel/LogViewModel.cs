@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -35,25 +36,13 @@ namespace WpfExplorer.ViewModel
 
             return false;
         }
-        int i = 0;
 
-        public void fillLogs(object sender, RoutedEventArgs e)
+        public void fillLogs()
         {
             string[] files = fs.readDirSync(Path.Combine(MainWindowViewModel.TEMP_LOCATION));
             foreach (string file in files)
             {
                 
-                DateTime now = DateTime.Parse(Path.GetFileNameWithoutExtension(file));
-                LogList.Add(now.ToString("D"));
-            }
-        }
-
-        private void fillLogsManually()
-        {
-            string[] files = fs.readDirSync(Path.Combine(MainWindowViewModel.TEMP_LOCATION));
-            foreach (string file in files)
-            {
-
                 DateTime now = DateTime.Parse(Path.GetFileNameWithoutExtension(file));
                 LogList.Add(now.ToString("D"));
             }
@@ -101,6 +90,7 @@ namespace WpfExplorer.ViewModel
 
         private void PerformSelectLog(object commandParameter)
         {
+            if (commandParameter == null) return;
             string command = commandParameter.ToString();
 
             DateTime time;
@@ -173,7 +163,37 @@ namespace WpfExplorer.ViewModel
             for (int i = 0; i < fileList.Length; i++) File.Delete(fileList[i]);
             LogText = "";
             LogList.Clear();
-            fillLogsManually();
+            fillLogs();
         }
+
+        private RelayCommand exportLogs;
+
+        public ICommand ExportLogs
+        {
+            get
+            {
+                if (exportLogs == null)
+                {
+                    exportLogs = new RelayCommand(PerformExportLogs);
+                }
+
+                return exportLogs;
+            }
+        }
+
+        private void PerformExportLogs(object commandParameter)
+        {
+            string path = main.exportZipDialog();
+            if(path == null) { MessageBox.Show("Vorgang wurde vom Nutzer abgebrochen", null, MessageBoxButton.OK, MessageBoxImage.Warning); return; }
+            ZipFile.CreateFromDirectory(MainWindowViewModel.TEMP_LOCATION, path);
+        }
+
+        private System.Windows.Media.Brush color_Background;
+
+        public System.Windows.Media.Brush Color_Background { get => color_Background; set => SetProperty(ref color_Background, value); }
+
+        private System.Windows.Media.Brush color_Foreground;
+
+        public System.Windows.Media.Brush Color_Foreground { get => color_Foreground; set => SetProperty(ref color_Foreground, value); }
     }
 }

@@ -43,9 +43,6 @@ namespace WpfExplorer.ViewModel
 
             //fs.checkUserSettings();
 
-            LogViewer viewer = new LogViewer();
-            viewer.ShowDialog();
-
             main.AddLog("initialized", main.status.log);
             
             tb_Ping_Text = "Connecting to Database...";
@@ -613,5 +610,22 @@ namespace WpfExplorer.ViewModel
         private System.Windows.Media.Brush color_FoundFiles;
 
         public System.Windows.Media.Brush Color_FoundFiles { get => color_FoundFiles; set => SetProperty(ref color_FoundFiles, value); }
+
+        private RelayCommand _bt_Log1;
+
+        public ICommand _bt_Log
+        {
+            get
+            {
+                if (_bt_Log1 == null) _bt_Log1 = new RelayCommand(Perform_bt_Log);
+                return _bt_Log1;
+            }
+        }
+
+        private void Perform_bt_Log(object commandParameter)
+        {
+            LogViewer viewer = new LogViewer();
+            viewer.ShowDialog();
+        }
     }
 }

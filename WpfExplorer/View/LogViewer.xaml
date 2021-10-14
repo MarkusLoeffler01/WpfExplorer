@@ -8,7 +8,8 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         mc:Ignorable="ignore"
-        Title="LogViewer" Height="720" Width="1280">
+        Title="LogViewer" Height="720" Width="1280"
+        Background="{Binding Color_Background}">
     <Window.DataContext>
         <ViewModel:LogViewModel x:Name="mvm"></ViewModel:LogViewModel>
     </Window.DataContext>
@@ -22,15 +23,15 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="9*"/>
             </Grid.RowDefinitions>
-            <TextBlock FontSize="30" HorizontalAlignment="Center">Klicken Sie auf einer Log-Datei in der Liste unten, um diese anzusehen</TextBlock>
-            <TextBox Grid.Row="1" Margin="10, 0, 0, 0" Foreground="Black" FontSize="{Binding TBFontSize}" PreviewMouseWheel="MouseWheel" Text="{Binding LogText}" Cursor="IBeam"></TextBox>
+            <TextBlock FontSize="30" Foreground="{Binding Color_Foreground}" HorizontalAlignment="Center">Klicken Sie auf einer Log-Datei in der Liste unten, um diese anzusehen</TextBlock>
+            <TextBox Grid.Row="1" Margin="10, 0, 0, 0" Foreground="{Binding Color_Foreground}" FontSize="{Binding TBFontSize}" PreviewMouseWheel="MouseWheel" Text="{Binding LogText}" Cursor="IBeam"></TextBox>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LogList}" Name="LogList" SelectedItem="{Binding LogSelected}">
+            <ListBox Grid.Row="1" Grid.Column="0" Foreground="{Binding Color_Foreground}" ItemsSource="{Binding LogList}" Name="LogList" SelectedItem="{Binding LogSelected}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseLeftButtonUp">
                         <i:InvokeCommandAction Command="{Binding SelectLog}" CommandParameter="{Binding ElementName=LogList, Path=SelectedItem}"/>
@@ -57,7 +58,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Content="Export" Width="100px"/>
+                    <Button Grid.Column="0" Content="Export" Command="{Binding ExportLogs}" Width="100px" Cursor="Hand"/>
                     <Button Grid.Column="1" Content="Wipe logs" Command="{Binding WipeLogs}" Width="100px"/>
                 </Grid>
             </Grid>

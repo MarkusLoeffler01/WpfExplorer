@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using iTextSharp;
@@ -54,11 +53,113 @@ namespace WpfExplorer
             if (data.AUTH_KEY == null || data.AUTH_KEY.Length == 0) { data.AUTH_KEY = main.RandomString(64); }
             MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
         }
+        public enum Window
+        {
+            Dialog,
+            LogViewer,
+            MainWindow,
+            UserSettings
+        }
+
+        public static void checkWindowColors(Window window)
+        {
+            if (!File.Exists(Path.Combine(MainWindowViewModel.CONFIG_LOCATIONS, "usersettings.json"))) return;
+
+            var converter = new System.Windows.Media.BrushConverter();
+            MainWindowViewModel.us = db.getConf<fs.C_UC>("usersettings");
+
+            if (window == Window.MainWindow)
+            {
+                var MainWin1 = MainWindow.instance;
+                var MainWin2 = MainWindowViewModel.instance;
+                if (MainWindowViewModel.us.DarkMode)
+                {
+
+                    MainWin1.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
+                    MainWin2.Color_ExceptionLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin2.Color_FileExceptionList = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin2.Color_SuchFeldLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin2.Color_tb_Ping = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin2.Color_FoundFiles = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin2.Color_tb_AddExceptions = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin2.Color_tb_Search = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                }
+                else
+                {
+                    MainWin1.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin2.Color_ExceptionLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    MainWin2.Color_FileExceptionList = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    MainWin2.Color_SuchFeldLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    MainWin2.Color_tb_Ping = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    MainWin2.Color_FoundFiles = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    MainWin2.Color_tb_AddExceptions = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    MainWin2.Color_tb_Search = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                }
+
+            }
+            else if (window == Window.Dialog)
+            {
+                var MainWin1 = MessageDialog.instance;
+                if (MainWindowViewModel.us.DarkMode)
+                {
+
+                    MainWin1.Color_Background = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
+                    MainWin1.Color_Foreground = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                }
+                else
+                {
+                    MainWin1.Color_Background = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin1.Color_Foreground = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
+                }
+            }
+
+            else if (window == Window.LogViewer)
+            {
+                var MainWin1 = LogViewModel.instance;
+                if (MainWindowViewModel.us.DarkMode)
+                {
+
+                    MainWin1.Color_Background = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
+                    MainWin1.Color_Foreground = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                }
+                else
+                {
+                    MainWin1.Color_Background = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    MainWin1.Color_Foreground = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
+                }
+            }
+            else if (window == Window.UserSettings)
+            {
+                if (MainWindowViewModel.us.DarkMode)
+                {
+                    var win3 = UserSettingsViewModel.instance;
+                    win3.Color_UserSettingsFore = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win3.Color_CheckBox1Fore = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win3.Color_CheckBox1Back = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win3.Color_MiddleBorder = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win3.Color_MiddleBorderBrush = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win3.Color_Window = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win3.DarkModeCheck = MainWindowViewModel.us.DarkMode;
+                    win3.RecursiveCheck = MainWindowViewModel.us.Recursive;
+                }
+                else
+                {
+                    var win3 = UserSettingsViewModel.instance;
+                    win3.Color_UserSettingsFore = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win3.Color_CheckBox1Fore = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win3.Color_CheckBox1Back = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win3.Color_MiddleBorder = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win3.Color_MiddleBorderBrush = (System.Windows.Media.Brush)converter.ConvertFromString("#000000");
+                    win3.Color_Window = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
+                    win3.DarkModeCheck = MainWindowViewModel.us.DarkMode;
+                    win3.RecursiveCheck = MainWindowViewModel.us.Recursive;
+                }
+            }
+        }
 
         public static void checkUserSettings(bool initSettingsWindow)
         {
-            string path = MainWindowViewModel.CONFIG_LOCATIONS;
-            if(File.Exists(MainWindowViewModel.CONFIG_LOCATIONS+"usersettings.json"))
+            if(File.Exists(Path.Combine(MainWindowViewModel.CONFIG_LOCATIONS, "usersettings.json")))
             {
                 var converter = new System.Windows.Media.BrushConverter();
                 MainWindowViewModel.us = db.getConf<fs.C_UC>("usersettings");
@@ -134,7 +235,7 @@ namespace WpfExplorer
 
         public static string readFileSync(string path)
         {
-            using (StreamReader r = new StreamReader(path, Encoding.UTF8)) try { return r.ReadToEnd(); } catch(Exception e) {  MessageBox.Show("Datenbank konnte nicht gefunden werden"); return null; }
+            using (StreamReader r = new StreamReader(path, Encoding.UTF8)) try { return r.ReadToEnd(); } catch(Exception e) { main.ReportError(e, main.status.warning, "Datei konnte nicht gelesen werden"); return null; }
         }
 
         public static void writeFileSync(string path, string context, bool overwrite = false)
@@ -197,7 +298,7 @@ namespace WpfExplorer
                 if(res == MessageBoxResult.Cancel) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
                 if ( res == MessageBoxResult.Yes)
                 {
-                    path = main.getSaveDialog(null, true);
+                    path = main.getExportDialog(null, true);
                     if(path == null) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
                     DialogWindow dialogWindow = new DialogWindow();
                     dialogWindow.Title = "Verschlüsseln der Datenbank";
@@ -208,7 +309,7 @@ namespace WpfExplorer
                 }
                 else
                 {
-                    path = main.getSaveDialog(null, false);
+                    path = main.getExportDialog(null, false);
                     if (path == null) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
                     fs.writeFileSync(path, JsonConvert.SerializeObject(db.getConf<C_IZ>("database")));
                 }

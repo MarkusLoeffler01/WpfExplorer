@@ -24,6 +24,12 @@ namespace WpfExplorer.View
         public DialogWindow()
         {
             InitializeComponent();
+            this.Loaded += InitVM;
+        }
+        private void InitVM(object sender, RoutedEventArgs e)
+        {
+
+            fs.checkWindowColors(fs.Window.Dialog);
         }
     }
 }

@@ -63,7 +63,7 @@ namespace WpfExplorer
         public static Model.FileStructure[] FoundFiles;
 
 
-        public static string getPathDialog(string path = null)
+        public static string getPathDialog(string path = null, string Title = "Verzeichnis zum Indizieren wählen")
         {
             WPFFolderBrowserDialog dia = new WPFFolderBrowserDialog();
             dia.InitialDirectory = path;
@@ -71,13 +71,13 @@ namespace WpfExplorer
             {
                 MessageBox.Show(dia.FileName);
                 dia.ShowHiddenItems = true;
-                dia.Title = "Verzeichnis zum Indizieren wählen";
+                dia.Title = Title;
                 return dia.FileName;
             }
             return null;
         }
 
-        public static string getSaveDialog(string path = null, bool encrypted = false)
+        public static string getExportDialog(string path = null, bool encrypted = false)
         {
             SaveFileDialog dia = new SaveFileDialog();
             dia.InitialDirectory = path;
@@ -93,6 +93,18 @@ namespace WpfExplorer
             {
                 return dia.FileName;
             }
+            return null;
+        }
+
+        public static string exportZipDialog(string path = null)
+        {
+            SaveFileDialog dia = new SaveFileDialog();
+            dia.InitialDirectory = path;
+            dia.Title = "Verzeichnis für die ZIP wählen";
+                dia.DefaultExt = "zip";
+                UseDefaultExtAsFilterIndex(dia);
+                dia.Filter = $"ZIP|*.zip|7-zip|*.7z";
+            if (dia.ShowDialog() == true) return dia.FileName;
             return null;
         }
 

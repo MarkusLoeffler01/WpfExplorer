@@ -97,7 +97,6 @@ namespace WpfExplorer.ViewModel
                     //DarkModeCheck = MainWindowViewModel.us.DarkMode;
                     if (darkModeCheck)
                     {
-                        
                         win.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#252525");
                         win2.Color_ExceptionLabel = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");
                         win2.Color_FileExceptionList = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF");

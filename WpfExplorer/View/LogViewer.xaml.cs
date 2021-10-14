@@ -23,9 +23,16 @@ namespace WpfExplorer.View
         public LogViewer()
         {
             InitializeComponent();
-            this.Loaded += LogViewModel.instance.fillLogs;
+            this.Loaded += InitVM;
         }
 
-        private void MouseWheel(object sender, MouseWheelEventArgs e) => LogViewModel.instance.MouseWheel(sender, e);
+        private void InitVM(object sender, RoutedEventArgs e)
+        {
+
+            fs.checkWindowColors(fs.Window.LogViewer);
+            LogViewModel.instance.fillLogs();
+        }
+
+        new void MouseWheel(object sender, MouseWheelEventArgs e) => LogViewModel.instance.MouseWheel(sender, e);
     }
 }

@@ -34,7 +34,7 @@ namespace WpfExplorer
         {
             ((MainWindowViewModel)DataContext).ready_Tick();
             USBDetector.Detect_Click(sender, e);
-            fs.checkUserSettings(false);
+            fs.checkWindowColors(fs.Window.MainWindow);
         }
     }
 }

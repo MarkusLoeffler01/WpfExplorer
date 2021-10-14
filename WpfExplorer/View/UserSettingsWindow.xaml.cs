@@ -28,8 +28,8 @@ namespace WpfExplorer.View
         }
         private void InitVM(object sender, RoutedEventArgs e)
         {
-            
-            fs.checkUserSettings(true);
+
+            fs.checkWindowColors(fs.Window.UserSettings);
         }
     }
 }
