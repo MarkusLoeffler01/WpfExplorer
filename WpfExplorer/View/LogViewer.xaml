@@ -23,7 +23,7 @@
                 <RowDefinition Height="9*"/>
             </Grid.RowDefinitions>
             <TextBlock FontSize="30" HorizontalAlignment="Center">Klicken Sie auf einer Log-Datei in der Liste unten, um diese anzusehen</TextBlock>
-            <TextBox Grid.Row="1" FontSize="{Binding TBFontSize}" PreviewMouseWheel="MouseWheel" Text="{Binding LogText}" Cursor="IBeam"></TextBox>
+            <TextBox Grid.Row="1" Margin="10, 0, 0, 0" Foreground="Black" FontSize="{Binding TBFontSize}" PreviewMouseWheel="MouseWheel" Text="{Binding LogText}" Cursor="IBeam"></TextBox>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -32,10 +32,18 @@
             </Grid.ColumnDefinitions>
             <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding LogList}" Name="LogList" SelectedItem="{Binding LogSelected}">
                 <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDoubleClick">
-                        <i:InvokeCommandAction Command="{Binding MouseDoubleClick}" CommandParameter="{Binding ElementName=LogList, Path=SelectedItem}"/>
+                    <i:EventTrigger EventName="MouseLeftButtonUp">
+                        <i:InvokeCommandAction Command="{Binding SelectLog}" CommandParameter="{Binding ElementName=LogList, Path=SelectedItem}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Select" Command="{Binding SelectLog}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
+                                Path=PlacementTarget.SelectedItem}"/>
+                        <MenuItem Header="Delete" Command="{Binding DeleteLog}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
+                                Path=PlacementTarget.SelectedItem}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
             </ListBox>
             <Grid Grid.Column="1" Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -50,7 +58,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Content="Export" Width="100px"/>
-                    <Button Grid.Column="1" Content="Exit" Width="100px"/>
+                    <Button Grid.Column="1" Content="Wipe logs" Command="{Binding WipeLogs}" Width="100px"/>
                 </Grid>
             </Grid>
         </Grid>

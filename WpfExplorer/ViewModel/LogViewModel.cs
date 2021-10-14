@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommandHelper;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -39,10 +40,20 @@ namespace WpfExplorer.ViewModel
         public void fillLogs(object sender, RoutedEventArgs e)
         {
             string[] files = fs.readDirSync(Path.Combine(MainWindowViewModel.TEMP_LOCATION));
-            logText.Text = "Hallo";
             foreach (string file in files)
             {
                 
+                DateTime now = DateTime.Parse(Path.GetFileNameWithoutExtension(file));
+                LogList.Add(now.ToString("D"));
+            }
+        }
+
+        private void fillLogsManually()
+        {
+            string[] files = fs.readDirSync(Path.Combine(MainWindowViewModel.TEMP_LOCATION));
+            foreach (string file in files)
+            {
+
                 DateTime now = DateTime.Parse(Path.GetFileNameWithoutExtension(file));
                 LogList.Add(now.ToString("D"));
             }
@@ -53,8 +64,8 @@ namespace WpfExplorer.ViewModel
             if (Keyboard.Modifiers != ModifierKeys.Control) return;
 
             e.Handled = true;
-            if (e.Delta > 0) ++TBFontSize.FontSize;
-            else --TBFontSize.FontSize;
+            if (e.Delta > 0) ++TBFontSize;
+            else --TBFontSize;
         }
 
         private object logSelected;
@@ -66,11 +77,103 @@ namespace WpfExplorer.ViewModel
 
         //public ListBox LogList { get => logList; set => SetProperty(ref logList, value); }
 
-        private TextBlock logText = new TextBlock();
+        private string logText = "";
 
-        public TextBlock LogText { get => logText; set => SetProperty(ref logText, value); }
-        public TextBox tBFontSize = new TextBox();
+        public string LogText { get => logText; set => SetProperty(ref logText, value); }
+        public int tBFontSize = 12;
 
-        public TextBox TBFontSize { get => tBFontSize; set => SetProperty(ref tBFontSize, value);  }
+        public int TBFontSize { get => tBFontSize; set => SetProperty(ref tBFontSize, value);  }
+
+        private RelayCommand selectLog;
+
+        public ICommand SelectLog
+        {
+            get
+            {
+                if (selectLog == null)
+                {
+                    selectLog = new RelayCommand(PerformSelectLog);
+                }
+
+                return selectLog;
+            }
+        }
+
+        private void PerformSelectLog(object commandParameter)
+        {
+            string command = commandParameter.ToString();
+
+            DateTime time;
+            string timeS = "";
+            DateTime.TryParse(command, out time);
+            if (time != null) timeS = time.ToString("yyyy-MM-dd")+".log";
+            try
+            {
+                string content = fs.readFileSync(Path.Combine(MainWindowViewModel.TEMP_LOCATION, timeS));
+                LogText = content;
+            }
+            catch(Exception e)
+            {
+                main.ReportError(e, main.status.error, $"Die LogDatei '{timeS}' konnte nicht gelesen werden. Prüfen Sie den Dateinamen");
+            }
+            //PropertyChanged(this, new PropertyChangedEventArgs(nameof(LogList)));
+        }
+
+        private RelayCommand deleteLog;
+
+        public ICommand DeleteLog
+        {
+            get
+            {
+                if (deleteLog == null)
+                {
+                    deleteLog = new RelayCommand(PerformDeleteLog);
+                }
+
+                return deleteLog;
+            }
+        }
+
+        private void PerformDeleteLog(object commandParameter)
+        {
+            string command = commandParameter.ToString();
+
+            DateTime time;
+            string timeS = "";
+            DateTime.TryParse(command, out time);
+            if (time != null) timeS = time.ToString("yyyy-MM-dd") + ".log";
+            try
+            {
+                File.Delete(Path.Combine(MainWindowViewModel.TEMP_LOCATION, timeS));
+            }
+            catch (Exception e)
+            {
+                main.ReportError(e, main.status.error, $"Die LogDatei '{timeS}' konnte nicht gelesen werden. Prüfen Sie den Dateinamen");
+            }
+        }
+
+        private RelayCommand wipeLogs;
+
+        public ICommand WipeLogs
+        {
+            get
+            {
+                if (wipeLogs == null)
+                {
+                    wipeLogs = new RelayCommand(PerformWipeLogs);
+                }
+
+                return wipeLogs;
+            }
+        }
+
+        private void PerformWipeLogs(object commandParameter)
+        {
+            string[] fileList = fs.readDirSync(Path.Combine(MainWindowViewModel.TEMP_LOCATION), true);
+            for (int i = 0; i < fileList.Length; i++) File.Delete(fileList[i]);
+            LogText = "";
+            LogList.Clear();
+            fillLogsManually();
+        }
     }
 }
