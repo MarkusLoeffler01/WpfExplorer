@@ -277,6 +277,7 @@ namespace WpfExplorer
                 
                 C_IZ data = JsonConvert.DeserializeObject<C_IZ>(content);
                 db.setConf("database", data);
+                main.AddLog("Die Datenbank wurde importiert", main.status.log);
                 MessageBox.Show("Datei erfolgreich importiert");
             }
             catch (Exception e) { 
@@ -313,7 +314,7 @@ namespace WpfExplorer
                     if (path == null) { MessageBox.Show("Import abgebrochen", "Datenbank-Verschlüsselung", MessageBoxButton.OK, MessageBoxImage.Exclamation); return; }
                     fs.writeFileSync(path, JsonConvert.SerializeObject(db.getConf<C_IZ>("database")));
                 }
-
+                main.AddLog("Die Datenbank wurde exportiert", main.status.log);
                 if (MessageBox.Show($"Datenbank erfolgreich unter {path} exportiert. Möchten Sie den Pfad öffnen?", "Datenbank-Verschlüsselung", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
                 Process.Start(path);
 

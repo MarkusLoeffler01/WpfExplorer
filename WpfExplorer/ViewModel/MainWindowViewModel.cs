@@ -194,6 +194,8 @@ namespace WpfExplorer.ViewModel
                     else if (v.Size > 1000000) { end = "MB"; size = v.Size / 1000000; }
                     else if (v.Size > 1000000000) { end = "GB"; size = v.Size / 1000000000; }
 
+                    v.Path = Path.GetDirectoryName(v.Path);
+
                     string res = "";
                     res += v.Filename + "\n";
                     res += v.Path + "\n";
@@ -350,15 +352,13 @@ namespace WpfExplorer.ViewModel
             if (o == null) return;
             string p = o.ToString();
             string[] pp = p.Split('\n');
+            string path = Path.Combine(pp[1], pp[0]);
 
-            Process cmd = new Process();
-            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            cmd.StartInfo.CreateNoWindow = true;
-            cmd.StartInfo.UseShellExecute = false;
-            cmd.StartInfo.FileName = "cmd.exe";
-            cmd.StartInfo.Arguments = "/c " + $"explorer.exe /select,\"{pp[1]}\\{pp[0]}\"";
-            cmd.EnableRaisingEvents = true;
-            cmd.Start();
+            string argument = "/select, \"" + path + "\"";
+            Process.Start("explorer.exe", argument);
+            //cmd.StartInfo.Arguments = "/c " + $"explorer.exe /select,\"{pp[1]}\\{pp[0]}\"";
+            //cmd.EnableRaisingEvents = true;
+            //cmd.Start();
         }
 
         private RelayCommand _bt_Help1;
@@ -421,8 +421,6 @@ namespace WpfExplorer.ViewModel
 
         private void backgroundWorker1_DoWork()
         {
-            string path = "C:\\Users\\LoefflerM\\OneDrive - Putzmeister Holding GmbH\\Desktop\\Berichtsheft";
-
             string[] files = fs.readDirSync(_PATH, true, true);
             List<fs.C_File> _files = new List<fs.C_File>();
 
@@ -446,9 +444,9 @@ namespace WpfExplorer.ViewModel
                 switch (fs.AddToIndex(files[i]))
                 {
 
-                    case -1: SetIndexMessage($"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"); ProcessedFiles.FilesSkipped.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
+                    case -1: string msg = $"Die Datei {Path.GetFileName(files[i])} konnte nicht indiziert werden, da sie schon vorhanden ist"; SetIndexMessage(msg); main.AddLog(msg, main.status.warning); ProcessedFiles.FilesSkipped.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Datei schon vorhanden
                     case -255: ProcessedFiles.FilesErr.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break; //Exception
-                    case 0: ProcessedFiles.FilesOk.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); break;
+                    case 0: ProcessedFiles.FilesOk.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); main.AddLog($"Die Datei {Path.GetFileName(files[i])} wurde zur Datenbank hinzugefügt", main.status.log); break;
 
                 }
                 SetIndexProgress(_files[i], i, TotalFiles);
@@ -463,6 +461,7 @@ namespace WpfExplorer.ViewModel
 
             int total = ProcessedFiles.FilesOk.Count + ProcessedFiles.FilesSkipped.Count + ProcessedFiles.FilesOk.Count;
             MsgText += $"\n{total} von {TotalFiles} Dateien verarbeitet";
+            main.AddLog(MsgText.Replace("\n", " | "), main.status.log);
             MessageBox.Show(MsgText);
         }
 
