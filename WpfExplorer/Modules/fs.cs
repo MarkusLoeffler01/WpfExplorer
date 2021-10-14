@@ -48,6 +48,8 @@ namespace WpfExplorer
                 }
             }
 
+            Directory.CreateDirectory(MainWindowViewModel.TEMP_LOCATION);
+
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
             if (data.AUTH_KEY == null || data.AUTH_KEY.Length == 0) { data.AUTH_KEY = main.RandomString(64); }
             MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;

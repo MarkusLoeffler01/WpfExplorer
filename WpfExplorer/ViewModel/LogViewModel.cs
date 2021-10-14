@@ -69,7 +69,7 @@ namespace WpfExplorer.ViewModel
         private TextBlock logText = new TextBlock();
 
         public TextBlock LogText { get => logText; set => SetProperty(ref logText, value); }
-        public TextBox tBFontSize;
+        public TextBox tBFontSize = new TextBox();
 
         public TextBox TBFontSize { get => tBFontSize; set => SetProperty(ref tBFontSize, value);  }
     }
