@@ -235,7 +235,20 @@ namespace WpfExplorer
 
         public static string readFileSync(string path)
         {
-            using (StreamReader r = new StreamReader(path, Encoding.UTF8)) try { return r.ReadToEnd(); } catch(Exception e) { main.ReportError(e, main.status.warning, "Datei konnte nicht gelesen werden"); return null; }
+            using (StreamReader r = new StreamReader(path, Encoding.UTF8)) {
+                string _ = null;
+                try 
+                { 
+                    _ = r.ReadToEnd(); 
+                }
+
+                catch (Exception e)
+                {
+                    main.ReportError(e, main.status.warning, "Datei konnte nicht gelesen werden");
+                }
+                finally { r.Close(); }
+                return _;
+            }
         }
 
         public static void writeFileSync(string path, string context, bool overwrite = false)
@@ -356,14 +369,26 @@ namespace WpfExplorer
             while (main.isIndexerRunning) { System.Diagnostics.Debug.WriteLine("Still running" + ___); ___++; }
             C_IZ conf = db.getConf<C_IZ>("database");
             List<Model.FileStructure> FoundFiles = new List<Model.FileStructure>();
-
             Regex.IsMatch(Filename, WildCardToRegular(Filename));
 
             for (int i = 0; i < conf.Paths.Count; i++)
             {
+                
                 List<C_File> _ = new List<C_File>();
                 if (Filename.Contains("*")) _ = conf.Paths[i].Files.Where(p => Regex.IsMatch(p.Name, WildCardToRegular(Filename))).ToList<C_File>();
                 else _ = conf.Paths[i].Files.Where(p => p.Name.Contains(Filename)).ToList();
+                if(SearchFileContent)
+                {
+                    try
+                    {
+                        if (Filename.Contains("*")) _.AddRange(conf.Paths[i].Files.Where(p => Regex.IsMatch(p.Content, WildCardToRegular(Filename))).ToList<C_File>());
+                        else _.AddRange(conf.Paths[i].Files.Where(p => String.IsNullOrEmpty(p.Content) ? false : p.Content.Contains(Filename)).ToList());
+                    }
+                    catch(Exception e)
+                    {
+                        if (e.GetType() != typeof(NullReferenceException)) main.ReportError(e, main.status.error, "Der Datenkontext der Datei konnte nicht gelesen werden");
+                    }
+                }
                 for(int j = 0; j < _.Count(); j++)
                 {
                     FoundFiles.Add(new Model.FileStructure() { Filename = _[j].Name, Path = _[j].FullPath, Size = _[j].Size });
@@ -392,7 +417,7 @@ namespace WpfExplorer
                         //JA, füge Eintrag zu Paths[i].Files hinzu, wenn diese nicht schon vorhanden ist
                         if (data.Paths[i].Files.Where(p => p.FullPath == file.FullPath).Count() == 0) data.Paths[i].Files.Add(file);
                         else { main.isIndexerRunning = false; return -1; }
-                        if (!data.Paths[i].Files.Contains(file)) { data.Paths[i].Files.Add(file); } else { main.isIndexerRunning = false; return -1; }
+                        //if (!data.Paths[i].Files.Contains(file)) { data.Paths[i].Files.Add(file); } else { main.isIndexerRunning = false; return -1; }
                         found = true;
                         break;
                     }
@@ -402,6 +427,7 @@ namespace WpfExplorer
 
                 //Speicher die DB-Datei
                 db.setConf("database", data);
+                db.dbdata = data;
                 main.AddToGrid(file, path);
                 main.isIndexerRunning = false;
                 return 0;

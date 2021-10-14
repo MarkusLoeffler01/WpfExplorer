@@ -11,17 +11,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using RelayCommand = CommandHelper.RelayCommand;
-using System.Threading;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Threading;
-using iTextSharp;
-using iTextSharp.text;
 using System.Text.RegularExpressions;
 using WpfExplorer.Model;
 using WpfExplorer.View;
 using Microsoft.Win32;
+using System.Threading.Tasks;
 
 namespace WpfExplorer.ViewModel
 {
@@ -82,9 +78,28 @@ namespace WpfExplorer.ViewModel
         }
         public void ready_Tick()
         {
-            db.push(this);
-            db.pull();
+            var res = db.fetch();
+            if(res == 1)
+            {
+                PPbtn = "↓";
+            }
+            else if(res == 0)
+            {
+                PPbtn = "↑";
+            }
+            else if(res == -2)
+            {
+                PPbtn = "✓";
+            }
         }
+
+        public void sync()
+        {
+            
+            db.pull();
+            db.push();
+        }
+        
 
         public static void CheckExtKey()
         {
@@ -99,7 +114,6 @@ namespace WpfExplorer.ViewModel
 
         private void SetPing(object sender, EventArgs e)
         {
-            Console.WriteLine("PING");
             double PingTime = db.PingDB();
             tb_Ping_Text = $"{PingTime}ms";
         }
@@ -182,7 +196,8 @@ namespace WpfExplorer.ViewModel
             if (tb_Search_Text.Length == 0) return;
             /**Es sollten zuerst die Dateinamen und DANN erst Dateien mit dem Inhalt durchsucht werden */
 
-            List<FileStructure> File = fs.searchFile(tb_Search_Text, false);
+            List<FileStructure> File = fs.searchFile(tb_Search_Text, true);
+            Task.Run(searchContext);
             if (File.Count != 0)
             {
 
@@ -204,6 +219,11 @@ namespace WpfExplorer.ViewModel
                     FoundFiles.Add(res);
                 }
             }
+        }
+
+        public void searchContext()
+        {
+
         }
 
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
@@ -390,7 +410,12 @@ namespace WpfExplorer.ViewModel
             _PATH = main.getPathDialog();
             if (_PATH == "") return;
 
-            Task.Run(backgroundWorker1_DoWork);
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.WorkerSupportsCancellation = true;
+            worker.ProgressChanged += backgroundWorker1_ProgressChanged;
+            worker.DoWork += backgroundWorker1_DoWork;
+            worker.RunWorkerAsync();
             return;
         }
 
@@ -419,16 +444,48 @@ namespace WpfExplorer.ViewModel
             return valid;
         }
 
-        private void backgroundWorker1_DoWork()
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            BW_Files files = JsonConvert.DeserializeObject<BW_Files>(e.UserState.ToString());
+            if (files.Message != null) SetIndexMessage(files.Message);
+            if(files.Current != null) SetIndexProgress(files.Current.FileName, files.Current.FileCount, files.Total);
+
+        }
+
+        private class BW_Files
+        {
+            public class File
+            {
+                public string FileName;
+                public int FileCount;
+            };
+            public int Total;
+            public uint InDB;
+            public File Current;
+            public string Message;
+
+            public BW_Files()
+            {
+                this.InDB = db.CountFiles();
+                this.Current = new File();
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            BW_Files _progress = new BW_Files();
+            
             string[] files = fs.readDirSync(_PATH, true, true);
+            if (files == null) return;
             List<fs.C_File> _files = new List<fs.C_File>();
 
             for (int i = 0; i < files.Length; i++)
             {
                 if (IsExceptedFile(files[i])) continue;
                 _files.Add(fs.getFileInfo(files[i]));
-                SetIndexMessage("Dateien werden gesucht... " + i + " Dateien gefunden");
+                _progress.Message = "Dateien werden gesucht... " + i + " Dateien gefunden";
+                worker.ReportProgress(0, JsonConvert.SerializeObject(_progress));
             }
 
 
@@ -436,6 +493,7 @@ namespace WpfExplorer.ViewModel
             files = checkForExcpetionlist(files);
 
             int TotalFiles = files.Length;
+            _progress.Total = TotalFiles;
             C_TFiles ProcessedFiles = new C_TFiles();
             for (int i = 0; i < TotalFiles; i++)
             {
@@ -449,7 +507,10 @@ namespace WpfExplorer.ViewModel
                     case 0: ProcessedFiles.FilesOk.Add(new C_Files { FileName = Path.GetFileName(files[i]), Path = files[i] }); main.AddLog($"Die Datei {Path.GetFileName(files[i])} wurde zur Datenbank hinzugefügt", main.status.log); break;
 
                 }
-                SetIndexProgress(_files[i], i, TotalFiles);
+                _progress.Current.FileCount++;
+                _progress.Current.FileName = _files[i].Name;
+                worker.ReportProgress(0, JsonConvert.SerializeObject(_progress));
+                //SetIndexProgress(_files[i], i, TotalFiles);
             }
             var temp_file = db.getConf<fs.C_IZ>("database");
             temp_file.last_sync = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -496,23 +557,21 @@ namespace WpfExplorer.ViewModel
         }
 
 
-        /** Diese Methode sollte in einem neuen Thread ausgrführt werden, um die UI nicht zu blockieren*/
-        public void SetIndexProgress(fs.C_File FileName, int current, int total)
+        public void SetIndexProgress(string FileName, int current, int total)
         {
-            current++;
             double p = 100 / Convert.ToDouble(total);
             double prozent = p * Convert.ToDouble(current);
+            if (Double.IsInfinity(prozent)) prozent = 0; 
 
-            /** Gebe die Aufgabe zurück an den HauptThread. 
-             * Nur dieser darf auf die UI zugreifen
-             */
-            FileProgress = $"{current} von {total} ({Math.Round(prozent, 2)}%) | {FileName.Name}";
+            tb_IndizierteFiles = $"{current} von {total} ({Math.Round(prozent, 2)}%) | {FileName}";
+            tb_DatenbankFiles = $"{current} Dateien in der Datenbank";
 
         }
 
         public void SetIndexMessage(string message)
         {
-            FileProgress = message;
+            tb_FoundFiles = message;
+            //FileProgress = message;
         }
 
         private RelayCommand settings_Click;
@@ -625,6 +684,87 @@ namespace WpfExplorer.ViewModel
         {
             LogViewer viewer = new LogViewer();
             viewer.ShowDialog();
+        }
+
+        private string tb_DatenbankFiles1;
+
+        public string tb_DatenbankFiles { get => tb_DatenbankFiles1; set => SetProperty(ref tb_DatenbankFiles1, value); }
+
+        private string tb_IndizierteFiles1;
+
+        public string tb_IndizierteFiles { get => tb_IndizierteFiles1; set => SetProperty(ref tb_IndizierteFiles1, value); }
+
+        private string tb_FoundFiles1;
+
+        public string tb_FoundFiles { get => tb_FoundFiles1; set => SetProperty(ref tb_FoundFiles1, value); }
+
+        private RelayCommand removeFromDB;
+        public ICommand RemoveFromDB
+        {
+            get
+            {
+                if (removeFromDB == null) removeFromDB = new RelayCommand(Perform_removeFromDB);
+                return removeFromDB;
+            }
+        }
+
+        private void Perform_removeFromDB(object commandParameter)
+        {
+            string[] splitted = commandParameter.ToString().Split('\n') ?? new string[] {};
+            fs.RemoveFromIndex(Path.Combine(splitted[1], splitted[0]));
+        }
+
+        private object pPbtn;
+
+        public object PPbtn { get => pPbtn; set => SetProperty(ref pPbtn, value); }
+
+        private double syncbtn_Rotate;
+
+        public double Syncbtn_Rotate { get => syncbtn_Rotate; set => SetProperty(ref syncbtn_Rotate, value); }
+
+        private RelayCommand rotate_button1;
+
+        public void _rotate_button(object commandParameter)
+        {
+            MainWindow.instance.AnimationBoard.Begin();
+            //MainWindow.instance.AnimationBoard.BeginAnimation()
+            ready_Tick();
+            //MainWindow.instance.AnimationBoard.Stop();
+        }
+
+        public ICommand rotate_button
+        {
+            get
+            {
+                if (rotate_button1 == null)
+                {
+                    rotate_button1 = new RelayCommand(_rotate_button);
+                }
+
+                return rotate_button1;
+            }
+        }
+
+        private RelayCommand syncbtn_Sync;
+
+        public ICommand Syncbtn_Sync
+        {
+            get
+            {
+                if (syncbtn_Sync == null)
+                {
+                    syncbtn_Sync = new RelayCommand(PerformSyncbtn_Sync);
+                }
+
+                return syncbtn_Sync;
+            }
+        }
+
+        private void PerformSyncbtn_Sync(object commandParameter)
+        {
+            db.pull();
+            db.push();
+            ready_Tick();
         }
     }
 }
