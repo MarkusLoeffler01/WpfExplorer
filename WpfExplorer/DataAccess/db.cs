@@ -91,6 +91,7 @@ namespace WpfExplorer
             if (fetch() == 0) return false;
 
             MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
+            if (MainWindowViewModel.AUTH_KEY == null) return false;
             var last_sync = myquery($"SELECT last_sync from users WHERE ID = @val1", new string[] {MainWindowViewModel.AUTH_KEY});
             if (last_sync.Count == 0)
             {
@@ -113,9 +114,12 @@ namespace WpfExplorer
         /// </summary>
         public static int fetch()
         {
-            if (MainWindowViewModel.AUTH_KEY.Length == 0) MainWindowViewModel.AUTH_KEY = main.RandomString(64);
-            string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             fs.C_IZ data = db.getConf<fs.C_IZ>("database");
+
+            MainWindowViewModel.AUTH_KEY = data.AUTH_KEY;
+            
+            if (MainWindowViewModel.AUTH_KEY == null || MainWindowViewModel.AUTH_KEY.Length == 0) MainWindowViewModel.AUTH_KEY = main.RandomString(64);
+            string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             var last_sync = myquery($"SELECT last_sync FROM users WHERE ID = @val1", new string[] { MainWindowViewModel.AUTH_KEY });
             if (last_sync.Count == 0)
             {

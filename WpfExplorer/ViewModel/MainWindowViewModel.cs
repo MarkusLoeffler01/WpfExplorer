@@ -204,8 +204,8 @@ namespace WpfExplorer.ViewModel
                 foreach (var v in File)
                 {
                     double size = 0;
-                    string end = "b";
-                    if (v.Size > 1000) { end = "kB"; size = Convert.ToDouble(v.Size / 1000); }
+                    string end = "B";
+                    if (v.Size > 1000) { end = "KB"; size = Convert.ToDouble(v.Size / 1000); }
                     else if (v.Size > 1000000) { end = "MB"; size = v.Size / 1000000; }
                     else if (v.Size > 1000000000) { end = "GB"; size = v.Size / 1000000000; }
 
@@ -341,7 +341,9 @@ namespace WpfExplorer.ViewModel
 
 
         public ObservableCollection<string> FileExceptionList { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<string> FoundFiles { get; set; } = new ObservableCollection<string>();
+
+        private ObservableCollection<string> foundFiles = new ObservableCollection<string>();
+        public ObservableCollection<string> FoundFiles { get => foundFiles; set => SetProperty(ref foundFiles, value); }
         private object selectedFileException;
 
         public object SelectedFileException { get => selectedFileException; set => SetProperty(ref selectedFileException, value); }
@@ -476,7 +478,7 @@ namespace WpfExplorer.ViewModel
             BackgroundWorker worker = sender as BackgroundWorker;
             BW_Files _progress = new BW_Files();
             
-            string[] files = fs.readDirSync(_PATH, true, true);
+            string[] files = fs.readDirSync(_PATH, true, UserSettingsViewModel.instance.RecursiveCheck);
             if (files == null) return;
             List<fs.C_File> _files = new List<fs.C_File>();
 
@@ -520,7 +522,7 @@ namespace WpfExplorer.ViewModel
             if (ProcessedFiles.FilesErr.Count != 0) MsgText += $"{ProcessedFiles.FilesErr.Count} Dateien fehlerhaft\n";
             if (ProcessedFiles.FilesOk.Count != 0) MsgText += $"{ProcessedFiles.FilesOk.Count} Dateien erfolgreich hinzugefügt\n";
 
-            int total = ProcessedFiles.FilesOk.Count + ProcessedFiles.FilesSkipped.Count + ProcessedFiles.FilesOk.Count;
+            int total = ProcessedFiles.FilesOk.Count + ProcessedFiles.FilesSkipped.Count + ProcessedFiles.FilesErr.Count;
             MsgText += $"\n{total} von {TotalFiles} Dateien verarbeitet";
             main.AddLog(MsgText.Replace("\n", " | "), main.status.log);
             MessageBox.Show(MsgText);
@@ -710,10 +712,18 @@ namespace WpfExplorer.ViewModel
 
         private void Perform_removeFromDB(object commandParameter)
         {
-            string[] splitted = commandParameter.ToString().Split('\n') ?? new string[] {};
-            fs.RemoveFromIndex(Path.Combine(splitted[1], splitted[0]));
-        }
 
+            string[] splitted = commandParameter.ToString().Split('\n') ?? new string[] { };
+            fs.RemoveFromIndex(Path.Combine(splitted[1], splitted[0]));
+
+
+            //BackgroundWorker worker = new BackgroundWorker();
+            //worker.WorkerReportsProgress = true;
+            //worker.WorkerSupportsCancellation = true;
+            //worker.ProgressChanged += RemoveFromIndex_ProgressChanged;
+            //worker.DoWork += RemoveFromIndex_DoWork;
+            //worker.RunWorkerAsync();
+        }
         private object pPbtn;
 
         public object PPbtn { get => pPbtn; set => SetProperty(ref pPbtn, value); }

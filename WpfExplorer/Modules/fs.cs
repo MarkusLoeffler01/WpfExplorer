@@ -15,6 +15,7 @@ using WpfExplorer.ViewModel;
 using WpfExplorer.Modules;
 using System.Diagnostics;
 using WpfExplorer.View;
+using System.Collections.ObjectModel;
 
 namespace WpfExplorer
 {
@@ -381,7 +382,7 @@ namespace WpfExplorer
                 {
                     try
                     {
-                        if (Filename.Contains("*")) _.AddRange(conf.Paths[i].Files.Where(p => Regex.IsMatch(p.Content, WildCardToRegular(Filename))).ToList<C_File>());
+                        if (Filename.Contains("*") && Filename != "*") _.AddRange(conf.Paths[i].Files.Where(p => Regex.IsMatch(p.Content ?? "", WildCardToRegular(Filename))).ToList<C_File>());
                         else _.AddRange(conf.Paths[i].Files.Where(p => String.IsNullOrEmpty(p.Content) ? false : p.Content.Contains(Filename)).ToList());
                     }
                     catch(Exception e)
@@ -467,12 +468,23 @@ namespace WpfExplorer
                 {
                     if (data.Paths[i].Path == path)
                     {
-                        //JA, füge Eintrag zu Paths[i].Files hinzu
-                        var f = data.Paths[i].Files.Where(p => p.Name == file.Name);
+                        //JA, entferne Eintrag von der DB
+                        List<C_File> f = data.Paths[i].Files.Where(p => (p.Name == file.Name && p.FullPath == file.FullPath)).ToList();
                         if (f.Count() == 1)
                         {
+                            var old = MainWindowViewModel.instance.FoundFiles;
+                            string o = $"{f[0].Name}\n{Path.GetDirectoryName(f[0].FullPath)}";
                             data.Paths[i].Files.Remove(f.First());
                             found = true;
+                            List<string> r = MainWindowViewModel.instance.FoundFiles.ToList();
+                            r.RemoveAll(u => u.Contains(o));
+                            MainWindowViewModel.instance.FoundFiles = new ObservableCollection<string>(r);
+                            var _new = MainWindowViewModel.instance.FoundFiles;
+                            string text = MainWindowViewModel.instance.tb_DatenbankFiles;
+                            string[] stext = text.Split(' ');
+                            int p = Convert.ToInt32(stext[0]);
+                            p--;
+                            MainWindowViewModel.instance.tb_DatenbankFiles = $"{p} Dateien in der Datenbank";
                             break;
                         }
                         //Der Directory ist nicht indiziert

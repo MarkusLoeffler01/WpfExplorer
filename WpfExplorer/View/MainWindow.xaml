@@ -39,7 +39,7 @@
                         <EventTrigger RoutedEvent="MouseLeftButtonDown" >
                             <BeginStoryboard>
                                 <Storyboard x:Name="AnimationBoard">
-                                    <DoubleAnimation Storyboard.TargetName="AnimatedRotateTransform" Storyboard.TargetProperty="Angle" FillBehavior="Stop" />
+                                    <DoubleAnimation Storyboard.TargetName="AnimatedRotateTransform" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="10" FillBehavior="Stop" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
@@ -83,7 +83,7 @@
                 <ListBox Foreground="{Binding Color_FoundFiles}" MaxHeight="600" Grid.Row="6" Name="GD_Dateiausgabe" ItemsSource="{Binding FoundFiles}" SelectedItem="{Binding SelectedFile}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <ListBox.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Delete" Command="{Binding RemoveFromDB}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
+                            <MenuItem Header="Aus Index entfernen" Command="{Binding RemoveFromDB}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
                                 Path=PlacementTarget.SelectedItem}"/>
                         </ContextMenu>
                     </ListBox.ContextMenu>
