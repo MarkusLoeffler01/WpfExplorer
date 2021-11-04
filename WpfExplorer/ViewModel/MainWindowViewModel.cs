@@ -52,7 +52,7 @@ namespace WpfExplorer.ViewModel
             else
             {
                 tb_Ping_Text = "Connection failed...";
-                main.ReportError(new Exception(), main.status.error, "Die Datenbank ist nicht erreichbar.Stellen Sie sicher, dass Sie den Port 3306 von ***REMOVED*** erreichen können");
+                main.ReportError(new Exception(), main.status.error, "Die Datenbank ist nicht erreichbar.Stellen Sie sicher, dass Sie den Port 3306 von ryukyun.de erreichen können");
                 return;
             }
             DispatcherTimer dT = new DispatcherTimer();
